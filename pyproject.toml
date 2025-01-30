@@ -19,5 +19,5 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/"
-Issues = "https://github.com/"
+Homepage = "https://github.com/pranava-ba/binomcikit"
+Issues = "https://github.com/pranava-ba/binomcikit"
