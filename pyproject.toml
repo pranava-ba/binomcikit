@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "binomcikit"
+version = "0.0.1"
+authors = [
+  { name="Vyasa R Rajeswaran", email="vyasarshi2308@gmail.com" },
+  { name="Pranava BA", email="pranavabaascaran@gmail.com"}
+]
+description = "Used to calculate Confidence intervals"
+readme = "README.md"
+requires-python = ">=3.0"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/"
+Issues = "https://github.com/"
