@@ -21,3 +21,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/pranava-ba/binomcikit"
 Issues = "https://github.com/pranava-ba/binomcikit"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/binomcikit"]
