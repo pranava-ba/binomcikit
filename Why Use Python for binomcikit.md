@@ -1,4 +1,4 @@
-# Why use Python for binomcikit?
+# Why use Python for binomcikit
 
 Estimating a single binomial proportion is a fundamental problem in statistics that applies to a wide range of real-world scenarios. In many fields, we encounter situations where we need to estimate the proportion of successes (or failures) in a fixed number of independent trials, with each trial having only two possible outcomes, such as success or failure, yes or no, pass or fail. This estimation problem is central to various industries, from healthcare to business to manufacturing.
 
