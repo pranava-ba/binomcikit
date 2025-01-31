@@ -7,10 +7,12 @@ name = "binomcikit"
 version = "0.0.1"
 authors = [
   { name="Vyasa R Rajeswaran", email="vyasarshi2308@gmail.com" },
-  { name="Pranava BA", email="pranavabaascaran@gmail.com"}
+  { name="Pranava BA", email="pranavabaascaran@gmail.com" }
 ]
 description = "Used to calculate Confidence intervals"
 readme = "README.md"
+long_description = { file = "README.md" } 
+long_description_content_type = "text/markdown"
 requires-python = ">=3.0"
 classifiers = [
     "Programming Language :: Python :: 3",
