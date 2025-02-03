@@ -40,7 +40,7 @@ We use "ci" in the start of each function name to indicate that the "Confidence 
 We then call the method used by first calling "ci", followed by the Naming Convention used.
 (ci is the prefix).
 
-**Example Usage:**
+### **Example Usage:**
 "cias" - Confidence Interval called using the ArcSine Method
 
 The names used to call each of the methods are listed below:
@@ -76,5 +76,9 @@ The names used to call each of the sub-methods/type of method are listed below:
 | 4. **Continuity Corrected** | c | prefix | cicwd |
 | 3. **Continuity Corrected X** | c_x | prefix **and** postfix | cicwdx |
 
+## Naming convention for plots
 
+Just add "plot" prefix before ci{methodname} to print the plot
 
+### **Example Usage:** 
+"plotciwdx" - plots the Based Method of Confidence Interval called using the Wald Methos
