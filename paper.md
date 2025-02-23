@@ -5,18 +5,22 @@ tags:
   - probability
   - statistics
 authors:
-  - name: "Vyasa R Rajeswaran"
-    orcid: "0009-0005-5912-8804"  
-    affiliation: "1"
-  - name: "Pranava BA"
-    orcid: "0009-0003-5883-8949" 
-    affiliation: "1"
-  - name: "Justindhas Y"
-    affiliation: "2"
+  - name: Vyasa R Rajeswaran
+    orcid: 0009-0005-5912-8804
+    equal-contrib: true
+    affiliation: 1
+  - name: Pranava BA
+    orcid: 0009-0003-5883-8949
+    equal-contrib: true
+    affiliation: 1
+  - name: Justindhas Y
+    orcid: 0000-0003-0296-2206
+    equal-contrib: true
+    affiliation: 2
 affiliations:
-  - name: "Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India"
+  - name: Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India
     index: 1
-  - name: "Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India"
+  - name: Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India
     index: 2
 date: 23 February 2025
 bibliography: paper.bib
