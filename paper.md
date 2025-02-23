@@ -26,7 +26,7 @@ affiliations:
   - name: Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India
     index: 2
 date: 23 February 2025
-description = "A Python package for calculating confidence intervals in statistical analysis using binomial distributions."
+description: "A Python package for calculating confidence intervals in statistical analysis using binomial distributions."
 bibliography: paper.bib
 ---
 
