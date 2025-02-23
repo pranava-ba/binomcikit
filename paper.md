@@ -1,30 +1,3 @@
----
-title: "Estimating a Single Binomial Proportion: Overview"
-tags:
-  - binomial
-  - probability
-  - statistics
-authors:
-  - name: Vyasa R Rajeswaran
-    orcid: 0009-0005-5912-8804
-    equal-contrib: true
-    affiliation: 1
-  - name: Pranava BA
-    orcid: 0009-0003-5883-8949
-    equal-contrib: true
-    affiliation: 1
-  - name: Justindhas Y
-    orcid: 0000-0003-0296-2206
-    equal-contrib: true
-    affiliation: 2
-affiliations:
-  - name: Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India
-    index: 1
-  - name: Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India
-    index: 2
-date: 23 February 2025
-bibliography: paper.bib
----
 
 
 # Estimating a Single Binomial Proportion: Overview
@@ -39,7 +12,33 @@ Justindhas Y²
 
 ## Summary
 
-**Estimating a single binomial proportion** is a foundational statistical task critical to diverse disciplines, involving the determination of the probability of success in a series of independent trials. This problem arises in fields such as clinical trials, quality control, social science research, financial risk assessment, and ecological studies, where quantifying binary outcomes (success/failure) is essential. The sample proportion $\hat{p}$ serves as the primary point estimate for the true proportion $p$, while confidence intervals or Bayesian methods are employed to express uncertainty.
+**Estimating a single binomial proportion** is a foundational statistical task critical to diverse disciplines, involving the determination of the probability of success in a ser---
+title: "Estimating a Single Binomial Proportion: Overview"
+tags:
+  - binomial
+  - probability
+  - statistics
+authors:
+  - name: Vyasa R Rajeswaran
+    orcid: 0009-0005-5912-8804
+    equal-contrib: true
+    affiliation: "1"
+  - name: Pranava BA
+    orcid: 0009-0003-5883-8949
+    equal-contrib: true
+    affiliation: "1"
+  - name: Justindhas Y
+    orcid: 0000-0003-0296-2206
+    equal-contrib: true
+    affiliation: "2"
+affiliations:
+  - index: 1
+    name: Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India
+  - index: 2
+    name: Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India
+date: 23 February 2025
+bibliography: paper.bib
+---ies of independent trials. This problem arises in fields such as clinical trials, quality control, social science research, financial risk assessment, and ecological studies, where quantifying binary outcomes (success/failure) is essential. The sample proportion $\hat{p}$ serves as the primary point estimate for the true proportion $p$, while confidence intervals or Bayesian methods are employed to express uncertainty.
 
 Challenges include addressing boundary conditions (proportions near 0 or 1), managing small sample sizes, and selecting appropriate methods to balance accuracy and computational efficiency. Despite its ubiquity, specialized computational tools for binomial proportion estimation remain underdeveloped in Python. While existing statistical packages (e.g., SciPy, statsmodels) offer generalized solutions, they lack tailored implementations for nuanced scenarios such as Bayesian inference with weakly informative priors, exact confidence interval methods for small samples, or coverage probability optimization.
 
