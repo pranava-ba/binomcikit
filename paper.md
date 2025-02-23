@@ -127,9 +127,3 @@ Estimating binomial proportions is a fundamental statistical problem with applic
 We acknowledge support from The Principal, Dr Deiva Sundari, the department of CSE(AIML), Dr A Joseph Anburaj, Mr K Kadhiravan, Mrs S Leelavathi from the Central Library during the genesis of this project.
 
 ## References
-
-1. Subbiah, M., and V. Rajeswaran. 2017. "Proportion: A comprehensive R package for inference on single Binomial proportion and Bayesian computations." *SoftwareX* 6: 36–41.
-
-2. Thompson, S. K., and G. A. F. Seber. 2021. *Adaptive clinical trial designs: Using Bayesian inference*. Springer.
-
-3. Gelman, A., and J. Hill. 2020. *Data analysis using regression and multilevel/hierarchical models*. Cambridge University Press.
