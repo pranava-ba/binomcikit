@@ -1,3 +1,27 @@
+---
+title: "Estimating a Single Binomial Proportion: Overview"
+tags:
+  - binomial
+  - probability
+  - statistics
+authors:
+  - name: "Vyasa R Rajeswaran"
+    orcid: 0009-0005-5912-8804  
+    affiliation: 1
+  - name: "Pranava BA"
+    orcid: 0009-0003-5883-8949 
+    affiliation: 1
+  - name: "Justindhas Y"
+    affiliation: 2
+affiliations:
+  - id: 1
+    name: "Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India"
+  - id: 2
+    name: "Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India"
+date: 2025-02-23  # Update with the actual date
+bibliography: paper.bib
+---
+
 # Estimating a Single Binomial Proportion: Overview
 
 ## **Authors:**  
@@ -14,6 +38,8 @@ Justindhas Y²
 
 Challenges include addressing boundary conditions (proportions near 0 or 1), managing small sample sizes, and selecting appropriate methods to balance accuracy and computational efficiency. Despite its ubiquity, specialized computational tools for binomial proportion estimation remain underdeveloped in Python. While existing statistical packages (e.g., SciPy, statsmodels) offer generalized solutions, they lack tailored implementations for nuanced scenarios such as Bayesian inference with weakly informative priors, exact confidence interval methods for small samples, or coverage probability optimization.
 
+## Statement of need
+Estimating binomial proportions is a fundamental statistical problem with applications across various fields, including healthcare, business, manufacturing, and finance. Despite its importance, Python lacks a dedicated package specifically designed for binomial proportion estimation, requiring users to rely on general statistical tools that do not always address specific challenges like boundary issues or advanced inference methods. Developing a specialized Python package for binomial proportion estimation would fill this gap, providing users with tailored functions for more accurate and accessible analysis.
 ## Estimation Methods for Binomial Proportions
 
 ### 1. Wald Interval
