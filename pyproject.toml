@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "binomcikit"
-version = "0.0.1"
+version = "0.0.5"
 authors = [
   { name="Vyasa R Rajeswaran", email="vyasarshi2308@gmail.com" },
   { name="Pranava BA", email="pranavabaascaran@gmail.com" }
