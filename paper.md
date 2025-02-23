@@ -26,6 +26,7 @@ affiliations:
   - name: Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India
     index: 2
 date: 23 February 2025
+description: A package to estimate single binomial proportions
 bibliography: paper.bib
 ---
 
