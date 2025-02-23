@@ -9,7 +9,7 @@ authors = [
   { name="Vyasa R Rajeswaran", email="vyasarshi2308@gmail.com" },
   { name="Pranava BA", email="pranavabaascaran@gmail.com" }
 ]
-description = "Used to calculate Confidence intervals"
+description = "A Python package for calculating confidence intervals in statistical analysis using binomial distributions."
 readme = "README.md"
 long_description = { file = "README.md" } 
 long_description_content_type = "text/markdown"
