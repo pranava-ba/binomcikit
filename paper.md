@@ -6,21 +6,22 @@ tags:
   - statistics
 authors:
   - name: "Vyasa R Rajeswaran"
-    orcid: 0009-0005-5912-8804  
-    affiliation: 1
+    orcid: "0009-0005-5912-8804"  
+    affiliation: "1"
   - name: "Pranava BA"
-    orcid: 0009-0003-5883-8949 
-    affiliation: 1
+    orcid: "0009-0003-5883-8949" 
+    affiliation: "1"
   - name: "Justindhas Y"
-    affiliation: 2
+    affiliation: "2"
 affiliations:
-  - id: 1
-    name: "Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India"
-  - id: 2
-    name: "Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India"
-date: 2025-02-23  # Update with the actual date
+  - name: "Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India"
+    index: 1
+  - name: "Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India"
+    index: 2
+date: 23 February 2025
 bibliography: paper.bib
 ---
+
 
 # Estimating a Single Binomial Proportion: Overview
 
