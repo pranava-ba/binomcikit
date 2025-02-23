@@ -1,4 +1,33 @@
-
+---
+title: "Estimating a Single Binomial Proportion: Overview"
+tags:
+  - binomial
+  - probability
+  - statistics
+authors:
+  - name: Vyasa R Rajeswaran
+    orcid: 0009-0005-5912-8804
+    equal-contrib: true
+    corresponding: false  # Add this line
+    affiliation: 1
+  - name: Pranava BA
+    orcid: 0009-0003-5883-8949
+    equal-contrib: true
+    corresponding: false  # Add this line
+    affiliation: 1
+  - name: Justindhas Y
+    orcid: 0000-0003-0296-2206
+    equal-contrib: true
+    corresponding: true   # Add this line
+    affiliation: 2
+affiliations:
+  - name: Second Year BE CSE (AIML), Easwari Engineering College, Chennai, India
+    index: 1
+  - name: Head of Department, CSE (AIML), Easwari Engineering College, Chennai, India
+    index: 2
+date: 23 February 2025
+bibliography: paper.bib
+---
 
 # Estimating a Single Binomial Proportion: Overview
 
