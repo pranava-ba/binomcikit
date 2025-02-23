@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "binomcikit"
+authors:
+  - family-names: "Rajeswaran"
+    given-names: "Vyasa R"
+  - family-names: "Baascaran"
+    given-names: "Pranava"
+  - family-names: "Justindhas"
+    given-names: "Y"
+version: "0.0.5"
+license: "GPL-3.0"
+description: "A Python package for computing confidence intervals in binomial statistics."
