@@ -1,4 +1,5 @@
 # BINOMCIKIT
+[![Documentation Status](https://readthedocs.org/projects/pranava-babinomcikit-rtd/badge/?version=latest)](https://pranava-babinomcikit-rtd.readthedocs.io/en/latest/)
 
 ## Introduction
 In many statistical problems, we are interested in estimating the proportion of successes in a binomial process. For example, if you flip a coin 100 times and observe 55 heads, you might want to estimate the true proportion of heads for that coin. This is known as estimating a **binomial proportion**.
