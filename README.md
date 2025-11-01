@@ -83,3 +83,6 @@ Just add "plot" prefix before ci{methodname} to print the plot
 
 ### **Example Usage:** 
 "plotciwdx" - plots the Based Method of Confidence Interval called using the Wald Methos
+
+---
+### Migrating to Plotly
