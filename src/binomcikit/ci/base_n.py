@@ -5,6 +5,51 @@ import scipy.stats as stats
 
 
 def ciwd(n, alp):
+    r"""Wald confidence intervals for a binomial proportion, for every ``x``.
+
+    The Wald interval centres on the observed proportion :math:`\hat p = x/n`
+    and adds a symmetric normal-approximation margin. It is the familiar
+    textbook interval, but it under-covers and gives a zero-width interval at
+    ``x = 0`` and ``x = n`` -- prefer :func:`cisc` in general.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``; the interval has
+        confidence :math:`1 - \alpha`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per ``x = 0..n`` with columns ``x``, ``LWD``, ``UWD`` (lower and
+        upper limits) and the diagnostic flags ``LABB`` (lower clamped to 0),
+        ``UABB`` (upper clamped to 1) and ``ZWI`` (zero-width interval).
+
+    See Also
+    --------
+    cisc : Score (Wilson) interval -- better coverage; the usual default.
+    ciwdx : Wald interval for a single observed ``x``.
+    ciall : Run all six base methods at once.
+
+    Notes
+    -----
+    With :math:`\hat q = 1 - \hat p` and :math:`z = \Phi^{-1}(1 - \alpha/2)`,
+
+    .. math:: \hat p \pm z \sqrt{\hat p\,\hat q / n},
+
+    with each limit clamped into :math:`[0, 1]`.
+
+    Examples
+    --------
+    >>> import binomcikit as bk
+    >>> df = bk.ciwd(20, 0.05)
+    >>> list(df.columns)
+    ['x', 'LWD', 'UWD', 'LABB', 'UABB', 'ZWI']
+    >>> len(df)
+    21
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -57,6 +102,48 @@ def ciwd(n, alp):
     })
 
 def cisc(n, alp):
+    r"""Score (Wilson) confidence intervals, for every ``x``.
+
+    Inverts the score test, so the interval is shifted toward :math:`1/2` and
+    stays inside :math:`[0, 1]`. It has good coverage even for small ``n`` and
+    extreme :math:`\hat p`, and is the usual recommended default.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per ``x`` with columns ``x``, ``LSC``, ``USC`` and the flags
+        ``LABB``, ``UABB``, ``ZWI``.
+
+    See Also
+    --------
+    ciwd : Wald interval.
+    ciscx : Score interval for a single observed ``x``.
+
+    Notes
+    -----
+    With :math:`z = \Phi^{-1}(1 - \alpha/2)`,
+
+    .. math::
+
+        \frac{n}{n+z^2}\left[\left(\hat p + \frac{z^2}{2n}\right)
+        \pm z\sqrt{\frac{\hat p\,\hat q}{n} + \frac{z^2}{4n^2}}\right].
+
+    Validated against
+    :func:`statsmodels.stats.proportion.proportion_confint` (``method="wilson"``).
+
+    Examples
+    --------
+    >>> import binomcikit as bk
+    >>> bk.cisc(20, 0.05).columns.tolist()
+    ['x', 'LSC', 'USC', 'LABB', 'UABB', 'ZWI']
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -110,6 +197,29 @@ def cisc(n, alp):
     return pd.DataFrame({'x': x, 'LSC': LSC, 'USC': USC, 'LABB': LABB, 'UABB': UABB, 'ZWI': ZWI})
 
 def cias(n, alp):
+    r"""ArcSine confidence intervals, for every ``x``.
+
+    Builds the interval on the variance-stabilising :math:`\arcsin\sqrt{\hat p}`
+    scale and transforms back, which stabilises the variance at the extremes.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per ``x`` with columns ``x``, ``LAS``, ``UAS`` and the flags
+        ``LABB``, ``UABB``, ``ZWI``.
+
+    Notes
+    -----
+    .. math:: \sin^2\!\left(\arcsin\sqrt{\hat p}
+        \pm \frac{z_{\alpha/2}}{2\sqrt{n}}\right).
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -163,6 +273,32 @@ def cias(n, alp):
 
 # Optimized ciLR function
 def cilr(n, alp):
+    r"""Likelihood-Ratio confidence intervals, for every ``x``.
+
+    Keeps the values of :math:`p` not rejected by the likelihood-ratio test,
+    i.e. where twice the drop in log-likelihood from the maximum stays below the
+    :math:`\chi^2_1` critical value. There is no closed form; the two endpoints
+    are found numerically with :func:`scipy.optimize.minimize_scalar`.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per ``x`` with columns ``x``, ``LLR``, ``ULR`` and the flags
+        ``LABB``, ``UABB``, ``ZWI``.
+
+    Notes
+    -----
+    The interval is
+    :math:`\{p : 2[\ell(\hat p) - \ell(p)] \le z^2_{\alpha/2}\}`, where
+    :math:`\ell(p) = x\ln p + (n-x)\ln(1-p)`.
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -229,6 +365,40 @@ def cilr(n, alp):
 
 
 def ciex(n, alp, e):
+    r"""Exact confidence intervals, for every ``x``.
+
+    Inverts the binomial tail probabilities rather than a normal approximation,
+    giving guaranteed (conservative) coverage. The parameter ``e`` tunes the
+    tail treatment: ``e = 1`` gives the Clopper--Pearson interval and
+    ``e = 0.5`` gives the mid-*p* interval.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+    e : list of float
+        One or more tail-tuning values in ``[0, 1]`` (pass as a list, e.g.
+        ``[1]`` for Clopper--Pearson). Up to 10 values.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Columns ``x``, ``LEX``, ``UEX``, the flags ``LABB``/``UABB``/``ZWI`` and
+        ``e``, with one block of rows per value of ``e``.
+
+    See Also
+    --------
+    ciex : Clopper--Pearson at ``e=1`` matches
+        :func:`statsmodels.stats.proportion.proportion_confint` (``method="beta"``).
+
+    Examples
+    --------
+    >>> import binomcikit as bk
+    >>> bk.ciex(10, 0.05, [1]).columns.tolist()
+    ['x', 'LEX', 'UEX', 'LABB', 'UABB', 'ZWI', 'e']
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -330,6 +500,29 @@ def exlim102u(x, n, alp, e):
 
 
 def citw(n, alp):
+    r"""Wald-T confidence intervals, for every ``x``.
+
+    A Wald interval that uses a Student-*t* critical value and an adjusted
+    standard error, which widens the interval slightly for small ``n``.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per ``x`` with columns ``x``, ``LTW``, ``UTW`` and the flags
+        ``LABB``, ``UABB``, ``ZWI``.
+
+    Notes
+    -----
+    :math:`\hat p \pm t_{\alpha/2}\,\mathrm{SE}^{*}`, with a *t* quantile in
+    place of the normal one.
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -397,6 +590,30 @@ def citw(n, alp):
 
 
 def cilt(n, alp):
+    r"""Logit-Wald confidence intervals, for every ``x``.
+
+    Builds a Wald interval on the log-odds (logit) scale and transforms back.
+    Because the logit scale is unbounded, the limits always lie strictly inside
+    :math:`(0, 1)` -- helpful for extreme :math:`\hat p`.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per ``x`` with columns ``x``, ``LLT``, ``ULT`` and the flags
+        ``LABB``, ``UABB``, ``ZWI``.
+
+    Notes
+    -----
+    .. math:: \operatorname{logit}^{-1}\!\left(\ln\frac{\hat p}{\hat q}
+        \pm z_{\alpha/2}\,\frac{1}{\sqrt{n\,\hat p\,\hat q}}\right).
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:
@@ -472,6 +689,32 @@ def cilt(n, alp):
 
 
 def ciall(n, alp):
+    r"""All six base confidence-interval methods, stacked together.
+
+    Runs :func:`ciwd`, :func:`cias`, :func:`cilr`, :func:`cisc`, :func:`citw`
+    and :func:`cilt` and concatenates them into one long-format table with a
+    ``method`` column -- ideal for comparing methods side by side or plotting
+    them together with :func:`~binomcikit.plotciall`.
+
+    Parameters
+    ----------
+    n : int
+        Number of trials (``n > 0``).
+    alp : float
+        Significance level :math:`\alpha` in ``[0, 1]``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Columns ``method``, ``x``, ``LowerLimit``, ``UpperLimit``,
+        ``LowerAbb``, ``UpperAbb``, ``ZWI``; ``6 * (n + 1)`` rows.
+
+    Examples
+    --------
+    >>> import binomcikit as bk
+    >>> sorted(bk.ciall(5, 0.05)["method"].unique())
+    ['ArcSine', 'Likelihood', 'Logit-Wald', 'Score', 'Wald', 'Wald-T']
+    """
     if n is None:
         raise ValueError("'n' is missing")
     if alp is None:

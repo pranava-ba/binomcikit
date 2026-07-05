@@ -69,7 +69,7 @@ def plotciex(n, alp, e):
         )
         p += geom_point_layer
 
-    p.show()
+    return p
 
 
 
@@ -133,7 +133,7 @@ def plotciwd(n, alp):
                         size=4) )
               #+ scale_shape_manual(values=[21, 22, 23]))
 
-    p.show()  # Display the plot
+    return p
 
 # Example usage (ensure ciWD function is defined)
 # PlotciWD(10, 0.05)
@@ -191,7 +191,7 @@ def plotcias(n, alp):
                         size=4, fill="red")
         #+ scale_shape_manual(values=[21, 22, 23])
 
-    p.show()
+    return p
 
 def plotcilr(n, alp):
     if n <= 0:
@@ -245,7 +245,7 @@ def plotcilr(n, alp):
                         mapping=aes(x='Value', y='ID', group='Abberation', shape='Abberation'),
                         size=4, fill="red") + scale_shape_manual(values=[21, 22, 23])
 
-    p.show()
+    return p
 
 def plotcisc(n, alp):
     if n <= 0:
@@ -299,7 +299,7 @@ def plotcisc(n, alp):
                         mapping=aes(x='Value', y='ID', group='Abberation', shape='Abberation'),
                         size=4, fill="red") + scale_shape_manual(values=[21, 22, 23])
 
-    p.show()
+    return p
 
 # Example usage (assuming ciSC is defined)
 # PlotciSC(5, 0.05)
@@ -369,7 +369,7 @@ def plotcitw(n, alp):
               #scale_shape_manual(values=[21, 22, 23]) +
               #scale_color_manual(values=['red', 'blue', 'green']))  # Specify colors for each shape
 
-    p.show() # Use print to display the plot
+    return p
 
 
 # Example usage (assuming ciTW is defined)
@@ -426,5 +426,5 @@ def plotcilt(n, alp):
                         mapping=aes(x='Value', y='ID', group='Abberation', shape='Abberation'),
                         size=4, fill="red") + scale_shape_manual(values=[21, 22, 23])
 
-    p.show()
+    return p
 
