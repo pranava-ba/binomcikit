@@ -1,7 +1,8 @@
-import pandas as pd
 import numpy as np
-import scipy.stats as stats
+import pandas as pd
 import scipy.optimize as optimize
+import scipy.stats as stats
+
 
 def ciawdx(x, n, alp, h):
     # Input validation

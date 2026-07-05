@@ -8,16 +8,19 @@ method (the ``g`` variants).
 """
 import pandas as pd
 from plotnine import (
-    ggplot, aes, labs, geom_errorbarh, geom_point, facet_grid,
+    aes,
+    facet_grid,
+    geom_errorbarh,
+    ggplot,
+    labs,
 )
 
-from .base_n import ciall
-from .base_n_x import ciallx
 from .adj_n import ciaall
 from .adj_n_x import ciaallx
+from .base_n import ciall
+from .bayes_n import ciba
 from .cc_n import cicall
 from .cc_n_x import cicallx
-from .bayes_n import ciba
 
 
 def _all_plot(df, title, facet=False):

@@ -20,12 +20,12 @@ target.
 
 Run:  ``python tools/gen_reference_pages.py``  (add ``--force`` to overwrite)
 """
+import importlib
+import inspect
 import os
+import pkgutil
 import re
 import sys
-import inspect
-import importlib
-import pkgutil
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -42,7 +42,7 @@ import binomcikit as bk  # noqa: E402
 
 # reuse the change-note logic from the mapping generator
 sys.path.insert(0, os.path.join(ROOT, "tools"))
-from gen_r_to_python_mapping import note, SPECIFIC  # noqa: E402
+from gen_r_to_python_mapping import note  # noqa: E402
 
 
 def module_functions():

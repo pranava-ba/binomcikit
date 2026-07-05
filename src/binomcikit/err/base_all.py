@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import ciwd, cisc, cias, cilr, citw, cilt, ciex
+from ..ci import cias, ciex, cilr, cilt, cisc, citw, ciwd
 
 
 def _validate(n, alp, phi, f):

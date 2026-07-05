@@ -3,25 +3,59 @@
 Numeric: base (base_all), adjusted (adj_all), continuity-corrected (cc_all),
 general given/simulated-p (general). Plots: plots.
 """
-from .base_all import (
-    covpwd, covpsc, covpas, covplr, covptw, covplt, covpall,
-)
 from .adj_all import (
-    covpawd, covpasc, covpaas, covpalt, covpatw, covpalr, covpaall,
+    covpaall,
+    covpaas,
+    covpalr,
+    covpalt,
+    covpasc,
+    covpatw,
+    covpawd,
+)
+from .base_all import (
+    covpall,
+    covpas,
+    covplr,
+    covplt,
+    covpsc,
+    covptw,
+    covpwd,
 )
 from .cc_all import (
-    covpcwd, covpcsc, covpcas, covpclt, covpctw, covpcall,
+    covpcall,
+    covpcas,
+    covpclt,
+    covpcsc,
+    covpctw,
+    covpcwd,
 )
+from .exact_bayes import covpba, covpex
 from .general import covpgen, covpsim
-from .exact_bayes import covpex, covpba
 from .plots import (
-    plotcovpwd, plotcovpsc, plotcovpas, plotcovplr, plotcovptw, plotcovplt,
-    plotcovpall,
-    plotcovpawd, plotcovpasc, plotcovpaas, plotcovpalr, plotcovpatw, plotcovpalt,
     plotcovpaall,
-    plotcovpcwd, plotcovpcsc, plotcovpcas, plotcovpctw, plotcovpclt,
+    plotcovpaas,
+    plotcovpall,
+    plotcovpalr,
+    plotcovpalt,
+    plotcovpas,
+    plotcovpasc,
+    plotcovpatw,
+    plotcovpawd,
+    plotcovpba,
     plotcovpcall,
-    plotcovpgen, plotcovpsim, plotcovpex, plotcovpba,
+    plotcovpcas,
+    plotcovpclt,
+    plotcovpcsc,
+    plotcovpctw,
+    plotcovpcwd,
+    plotcovpex,
+    plotcovpgen,
+    plotcovplr,
+    plotcovplt,
+    plotcovpsc,
+    plotcovpsim,
+    plotcovptw,
+    plotcovpwd,
 )
 
 # Public API = every function bound above (submodules excluded).

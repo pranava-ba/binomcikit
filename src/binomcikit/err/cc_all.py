@@ -5,8 +5,8 @@ Five methods (no Likelihood-Ratio). Note the R argument order is
 """
 import pandas as pd
 
-from ..ci import cicwd, cicsc, cicas, ciclt, cictw
-from .base_all import _validate, _error
+from ..ci import cicas, ciclt, cicsc, cictw, cicwd
+from .base_all import _error, _validate
 
 _CC = {
     "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),

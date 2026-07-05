@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import ciwd, cisc, cias, cilr, citw, cilt
+from ..ci import cias, cilr, cilt, cisc, citw, ciwd
 
 _S = 5000  # simulation runs, matching the R package
 

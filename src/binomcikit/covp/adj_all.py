@@ -4,8 +4,8 @@ Adds ``h`` pseudo-counts to x (and 2h to n) before forming the interval. The
 adjusted interval limits are reused from the 1xx ``ci`` adjusted family; the
 coverage simulation engine is shared with :mod:`binomcikit.covp.base_all`.
 """
-from ..ci import ciawd, ciasc, ciaas, cialt, ciatw, cialr
-from .base_all import _validate, _coverage
+from ..ci import ciaas, cialr, cialt, ciasc, ciatw, ciawd
+from .base_all import _coverage, _validate
 
 
 def _validate_adj(n, alp, h, a, b, t1, t2):

@@ -5,7 +5,6 @@ cross-path equivalence rather than draw-for-draw equality with R.
 
 R example (man/lengthWD.Rd): n=5; alp=0.05; a=1; b=1
 """
-import numpy as np
 import pytest
 
 import binomcikit as b

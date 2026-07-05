@@ -4,9 +4,9 @@ Each plot shows the increase in nominal error (delalp) and the long-term power
 (theta) as bars, in two stacked facets, coloured by pass/fail status.
 """
 import pandas as pd
-from plotnine import ggplot, aes, labs, geom_col, facet_grid
+from plotnine import aes, facet_grid, geom_col, ggplot, labs
 
-from . import base_all, adj_all, cc_all
+from . import adj_all, base_all, cc_all
 from .general import errgen
 
 

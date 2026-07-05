@@ -6,13 +6,28 @@ tolerance band (t1, t2), and the mean / minimum coverage.
 """
 import numpy as np
 import pandas as pd
-from plotnine import ggplot, aes, labs, geom_line, geom_hline
+from plotnine import aes, geom_hline, geom_line, ggplot, labs
 
 from ..ci import (
-    ciwd, cisc, cias, cilr, citw, cilt,
-    ciawd, ciasc, ciaas, cialr, cialt, ciatw,
-    cicwd, cicsc, cicas, ciclt, cictw,
-    ciex, ciba,
+    ciaas,
+    cialr,
+    cialt,
+    cias,
+    ciasc,
+    ciatw,
+    ciawd,
+    ciba,
+    cicas,
+    ciclt,
+    cicsc,
+    cictw,
+    cicwd,
+    ciex,
+    cilr,
+    cilt,
+    cisc,
+    citw,
+    ciwd,
 )
 from .base_all import _coverage_curve
 from .general import _check_limits

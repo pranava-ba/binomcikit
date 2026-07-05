@@ -8,8 +8,9 @@ credible interval and an HPD interval.
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-from scipy.special import comb, beta as beta_fn
 from scipy.optimize import minimize
+from scipy.special import beta as beta_fn
+from scipy.special import comb
 
 from .._hpd import hpd_beta
 

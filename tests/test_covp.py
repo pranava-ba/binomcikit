@@ -116,6 +116,7 @@ def test_covpgen_matches_covpwd_on_same_hp():
     # covpwd is covpgen with the Wald limits and the same hp draws, so the
     # per-hp coverage — and thus mcp — must agree exactly.
     import numpy as np
+
     from binomcikit.covp.base_all import _coverage
     n, alp = 5, 0.05
     wd = b.ciwd(n, alp)

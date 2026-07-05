@@ -4,9 +4,9 @@ Each plot shows p-confidence and p-bias against the number of successes, in two
 stacked facets. For the "all methods" variants the lines are coloured by method.
 """
 import pandas as pd
-from plotnine import ggplot, aes, labs, geom_line, facet_grid
+from plotnine import aes, facet_grid, geom_line, ggplot, labs
 
-from . import base_all, adj_all, cc_all
+from . import adj_all, base_all, cc_all
 from .general import pcopbigen
 
 

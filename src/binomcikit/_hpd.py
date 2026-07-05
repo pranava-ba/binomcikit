@@ -6,8 +6,8 @@ probability mass equals ``conf`` by minimising the width over the lower-tail
 probability.
 """
 import numpy as np
-from scipy.stats import beta
 from scipy.optimize import minimize_scalar
+from scipy.stats import beta
 
 
 def hpd_beta(a, b, conf=0.95):

@@ -8,8 +8,8 @@ Note: continuity correction is defined for five methods (no Likelihood-Ratio).
 """
 import pandas as pd
 
-from ..ci import cicwd, cicsc, cicas, ciclt, cictw
-from .base_all import _validate, _coverage
+from ..ci import cicas, ciclt, cicsc, cictw, cicwd
+from .base_all import _coverage, _validate
 
 
 def _validate_cc(n, alp, c, a, b, t1, t2):

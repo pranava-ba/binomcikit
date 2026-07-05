@@ -1,5 +1,6 @@
-import scipy.stats as stats
 import pandas as pd
+import scipy.stats as stats
+
 
 def ciwdx(x=None, n=None, alp=None):
     # Input validation
@@ -43,8 +44,6 @@ def ciwdx(x=None, n=None, alp=None):
         'ZWI': [ZWI]
     })
 
-import scipy.stats as stats
-import pandas as pd
 
 def ciscx(x=None, n=None, alp=None):
     # Input validation
@@ -90,9 +89,8 @@ def ciscx(x=None, n=None, alp=None):
         'ZWI': [ZWI]
     })
 
-import scipy.stats as stats
 import numpy as np
-import pandas as pd
+
 
 def ciasx(x=None, n=None, alp=None):
     # Input validation
@@ -135,9 +133,8 @@ def ciasx(x=None, n=None, alp=None):
         'ZWI': [ZWI]
     })
 
-import scipy.stats as stats
 from scipy.optimize import minimize_scalar
-import pandas as pd
+
 
 def cilrx(x=None, n=None, alp=None):
     # Input validation
@@ -203,10 +200,7 @@ def cilrx(x=None, n=None, alp=None):
 # Example usage:
 # result = ciLRx(x=10, n=100, alp=0.05)
 # print(result)
-import numpy as np
-import scipy.stats as stats
 import scipy.optimize as optimize
-import pandas as pd
 
 
 def ciexx(x, n, alp, e):
@@ -285,9 +279,6 @@ def exlim103u(x, n, alp, e):
         return optimize.brentq(f2, 0, 1)
 
 
-import numpy as np
-import scipy.stats as stats
-import pandas as pd
 
 
 def ciltx(x, n, alp):
@@ -342,8 +333,8 @@ def ciltx(x, n, alp):
 
     return pd.DataFrame([{"x": x, "LLTx": LLTx, "ULTx": ULTx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}])
 
-import numpy as np
 from scipy.stats import t
+
 
 def citwx(x, n, alp):
     if x is None:

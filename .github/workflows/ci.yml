@@ -29,9 +29,8 @@ jobs:
         run: pytest -q
 
   lint:
-    name: Lint (advisory)
+    name: Lint
     runs-on: ubuntu-latest
-    continue-on-error: true    # informational for now; does not gate merges
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

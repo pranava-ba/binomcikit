@@ -5,8 +5,8 @@ interval (ciba), reporting coverage for both its quantile and HPD variants.
 """
 import pandas as pd
 
-from ..ci import ciex, ciba
-from .base_all import _validate, _coverage
+from ..ci import ciba, ciex
+from .base_all import _coverage, _validate
 
 
 def covpex(n, alp, e, a, b, t1, t2, seed=None):

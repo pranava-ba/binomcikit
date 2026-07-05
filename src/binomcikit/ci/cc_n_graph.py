@@ -1,9 +1,11 @@
-from .cc_n import *
+import numpy as np
 
 ###################################################################
 import pandas as pd
-import numpy as np
 from plotnine import *
+
+from .cc_n import *
+
 
 def plotcicwd(n, alp, c):
     if n is None:

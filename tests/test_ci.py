@@ -10,12 +10,10 @@ Three kinds of checks, matching the porting strategy:
 3. Property tests: limits stay in [0, 1], lower <= upper, and the interval
    brackets the point estimate p-hat where the method guarantees it.
 """
-import numpy as np
-import pandas as pd
 import pytest
+from statsmodels.stats.proportion import proportion_confint as sm_ci
 
 import binomcikit as b
-from statsmodels.stats.proportion import proportion_confint as sm_ci
 
 ALP = 0.05
 TOL = 1e-9

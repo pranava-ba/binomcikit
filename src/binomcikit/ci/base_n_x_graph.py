@@ -7,11 +7,16 @@ Provides:
 """
 import pandas as pd
 from plotnine import (
-    ggplot, aes, labs, geom_errorbarh, geom_point,
-    scale_shape_manual, facet_grid,
+    aes,
+    facet_grid,
+    geom_errorbarh,
+    geom_point,
+    ggplot,
+    labs,
+    scale_shape_manual,
 )
 
-from .base_n_x import ciexx, ciallx
+from .base_n_x import ciallx, ciexx
 
 
 def _aberration_frame(ss):

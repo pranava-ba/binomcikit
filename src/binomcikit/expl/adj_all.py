@@ -1,8 +1,8 @@
 """3xx family - Expected length of the adjusted CI methods (R files 311, 314)."""
 import pandas as pd
 
-from ..ci import ciawd, ciasc, ciaas, cialt, ciatw, cialr
-from .base_all import _validate, _length, _expl_curve, _beta_hp
+from ..ci import ciaas, cialr, cialt, ciasc, ciatw, ciawd
+from .base_all import _beta_hp, _expl_curve, _length, _validate
 
 _ADJ = {
     "Wald": (ciawd, 'LAWD', 'UAWD'), "ArcSine": (ciaas, 'LAAS', 'UAAS'),

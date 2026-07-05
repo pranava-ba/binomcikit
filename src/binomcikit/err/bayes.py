@@ -6,7 +6,7 @@ intervals from the 1xx ``ciba``.
 import pandas as pd
 
 from ..ci import ciba
-from .base_all import _validate, _error
+from .base_all import _error, _validate
 
 
 def errba(n, alp, phi, f, a, b):

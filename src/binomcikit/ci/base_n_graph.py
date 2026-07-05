@@ -1,4 +1,6 @@
 from .base_n import *
+
+
 def plotciex(n, alp, e):
     # Input validation
     if n <= 0:
@@ -302,7 +304,16 @@ def plotcisc(n, alp):
 # Example usage (assuming ciSC is defined)
 # PlotciSC(5, 0.05)
 import pandas as pd
-from plotnine import ggplot, aes, labs, geom_errorbarh, geom_point, scale_shape_manual, scale_color_manual
+from plotnine import (
+    aes,
+    geom_errorbarh,
+    geom_point,
+    ggplot,
+    labs,
+    scale_color_manual,
+    scale_shape_manual,
+)
+
 
 def plotcitw(n, alp):
     if n <= 0:

@@ -7,27 +7,59 @@ general given-limits (general). Plots: plots. These quantities are deterministic
 Note: the Bayesian variant (pCOpBIBA / PlotpCOpBIBA) depends on the 6xx Bayesian
 credible interval and is deferred until that family is ported.
 """
-from .base_all import (
-    pcopbiwd, pcopbisc, pcopbias, pcopbilr, pcopbilt, pcopbitw, pcopbiex,
-    pcopbiall,
-)
 from .adj_all import (
-    pcopbiawd, pcopbiasc, pcopbiaas, pcopbialt, pcopbiatw, pcopbialr,
     pcopbiaall,
+    pcopbiaas,
+    pcopbialr,
+    pcopbialt,
+    pcopbiasc,
+    pcopbiatw,
+    pcopbiawd,
 )
+from .base_all import (
+    pcopbiall,
+    pcopbias,
+    pcopbiex,
+    pcopbilr,
+    pcopbilt,
+    pcopbisc,
+    pcopbitw,
+    pcopbiwd,
+)
+from .bayes import pcopbiba
 from .cc_all import (
-    pcopbicwd, pcopbicsc, pcopbicas, pcopbiclt, pcopbictw, pcopbicall,
+    pcopbicall,
+    pcopbicas,
+    pcopbiclt,
+    pcopbicsc,
+    pcopbictw,
+    pcopbicwd,
 )
 from .general import pcopbigen
-from .bayes import pcopbiba
 from .plots import (
-    plotpcopbiwd, plotpcopbisc, plotpcopbias, plotpcopbilr, plotpcopbilt,
-    plotpcopbitw, plotpcopbiex, plotpcopbiall,
-    plotpcopbiawd, plotpcopbiasc, plotpcopbiaas, plotpcopbialr, plotpcopbialt,
-    plotpcopbiatw, plotpcopbiaall,
-    plotpcopbicwd, plotpcopbicsc, plotpcopbicas, plotpcopbiclt, plotpcopbictw,
+    plotpcopbiaall,
+    plotpcopbiaas,
+    plotpcopbiall,
+    plotpcopbialr,
+    plotpcopbialt,
+    plotpcopbias,
+    plotpcopbiasc,
+    plotpcopbiatw,
+    plotpcopbiawd,
+    plotpcopbiba,
     plotpcopbicall,
-    plotpcopbigen, plotpcopbiba,
+    plotpcopbicas,
+    plotpcopbiclt,
+    plotpcopbicsc,
+    plotpcopbictw,
+    plotpcopbicwd,
+    plotpcopbiex,
+    plotpcopbigen,
+    plotpcopbilr,
+    plotpcopbilt,
+    plotpcopbisc,
+    plotpcopbitw,
+    plotpcopbiwd,
 )
 
 # Public API = every function bound above (submodules excluded).

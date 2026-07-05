@@ -6,7 +6,7 @@ credible intervals from the 1xx ``ciba``.
 import pandas as pd
 
 from ..ci import ciba
-from .base_all import _validate, _pconf_pbias
+from .base_all import _pconf_pbias, _validate
 
 
 def pcopbiba(n, alp, a1, a2):

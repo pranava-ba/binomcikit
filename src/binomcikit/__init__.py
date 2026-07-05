@@ -15,13 +15,13 @@ The subpackages are also available directly (e.g. ``binomcikit.ci``). Only the
 public functions are re-exported at the top level — third-party names used
 internally (numpy, pandas, plotnine, …) are not.
 """
-from . import ci, covp, expl, pconf, err, bayes
-from .ci import *          # noqa: F401,F403  (respects each subpackage __all__)
-from .covp import *        # noqa: F401,F403
-from .expl import *        # noqa: F401,F403
-from .pconf import *       # noqa: F401,F403
-from .err import *         # noqa: F401,F403
-from .bayes import *       # noqa: F401,F403
+from . import bayes, ci, covp, err, expl, pconf
+from .bayes import *  # noqa: F401,F403
+from .ci import *  # noqa: F401,F403  (respects each subpackage __all__)
+from .covp import *  # noqa: F401,F403
+from .err import *  # noqa: F401,F403
+from .expl import *  # noqa: F401,F403
+from .pconf import *  # noqa: F401,F403
 
 __version__ = "2.0.9"
 

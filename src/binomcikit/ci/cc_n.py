@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import norm
-from scipy.stats import t
+from scipy.stats import norm, t
 
 
 def cicwd(n, alp, c):

@@ -7,24 +7,59 @@ R package up to floating point.
 Note: the Bayesian variant (errBA / PloterrBA) depends on the 6xx Bayesian
 credible interval and is deferred until that family is ported.
 """
-from .base_all import (
-    errwd, errsc, erras, errlr, errlt, errtw, errex, errall,
-)
 from .adj_all import (
-    errawd, errasc, erraas, erralt, erratw, erralr, erraall,
+    erraall,
+    erraas,
+    erralr,
+    erralt,
+    errasc,
+    erratw,
+    errawd,
 )
+from .base_all import (
+    errall,
+    erras,
+    errex,
+    errlr,
+    errlt,
+    errsc,
+    errtw,
+    errwd,
+)
+from .bayes import errba
 from .cc_all import (
-    errcwd, errcsc, errcas, errclt, errctw, errcall,
+    errcall,
+    errcas,
+    errclt,
+    errcsc,
+    errctw,
+    errcwd,
 )
 from .general import errgen
-from .bayes import errba
 from .plots import (
-    ploterrwd, ploterrsc, ploterras, ploterrlr, ploterrlt, ploterrtw,
-    ploterrex, ploterrall,
-    ploterrawd, ploterrasc, ploterraas, ploterralr, ploterralt, ploterratw,
     ploterraall,
-    ploterrcwd, ploterrcsc, ploterrcas, ploterrclt, ploterrctw, ploterrcall,
-    ploterrgen, ploterrba,
+    ploterraas,
+    ploterrall,
+    ploterralr,
+    ploterralt,
+    ploterras,
+    ploterrasc,
+    ploterratw,
+    ploterrawd,
+    ploterrba,
+    ploterrcall,
+    ploterrcas,
+    ploterrclt,
+    ploterrcsc,
+    ploterrctw,
+    ploterrcwd,
+    ploterrex,
+    ploterrgen,
+    ploterrlr,
+    ploterrlt,
+    ploterrsc,
+    ploterrtw,
+    ploterrwd,
 )
 
 # Public API = every function bound above (submodules excluded).

@@ -59,6 +59,11 @@ extend-exclude = ["reference", "docs"]
 select = ["F", "I"]
 ignore = ["F403", "F405"]   # star-imports are intentional in some __init__ files
 
+[tool.ruff.lint.per-file-ignores]
+# __init__ files re-export the public API; imports there are "unused" locally
+# but intentional (the public __all__ is built dynamically).
+"**/__init__.py" = ["F401"]
+
 [tool.black]
 line-length = 100
 target-version = ["py39"]

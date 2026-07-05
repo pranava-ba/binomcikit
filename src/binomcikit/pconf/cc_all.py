@@ -4,8 +4,8 @@ Five methods (no Likelihood-Ratio).
 """
 import pandas as pd
 
-from ..ci import cicwd, cicsc, cicas, ciclt, cictw
-from .base_all import _validate, _pconf_pbias
+from ..ci import cicas, ciclt, cicsc, cictw, cicwd
+from .base_all import _pconf_pbias, _validate
 
 _CC = {
     "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),

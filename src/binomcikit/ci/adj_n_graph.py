@@ -1,6 +1,7 @@
-from .adj_n import *
 import pandas as pd
 from plotnine import *
+
+from .adj_n import *
 
 
 def plotciawd(n, alp, h):

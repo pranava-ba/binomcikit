@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-import scipy.stats as stats
 import scipy.optimize as optimize
+import scipy.stats as stats
+
 
 def ciwd(n, alp):
     if n is None:

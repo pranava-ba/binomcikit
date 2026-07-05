@@ -5,7 +5,6 @@ possible.
 
 R example (man/errWD.Rd): n=20; alp=0.05; phi=0.05; f=-2
 """
-import numpy as np
 import pytest
 
 import binomcikit as b

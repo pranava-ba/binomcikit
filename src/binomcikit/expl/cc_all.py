@@ -4,8 +4,8 @@ Five methods (no Likelihood-Ratio), matching the CC coverage family.
 """
 import pandas as pd
 
-from ..ci import cicwd, cicsc, cicas, ciclt, cictw
-from .base_all import _validate, _length, _expl_curve, _beta_hp
+from ..ci import cicas, ciclt, cicsc, cictw, cicwd
+from .base_all import _beta_hp, _expl_curve, _length, _validate
 
 _CC = {
     "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),

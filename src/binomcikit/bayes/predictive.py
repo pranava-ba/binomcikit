@@ -5,7 +5,8 @@ future trials, given x successes in n past trials under a Beta(a1, a2) prior.
 """
 import numpy as np
 import pandas as pd
-from scipy.special import comb, beta as beta_fn
+from scipy.special import beta as beta_fn
+from scipy.special import comb
 
 
 def _validate(n, m, a1, a2):

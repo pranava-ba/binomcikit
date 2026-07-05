@@ -1,8 +1,8 @@
 """5xx family - Error and failure for the adjusted CI methods (R file 511)."""
 import pandas as pd
 
-from ..ci import ciawd, ciasc, ciaas, cialt, ciatw, cialr
-from .base_all import _validate, _error
+from ..ci import ciaas, cialr, cialt, ciasc, ciatw, ciawd
+from .base_all import _error, _validate
 
 _ADJ = {
     "Wald": (ciawd, 'LAWD', 'UAWD'), "ArcSine": (ciaas, 'LAAS', 'UAAS'),

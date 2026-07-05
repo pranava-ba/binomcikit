@@ -6,12 +6,12 @@ to the Python function/module it was ported to (by introspecting the installed
 
 Run from anywhere:  ``python tools/gen_r_to_python_mapping.py``
 """
+import importlib
+import inspect
 import os
+import pkgutil
 import re
 import sys
-import importlib
-import pkgutil
-import inspect
 import warnings
 
 warnings.filterwarnings("ignore")
