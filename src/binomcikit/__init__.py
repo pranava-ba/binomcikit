@@ -10,10 +10,22 @@ public API stays flat (e.g. ``binomcikit.ciwd`` works directly):
     pconf  (4xx)  p-confidence and p-bias
     err    (5xx)  Error and failure (limit-based)
     bayes  (6xx)  Bayesian methods
+
+The subpackages are also available directly (e.g. ``binomcikit.ci``). Only the
+public functions are re-exported at the top level — third-party names used
+internally (numpy, pandas, plotnine, …) are not.
 """
-from .ci import *
-from .covp import *
-from .expl import *
-from .pconf import *
-from .err import *
-from .bayes import *
+from . import ci, covp, expl, pconf, err, bayes
+from .ci import *          # noqa: F401,F403  (respects each subpackage __all__)
+from .covp import *        # noqa: F401,F403
+from .expl import *        # noqa: F401,F403
+from .pconf import *       # noqa: F401,F403
+from .err import *         # noqa: F401,F403
+from .bayes import *       # noqa: F401,F403
+
+__version__ = "2.0.9"
+
+__all__ = sorted({
+    *ci.__all__, *covp.__all__, *expl.__all__,
+    *pconf.__all__, *err.__all__, *bayes.__all__,
+})

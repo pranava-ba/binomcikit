@@ -19,3 +19,6 @@ from .bayesfactors import (
     hypotestbaf3, hypotestbaf3x, hypotestbaf4, hypotestbaf4x,
     hypotestbaf5, hypotestbaf5x, hypotestbaf6, hypotestbaf6x,
 )
+
+# Public API = every function bound above (submodules excluded).
+__all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))

@@ -29,3 +29,6 @@ from .plots import (
     plotpcopbicall,
     plotpcopbigen, plotpcopbiba,
 )
+
+# Public API = every function bound above (submodules excluded).
+__all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))
