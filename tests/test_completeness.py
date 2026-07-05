@@ -3,24 +3,21 @@ the Python package (matched case-insensitively), and a representative sample of
 the newly added plot functions must construct without error.
 """
 import os
-import re
 
 import pytest
 
 import binomcikit as b
 
 HERE = os.path.dirname(__file__)
-NAMESPACE = os.path.join(HERE, "..", "reference", "rpackage", "NAMESPACE")
+# Vendored list of every function exported by the R package's NAMESPACE, so the
+# completeness check is self-contained (works in CI without the R source). It is
+# regenerated from reference/rpackage/NAMESPACE by the docs tooling.
+R_EXPORTS = os.path.join(HERE, "r_exports.txt")
 
 
 def _r_exports():
-    exports = set()
-    with open(NAMESPACE) as fh:
-        for line in fh:
-            m = re.match(r"export\((.+)\)", line.strip())
-            if m:
-                exports.add(m.group(1))
-    return exports
+    with open(R_EXPORTS) as fh:
+        return {line.strip() for line in fh if line.strip()}
 
 
 def test_all_r_exports_present():

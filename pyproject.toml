@@ -40,8 +40,26 @@ where = ["src"]
 
 [project.optional-dependencies]
 test = ["pytest", "statsmodels"]
+dev = ["pytest", "statsmodels", "pytest-cov", "ruff", "black", "build", "twine"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
 filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+# The reference material and generated docs are not linted.
+extend-exclude = ["reference", "docs"]
+
+[tool.ruff.lint]
+# Start lenient: catch real problems (pyflakes F, import order I) but not the
+# many long lines / single-letter stats variables inherited from the R port.
+select = ["F", "I"]
+ignore = ["F403", "F405"]   # star-imports are intentional in some __init__ files
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+extend-exclude = "reference"

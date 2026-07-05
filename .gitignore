@@ -27,7 +27,15 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Dev-only reference material (R source, PDFs) — kept in a sibling folder,
+# never part of the package.
+reference/
+
 # Never commit secrets
 *recovery*codes*.txt
 *password*.txt
 *API*.txt
+*token*.txt
+*secret*
+*_private_*
+

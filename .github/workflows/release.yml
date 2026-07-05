@@ -1,0 +1,50 @@
+name: Release
+
+# Builds the distributions on every version tag, and (once PyPI Trusted
+# Publishing is configured) publishes them. This is the machinery for the
+# final "bump the version and ship to PyPI" step.
+#
+# To enable publishing:
+#   1. On PyPI: add a Trusted Publisher for this repo + workflow "release.yml".
+#   2. On GitHub: create an environment named "pypi" (repo Settings → Environments).
+# Until then, the `build` job still runs and uploads the artifacts.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    name: Build sdist + wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+      - name: Check metadata
+        run: |
+          python -m pip install --upgrade twine
+          twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write          # PyPI Trusted Publishing (OIDC) — no token stored
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
