@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Docs
+docs/_build/
+docs/generated/
+
+# Environments / editors
+.venv/
+venv/
+.env
+.idea/
+.vscode/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Never commit secrets
+*recovery*codes*.txt
+*password*.txt
+*API*.txt
