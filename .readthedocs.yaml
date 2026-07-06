@@ -14,5 +14,7 @@ python:
   install:
     - requirements: docs/requirements.txt
 
-formats:
-  - pdf
+# HTML only. A PDF build of the large R->Python mapping table reliably fails in
+# LaTeX and would mark the whole build "failed", so it is intentionally omitted.
+# (autodoc imports the package with its heavy deps mocked -- see conf.py.)
+formats: []
