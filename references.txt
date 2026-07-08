@@ -1,0 +1,9 @@
+https://numpy.org/
+https://emcee.readthedocs.io/en/stable/
+https://python.arviz.org/en/0.14.0/index.html
+https://www.pymc.io/projects/docs/en/stable/learn.html
+https://pystan.readthedocs.io/en/latest/
+https://github.com/ElsevierSoftwareX
+https://www.sciencedirect.com/science/article/pii/S2352711017300018
+https://www.scopus.com/authid/detail.uri?authorId=36742459100
+https://www.scopus.com/authid/detail.uri?authorId=57192946708
