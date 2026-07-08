@@ -80,6 +80,7 @@ getting_started
 :caption: Learn
 
 user_guide/index
+theory/index
 gallery
 ```
 
