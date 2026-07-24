@@ -4,18 +4,18 @@ sd_hide_title: true
 
 # binomcikit
 
-<div align="center">
-
-# binomcikit
-
-**Inference on a single binomial proportion — confidence intervals, their evaluation, and Bayesian methods.**
-
-[![PyPI](https://img.shields.io/pypi/v/binomcikit?style=flat-square)](https://pypi.org/project/binomcikit/)
-[![CI](https://img.shields.io/github/actions/workflow/status/pranava-ba/binomcikit/ci.yml?branch=main&style=flat-square&label=tests)](https://github.com/pranava-ba/binomcikit/actions)
-[![Docs](https://img.shields.io/readthedocs/pranava-babinomcikit-rtd?style=flat-square)](https://pranava-babinomcikit-rtd.readthedocs.io/)
-[![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square)](https://github.com/pranava-ba/binomcikit/blob/main/LICENSE.txt)
-
+```{raw} html
+<div style="text-align:center">
+  <h1 style="margin-bottom:0.2rem">binomcikit</h1>
+  <p><strong>Inference on a single binomial proportion — confidence intervals, their evaluation, and Bayesian methods.</strong></p>
+  <p>
+    <a href="https://pypi.org/project/binomcikit/"><img alt="PyPI" src="https://img.shields.io/pypi/v/binomcikit?style=flat-square"></a>
+    <a href="https://github.com/pranava-ba/binomcikit/actions"><img alt="tests" src="https://img.shields.io/github/actions/workflow/status/pranava-ba/binomcikit/ci.yml?branch=main&amp;style=flat-square&amp;label=tests"></a>
+    <a href="https://pranava-babinomcikit-rtd.readthedocs.io/"><img alt="Docs" src="https://img.shields.io/readthedocs/pranava-babinomcikit-rtd?style=flat-square"></a>
+    <a href="https://github.com/pranava-ba/binomcikit/blob/main/LICENSE.txt"><img alt="License" src="https://img.shields.io/badge/license-GPLv3-blue?style=flat-square"></a>
+  </p>
 </div>
+```
 
 `binomcikit` estimates the proportion of successes *p* in a binomial process and,
 crucially, lets you **evaluate** how good an interval is. It is a complete Python
