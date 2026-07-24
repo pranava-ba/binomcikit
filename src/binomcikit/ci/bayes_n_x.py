@@ -1,4 +1,5 @@
 """1xx family - Bayesian credible interval for a single x (port of R ciBAx)."""
+
 import pandas as pd
 import scipy.stats as stats
 
@@ -31,7 +32,14 @@ def cibax(x, n, alp, a, b):
     ubaqx = stats.beta.ppf(1 - alp / 2, s1, s2)
     lbahx, ubahx = hpd_beta(s1, s2, conf=1 - alp)
 
-    return pd.DataFrame([{
-        'x': x, 'LBAQx': lbaqx, 'UBAQx': ubaqx,
-        'LBAHx': lbahx, 'UBAHx': ubahx,
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "x": x,
+                "LBAQx": lbaqx,
+                "UBAQx": ubaqx,
+                "LBAHx": lbahx,
+                "UBAHx": ubahx,
+            }
+        ]
+    )

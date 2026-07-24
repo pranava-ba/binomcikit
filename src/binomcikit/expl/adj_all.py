@@ -1,13 +1,17 @@
 """3xx family - Expected length of the adjusted CI methods (R files 311, 314)."""
+
 import pandas as pd
 
 from ..ci import ciaas, cialr, cialt, ciasc, ciatw, ciawd
 from .base_all import _beta_hp, _expl_curve, _length, _validate
 
 _ADJ = {
-    "Wald": (ciawd, 'LAWD', 'UAWD'), "ArcSine": (ciaas, 'LAAS', 'UAAS'),
-    "Likelihood": (cialr, 'LALR', 'UALR'), "Score": (ciasc, 'LASC', 'UASC'),
-    "Wald-T": (ciatw, 'LATW', 'UATW'), "Logit-Wald": (cialt, 'LALT', 'UALT'),
+    "Wald": (ciawd, "LAWD", "UAWD"),
+    "ArcSine": (ciaas, "LAAS", "UAAS"),
+    "Likelihood": (cialr, "LALR", "UALR"),
+    "Score": (ciasc, "LASC", "UASC"),
+    "Wald-T": (ciatw, "LATW", "UATW"),
+    "Logit-Wald": (cialt, "LALT", "UALT"),
 }
 
 
@@ -67,11 +71,10 @@ def lengthaall(n, alp, h, a, b, seed=None):
     rows = []
     for name in _ADJ:
         row = _adj_length(name, n, alp, h, a, b, seed).iloc[0].to_dict()
-        row['method'] = name
+        row["method"] = name
         rows.append(row)
     out = pd.DataFrame(rows)
-    return out[['method', 'sumLen', 'explMean', 'explSD', 'explMax',
-                'explLL', 'explUL']]
+    return out[["method", "sumLen", "explMean", "explSD", "explMax", "explLL", "explUL"]]
 
 
 def explaall(n, alp, h, a, b, seed=None):

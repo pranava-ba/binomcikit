@@ -17,10 +17,11 @@ Note: the R package uses ``set.seed``-driven ``rbeta`` draws. NumPy's RNG differ
 from R's, so results match R only in distribution, not draw-for-draw. Pass
 ``seed`` for reproducible output.
 """
+
 import numpy as np
 import pandas as pd
-import scipy.stats as stats
 
+from .._accel import coverage_series
 from ..ci import cias, cilr, cilt, cisc, citw, ciwd
 
 _S = 5000  # simulation runs, matching the R package
@@ -72,31 +73,34 @@ def _coverage_core(n, alp, lower, upper, hp, t1, t2):
     rmse_mi = np.sqrt(np.mean((cpp - micp) ** 2))
     tol = 100.0 * ctr / len(cpp)
 
-    return pd.DataFrame([{
-        'mcp': mcp, 'micp': micp,
-        'RMSE_N': rmse_n, 'RMSE_M': rmse_m, 'RMSE_MI': rmse_mi,
-        'tol': tol,
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "mcp": mcp,
+                "micp": micp,
+                "RMSE_N": rmse_n,
+                "RMSE_M": rmse_m,
+                "RMSE_MI": rmse_mi,
+                "tol": tol,
+            }
+        ]
+    )
 
 
 def _coverage_series(n, lower, upper, hp):
-    """Return the coverage probability at each hypothetical p in ``hp``."""
-    x = np.arange(n + 1)
-    lower = np.asarray(lower, dtype=float)
-    upper = np.asarray(upper, dtype=float)
-    hp = np.asarray(hp, dtype=float)
-    cpp = np.empty(len(hp))
-    for j in range(len(hp)):
-        covered = (hp[j] > lower) & (hp[j] < upper)
-        cpp[j] = np.sum(stats.binom.pmf(x[covered], n, hp[j]))
-    return cpp
+    """Coverage probability at each hypothetical p in ``hp``.
+
+    Delegates to :mod:`binomcikit._accel`: a compiled (numba) kernel for large
+    ``n`` when ``binomcikit[fast]`` is installed, else a vectorised numpy
+    reduction — the results are identical either way.
+    """
+    return coverage_series(n, lower, upper, hp)
 
 
 def _coverage_curve(n, lower, upper, hp, method):
     """Per-hp coverage curve (hp, cp, method), for plotting (R gcovp* helpers)."""
     cpp = _coverage_series(n, lower, upper, hp)
-    return pd.DataFrame({'hp': np.asarray(hp, dtype=float), 'cp': cpp,
-                         'method': method})
+    return pd.DataFrame({"hp": np.asarray(hp, dtype=float), "cp": cpp, "method": method})
 
 
 def _coverage(n, alp, a, b, t1, t2, lower, upper, seed=None, s=_S):
@@ -111,55 +115,59 @@ def covpwd(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability of the Wald interval (R covpWD)."""
     _validate(n, alp, a, b, t1, t2)
     df = ciwd(n, alp)
-    return _coverage(n, alp, a, b, t1, t2, df['LWD'], df['UWD'], seed)
+    return _coverage(n, alp, a, b, t1, t2, df["LWD"], df["UWD"], seed)
 
 
 def covpsc(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability of the Score (Wilson) interval (R covpSC)."""
     _validate(n, alp, a, b, t1, t2)
     df = cisc(n, alp)
-    return _coverage(n, alp, a, b, t1, t2, df['LSC'], df['USC'], seed)
+    return _coverage(n, alp, a, b, t1, t2, df["LSC"], df["USC"], seed)
 
 
 def covpas(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability of the ArcSine interval (R covpAS)."""
     _validate(n, alp, a, b, t1, t2)
     df = cias(n, alp)
-    return _coverage(n, alp, a, b, t1, t2, df['LAS'], df['UAS'], seed)
+    return _coverage(n, alp, a, b, t1, t2, df["LAS"], df["UAS"], seed)
 
 
 def covplr(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability of the Likelihood-Ratio interval (R covpLR)."""
     _validate(n, alp, a, b, t1, t2)
     df = cilr(n, alp)
-    return _coverage(n, alp, a, b, t1, t2, df['LLR'], df['ULR'], seed)
+    return _coverage(n, alp, a, b, t1, t2, df["LLR"], df["ULR"], seed)
 
 
 def covptw(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability of the Wald-T interval (R covpTW)."""
     _validate(n, alp, a, b, t1, t2)
     df = citw(n, alp)
-    return _coverage(n, alp, a, b, t1, t2, df['LTW'], df['UTW'], seed)
+    return _coverage(n, alp, a, b, t1, t2, df["LTW"], df["UTW"], seed)
 
 
 def covplt(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability of the Logit-Wald interval (R covpLT)."""
     _validate(n, alp, a, b, t1, t2)
     df = cilt(n, alp)
-    return _coverage(n, alp, a, b, t1, t2, df['LLT'], df['ULT'], seed)
+    return _coverage(n, alp, a, b, t1, t2, df["LLT"], df["ULT"], seed)
 
 
 def covpall(n, alp, a, b, t1, t2, seed=None):
     """Coverage probability summary for all six base methods (R covpAll)."""
     _validate(n, alp, a, b, t1, t2)
     methods = {
-        'Wald': covpwd, 'ArcSine': covpas, 'Likelihood': covplr,
-        'Score': covpsc, 'Wald-T': covptw, 'Logit-Wald': covplt,
+        "Wald": covpwd,
+        "ArcSine": covpas,
+        "Likelihood": covplr,
+        "Score": covpsc,
+        "Wald-T": covptw,
+        "Logit-Wald": covplt,
     }
     rows = []
     for name, fn in methods.items():
         row = fn(n, alp, a, b, t1, t2, seed).iloc[0].to_dict()
-        row['method'] = name
+        row["method"] = name
         rows.append(row)
     out = pd.DataFrame(rows)
-    return out[['method', 'mcp', 'micp', 'RMSE_N', 'RMSE_M', 'RMSE_MI', 'tol']]
+    return out[["method", "mcp", "micp", "RMSE_N", "RMSE_M", "RMSE_MI", "tol"]]

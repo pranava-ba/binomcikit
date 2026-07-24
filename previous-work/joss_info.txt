@@ -1,0 +1,6 @@
+https://github.com/Alcampopiano/hypothesize
+https://github.com/williamsbenjamin/blendR
+https://github.com/BPSB/combine-p-values-discrete
+https://github.com/Amalan-ConStat/R-fitODBOD
+https://github.com/openjournals/joss-reviews/issues/7839
+https://joss.readthedocs.io/en/latest/index.html

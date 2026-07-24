@@ -1,13 +1,17 @@
 """4xx family - p-confidence and p-bias for the adjusted CI methods (R file 411)."""
+
 import pandas as pd
 
 from ..ci import ciaas, cialr, cialt, ciasc, ciatw, ciawd
 from .base_all import _pconf_pbias, _validate
 
 _ADJ = {
-    "Wald": (ciawd, 'LAWD', 'UAWD'), "ArcSine": (ciaas, 'LAAS', 'UAAS'),
-    "Likelihood": (cialr, 'LALR', 'UALR'), "Score": (ciasc, 'LASC', 'UASC'),
-    "Wald-T": (ciatw, 'LATW', 'UATW'), "Logit-Wald": (cialt, 'LALT', 'UALT'),
+    "Wald": (ciawd, "LAWD", "UAWD"),
+    "ArcSine": (ciaas, "LAAS", "UAAS"),
+    "Likelihood": (cialr, "LALR", "UALR"),
+    "Score": (ciasc, "LASC", "UASC"),
+    "Wald-T": (ciatw, "LATW", "UATW"),
+    "Logit-Wald": (cialt, "LALT", "UALT"),
 }
 
 
@@ -67,7 +71,6 @@ def pcopbiaall(n, alp, h):
     frames = []
     for name in _ADJ:
         d = _adj(name, n, alp, h)
-        d['method'] = name
+        d["method"] = name
         frames.append(d)
-    return pd.concat(frames, ignore_index=True)[
-        ['method', 'x1', 'pconf', 'pbias']]
+    return pd.concat(frames, ignore_index=True)[["method", "x1", "pconf", "pbias"]]

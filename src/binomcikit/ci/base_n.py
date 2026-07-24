@@ -83,23 +83,17 @@ def ciwd(n, alp):
         seW[i] = np.sqrt(pW[i] * qW[i] / n)
         LWD[i] = pW[i] - (cv * seW[i])
         UWD[i] = pW[i] + (cv * seW[i])
-        
+
         LABB[i] = "YES" if LWD[i] < 0 else "NO"
         LWD[i] = max(0, LWD[i])
-        
+
         UABB[i] = "YES" if UWD[i] > 1 else "NO"
         UWD[i] = min(1, UWD[i])
-        
+
         ZWI[i] = "YES" if UWD[i] - LWD[i] == 0 else "NO"
 
-    return pd.DataFrame( {
-        'x': x,
-        'LWD': LWD,
-        'UWD': UWD,
-        'LABB': LABB,
-        'UABB': UABB,
-        'ZWI': ZWI
-    })
+    return pd.DataFrame({"x": x, "LWD": LWD, "UWD": UWD, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
+
 
 def cisc(n, alp):
     r"""Score (Wilson) confidence intervals, for every ``x``.
@@ -163,13 +157,13 @@ def cisc(n, alp):
     seS = np.zeros(k)
     LSC = np.zeros(k)
     USC = np.zeros(k)
-    LABB = np.full(k, 'NO')
-    UABB = np.full(k, 'NO')
-    ZWI = np.full(k, 'NO')
+    LABB = np.full(k, "NO")
+    UABB = np.full(k, "NO")
+    ZWI = np.full(k, "NO")
 
     # CRITICAL VALUES
     cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
-    cv1 = (cv ** 2) / (2 * n)
+    cv1 = (cv**2) / (2 * n)
     cv2 = (cv / (2 * n)) ** 2
 
     # SCORE (WILSON) METHOD
@@ -177,8 +171,8 @@ def cisc(n, alp):
         pS[i] = x[i] / n
         qS[i] = 1 - pS[i]
         seS[i] = np.sqrt((pS[i] * qS[i] / n) + cv2)
-        LSC[i] = (n / (n + cv ** 2)) * ((pS[i] + cv1) - (cv * seS[i]))
-        USC[i] = (n / (n + cv ** 2)) * ((pS[i] + cv1) + (cv * seS[i]))
+        LSC[i] = (n / (n + cv**2)) * ((pS[i] + cv1) - (cv * seS[i]))
+        USC[i] = (n / (n + cv**2)) * ((pS[i] + cv1) + (cv * seS[i]))
 
         # Lower bound adjustments
         if LSC[i] < 0:
@@ -194,7 +188,8 @@ def cisc(n, alp):
         if USC[i] - LSC[i] == 0:
             ZWI[i] = "YES"
 
-    return pd.DataFrame({'x': x, 'LSC': LSC, 'USC': USC, 'LABB': LABB, 'UABB': UABB, 'ZWI': ZWI})
+    return pd.DataFrame({"x": x, "LSC": LSC, "USC": USC, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
+
 
 def cias(n, alp):
     r"""ArcSine confidence intervals, for every ``x``.
@@ -252,23 +247,16 @@ def cias(n, alp):
         seA[i] = cv / np.sqrt(4 * n)
         LAS[i] = (np.sin(np.arcsin(np.sqrt(pA[i])) - seA[i])) ** 2
         UAS[i] = (np.sin(np.arcsin(np.sqrt(pA[i])) + seA[i])) ** 2
-        
+
         LABB[i] = "YES" if LAS[i] < 0 else "NO"
         LAS[i] = max(0, LAS[i])
-        
+
         UABB[i] = "YES" if UAS[i] > 1 else "NO"
         UAS[i] = min(1, UAS[i])
-        
+
         ZWI[i] = "YES" if UAS[i] - LAS[i] == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': x,
-        'LAS': LAS,
-        'UAS': UAS,
-        'LABB': LABB,
-        'UABB': UABB,
-        'ZWI': ZWI
-    })
+    return pd.DataFrame({"x": x, "LAS": LAS, "UAS": UAS, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
 
 # Optimized ciLR function
@@ -314,10 +302,10 @@ def cilr(n, alp):
     # INITIALIZATIONS
     LLR = np.zeros(k)
     ULR = np.zeros(k)
-    LABB = np.full(k, 'NO')
-    UABB = np.full(k, 'NO')
-    ZWI = np.full(k, 'NO')
-    
+    LABB = np.full(k, "NO")
+    UABB = np.full(k, "NO")
+    ZWI = np.full(k, "NO")
+
     # Precompute critical value
     cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
 
@@ -330,38 +318,41 @@ def cilr(n, alp):
 
     for i in range(k):
         # Minimize using likelihood function (MLE)
-        mle_res = optimize.minimize_scalar(lambda p: -likelhd(p, i), bounds=(0, 1), method='bounded')
+        mle_res = optimize.minimize_scalar(
+            lambda p: -likelhd(p, i), bounds=(0, 1), method="bounded"
+        )
         mle_i = mle_res.x
 
         # Compute the cutoff for optimization
-        cutoff = loglik(mle_i, i) - (cv ** 2 / 2)
+        cutoff = loglik(mle_i, i) - (cv**2 / 2)
 
         # Objective function for LLR and ULR
         def loglik_optim(p):
             return np.abs(cutoff - loglik(p, i))
 
         # Minimize to find LLR and ULR
-        LLR_res = optimize.minimize_scalar(loglik_optim, bounds=(0, mle_i), method='bounded')
+        LLR_res = optimize.minimize_scalar(loglik_optim, bounds=(0, mle_i), method="bounded")
         LLR[i] = LLR_res.x
 
-        ULR_res = optimize.minimize_scalar(loglik_optim, bounds=(mle_i, 1), method='bounded')
+        ULR_res = optimize.minimize_scalar(loglik_optim, bounds=(mle_i, 1), method="bounded")
         ULR[i] = ULR_res.x
-        
+
         # Set flags based on conditions
         LABB[i] = "YES" if LLR[i] < 0 else "NO"
         UABB[i] = "YES" if ULR[i] > 1 else "NO"
         ZWI[i] = "YES" if (ULR[i] - LLR[i]) == 0 else "NO"
 
     # Return with 'x' as a column, matching the other ci* methods
-    return pd.DataFrame({
-        'x': x,
-        'LLR': LLR,
-        'ULR': ULR,
-        'LABB': LABB,
-        'UABB': UABB,
-        'ZWI': ZWI,
-    })
-
+    return pd.DataFrame(
+        {
+            "x": x,
+            "LLR": LLR,
+            "ULR": ULR,
+            "LABB": LABB,
+            "UABB": UABB,
+            "ZWI": ZWI,
+        }
+    )
 
 
 def ciex(n, alp, e):
@@ -415,7 +406,7 @@ def ciex(n, alp, e):
         e = [e]  # Convert single float to a list
     elif not isinstance(e, (np.ndarray, list)) or any([i > 1 or i < 0 for i in e]):
         raise ValueError("'e' values have to be between 0 and 1")
-    
+
     if len(e) > 10:
         raise ValueError("'e' can have only 10 intervals")
 
@@ -426,44 +417,40 @@ def ciex(n, alp, e):
     for i in range(nvar):
         lu = lufn101(n, alp, e[i])
         result = pd.concat([result, lu], ignore_index=True)
-    
+
     return result
+
 
 # Lower and upper limit function
 def lufn101(n, alp, e):
     x = np.arange(n + 1)  # Generate values from 0 to n
     LEX = np.zeros(n + 1)
     UEX = np.zeros(n + 1)
-    LABB = np.full(n + 1, 'NO')
-    UABB = np.full(n + 1, 'NO')
-    ZWI = np.full(n + 1, 'NO')
+    LABB = np.full(n + 1, "NO")
+    UABB = np.full(n + 1, "NO")
+    ZWI = np.full(n + 1, "NO")
 
     for i in range(n + 1):
         LEX[i] = exlim102l(x[i], n, alp, e)
         UEX[i] = exlim102u(x[i], n, alp, e)
-        
+
         # Update flags based on limits
         if LEX[i] < 0:
             LABB[i] = "YES"
             LEX[i] = 0
-        
+
         if UEX[i] > 1:
             UABB[i] = "YES"
             UEX[i] = 1
-        
+
         if UEX[i] - LEX[i] == 0:
             ZWI[i] = "YES"
 
     # Create DataFrame for this e value
-    return pd.DataFrame({
-        'x': x,
-        'LEX': LEX,
-        'UEX': UEX,
-        'LABB': LABB,
-        'UABB': UABB,
-        'ZWI': ZWI,
-        'e': [e] * (n + 1)
-    })
+    return pd.DataFrame(
+        {"x": x, "LEX": LEX, "UEX": UEX, "LABB": LABB, "UABB": UABB, "ZWI": ZWI, "e": [e] * (n + 1)}
+    )
+
 
 # Lower limit calculation
 def exlim102l(x, n, alp, e):
@@ -476,10 +463,15 @@ def exlim102l(x, n, alp, e):
         y = np.arange(0, z + 1)
 
         def f1(p):
-            return (1 - e) * stats.binom.pmf(x, n, p) + np.sum(stats.binom.pmf(y, n, p)) - (1 - (alp / 2))
-        
-        root_result = optimize.root_scalar(f1, bracket=[0, 1], method='bisect')
+            return (
+                (1 - e) * stats.binom.pmf(x, n, p)
+                + np.sum(stats.binom.pmf(y, n, p))
+                - (1 - (alp / 2))
+            )
+
+        root_result = optimize.root_scalar(f1, bracket=[0, 1], method="bisect")
         return root_result.root
+
 
 # Upper limit calculation
 def exlim102u(x, n, alp, e):
@@ -493,10 +485,9 @@ def exlim102u(x, n, alp, e):
 
         def f2(p):
             return e * stats.binom.pmf(x, n, p) + np.sum(stats.binom.pmf(y, n, p)) - (alp / 2)
-        
-        root_result = optimize.root_scalar(f2, bracket=[0, 1], method='bisect')
-        return root_result.root
 
+        root_result = optimize.root_scalar(f2, bracket=[0, 1], method="bisect")
+        return root_result.root
 
 
 def citw(n, alp):
@@ -553,9 +544,17 @@ def citw(n, alp):
         return p * (1 - p) / n
 
     def f2(p, n):
-        return (p * (1 - p) / (n**3)) + \
-               (p + ((6 * n) - 7) * (p**2) + (4 * (n - 1) * (n - 3) * (p**3)) - (2 * (n - 1) * ((2 * n) - 3) * (p**4))) / (n**5) - \
-               (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+        return (
+            (p * (1 - p) / (n**3))
+            + (
+                p
+                + ((6 * n) - 7) * (p**2)
+                + (4 * (n - 1) * (n - 3) * (p**3))
+                - (2 * (n - 1) * ((2 * n) - 3) * (p**4))
+            )
+            / (n**5)
+            - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+        )
 
     # MODIFIED_t-WALD METHOD
     for i in range(k):
@@ -565,7 +564,7 @@ def citw(n, alp):
             pTW[i] = x[i] / n
         qTW[i] = 1 - pTW[i]
 
-        DOF[i] = 2 * ((f1(pTW[i], n))**2) / f2(pTW[i], n)
+        DOF[i] = 2 * ((f1(pTW[i], n)) ** 2) / f2(pTW[i], n)
         cv[i] = stats.t.ppf(1 - (alp / 2), df=DOF[i])
         seTW[i] = cv[i] * np.sqrt(f1(pTW[i], n))
         LTW[i] = pTW[i] - seTW[i]
@@ -579,14 +578,7 @@ def citw(n, alp):
 
         ZWI[i] = "YES" if UTW[i] - LTW[i] == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': x,
-        'LTW': LTW,
-        'UTW': UTW,
-        'LABB': LABB,
-        'UABB': UABB,
-        'ZWI': ZWI
-    })
+    return pd.DataFrame({"x": x, "LTW": LTW, "UTW": UTW, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
 
 def cilt(n, alp):
@@ -634,9 +626,9 @@ def cilt(n, alp):
     lgit = np.zeros(k)
     LLT = np.zeros(k)
     ULT = np.zeros(k)
-    LABB = np.full(k, 'NO')
-    UABB = np.full(k, 'NO')
-    ZWI = np.full(k, 'NO')
+    LABB = np.full(k, "NO")
+    UABB = np.full(k, "NO")
+    ZWI = np.full(k, "NO")
 
     # Critical value for normal distribution
     cv = stats.norm.ppf(1 - (alp / 2))
@@ -673,19 +665,7 @@ def cilt(n, alp):
             ZWI[i] = "YES"
 
     # Create a DataFrame for output
-    return pd.DataFrame({
-        'x': x,
-        'LLT': LLT,
-        'ULT': ULT,
-        'LABB': LABB,
-        'UABB': UABB,
-        'ZWI': ZWI
-    })
-
-
-
-
-
+    return pd.DataFrame({"x": x, "LLT": LLT, "ULT": ULT, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
 
 def ciall(n, alp):
@@ -733,35 +713,39 @@ def ciall(n, alp):
     LogitWald_df = cilt(n, alp)
 
     # Assign method names as strings
-    WaldCI_df['method'] = "Wald"
-    ArcSineCI_df['method'] = "ArcSine"
-    LRCI_df['method'] = "Likelihood"
-    ScoreCI_df['method'] = "Score"
-    WaldTCI_df['method'] = "Wald-T"
-    LogitWald_df['method'] = "Logit-Wald"
+    WaldCI_df["method"] = "Wald"
+    ArcSineCI_df["method"] = "ArcSine"
+    LRCI_df["method"] = "Likelihood"
+    ScoreCI_df["method"] = "Score"
+    WaldTCI_df["method"] = "Wald-T"
+    LogitWald_df["method"] = "Logit-Wald"
 
     # Helper function to safely extract the 'x' column if present
     def create_generic_df(df, method, lower_col, upper_col):
-        return pd.DataFrame({
-            'method': df['method'],
-            'x': df['x'] if 'x' in df.columns else None,  # Default to None if 'x' is missing
-            'LowerLimit': df[lower_col],
-            'UpperLimit': df[upper_col],
-            'LowerAbb': df['LABB'],
-            'UpperAbb': df['UABB'],
-            'ZWI': df['ZWI']
-        })
+        return pd.DataFrame(
+            {
+                "method": df["method"],
+                "x": df["x"] if "x" in df.columns else None,  # Default to None if 'x' is missing
+                "LowerLimit": df[lower_col],
+                "UpperLimit": df[upper_col],
+                "LowerAbb": df["LABB"],
+                "UpperAbb": df["UABB"],
+                "ZWI": df["ZWI"],
+            }
+        )
 
     # Create generic DataFrames
-    Generic_1 = create_generic_df(WaldCI_df, "Wald", 'LWD', 'UWD')
-    Generic_2 = create_generic_df(ArcSineCI_df, "ArcSine", 'LAS', 'UAS')
-    Generic_3 = create_generic_df(LRCI_df, "Likelihood", 'LLR', 'ULR')
-    Generic_4 = create_generic_df(ScoreCI_df, "Score", 'LSC', 'USC')
-    Generic_5 = create_generic_df(WaldTCI_df, "Wald-T", 'LTW', 'UTW')
-    Generic_6 = create_generic_df(LogitWald_df, "Logit-Wald", 'LLT', 'ULT')
+    Generic_1 = create_generic_df(WaldCI_df, "Wald", "LWD", "UWD")
+    Generic_2 = create_generic_df(ArcSineCI_df, "ArcSine", "LAS", "UAS")
+    Generic_3 = create_generic_df(LRCI_df, "Likelihood", "LLR", "ULR")
+    Generic_4 = create_generic_df(ScoreCI_df, "Score", "LSC", "USC")
+    Generic_5 = create_generic_df(WaldTCI_df, "Wald-T", "LTW", "UTW")
+    Generic_6 = create_generic_df(LogitWald_df, "Logit-Wald", "LLT", "ULT")
 
     # Combine all the DataFrames
-    Final_df = pd.concat([Generic_1, Generic_2, Generic_3, Generic_4, Generic_5, Generic_6], ignore_index=True)
+    Final_df = pd.concat(
+        [Generic_1, Generic_2, Generic_3, Generic_4, Generic_5, Generic_6], ignore_index=True
+    )
     Final_df.index = range(1, len(Final_df) + 1)
 
     return Final_df

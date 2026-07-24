@@ -6,6 +6,7 @@ with a Jeffreys-scale interpretation. Beta integrals reduce to the Beta CDF/SF:
 integral over (th, 1) is ``beta.sf(th, .)`` (upper tail) and integral over
 (0, th) is ``beta.cdf(th, .)`` (lower tail).
 """
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -31,12 +32,12 @@ def _interpret(bf):
 
 
 def _frame(x, bafa):
-    df = pd.DataFrame({'x': np.atleast_1d(x), 'BaFa01': np.atleast_1d(bafa)})
-    df['Interpretation'] = df['BaFa01'].apply(_interpret)
+    df = pd.DataFrame({"x": np.atleast_1d(x), "BaFa01": np.atleast_1d(bafa)})
+    df["Interpretation"] = df["BaFa01"].apply(_interpret)
     return df
 
 
-def _check_th(th, name='th0'):
+def _check_th(th, name="th0"):
     if th is None:
         raise ValueError(f"'{name}' is missing")
     if not isinstance(th, (int, float)) or not 0 < th <= 1:
@@ -52,8 +53,7 @@ def _check_n(n):
 
 # --- BAF1 --------------------------------------------------------------------
 def _baf1(x, n, th0, a1, b1):
-    return (beta_fn(a1, b1) / beta_fn(x + a1, n - x + b1)
-            * th0 ** x * (1 - th0) ** (n - x))
+    return beta_fn(a1, b1) / beta_fn(x + a1, n - x + b1) * th0**x * (1 - th0) ** (n - x)
 
 
 def hypotestbaf1(n, th0, a1, b1):
@@ -75,7 +75,7 @@ def hypotestbaf1x(x, n, th0, a1, b1):
 def _baf2(x, n, th0, a1, b1):
     t1 = stats.beta.sf(th0, a1, b1)
     t2 = stats.beta.sf(th0, x + a1, n - x + b1)
-    return (t1 / t2) * th0 ** x * (1 - th0) ** (n - x)
+    return (t1 / t2) * th0**x * (1 - th0) ** (n - x)
 
 
 def hypotestbaf2(n, th0, a1, b1):
@@ -97,7 +97,7 @@ def hypotestbaf2x(x, n, th0, a1, b1):
 def _baf3(x, n, th0, a1, b1):
     t1 = stats.beta.cdf(th0, a1, b1)
     t2 = stats.beta.cdf(th0, x + a1, n - x + b1)
-    return (t1 / t2) * th0 ** x * (1 - th0) ** (n - x)
+    return (t1 / t2) * th0**x * (1 - th0) ** (n - x)
 
 
 def hypotestbaf3(n, th0, a1, b1):
@@ -173,8 +173,8 @@ def _baf6(x, n, th1, a1, b1, th2, a2, b2):
 def hypotestbaf6(n, th1, a1, b1, th2, a2, b2):
     """Bayes factor for two interval hypotheses (R hypotestBAF6)."""
     _check_n(n)
-    _check_th(th1, 'th1')
-    _check_th(th2, 'th2')
+    _check_th(th1, "th1")
+    _check_th(th2, "th2")
     x = np.arange(n + 1)
     return _frame(x, _baf6(x, n, th1, a1, b1, th2, a2, b2))
 
@@ -182,6 +182,6 @@ def hypotestbaf6(n, th1, a1, b1, th2, a2, b2):
 def hypotestbaf6x(x, n, th1, a1, b1, th2, a2, b2):
     """BAF6 for a given x (R hypotestBAF6x)."""
     _check_n(n)
-    _check_th(th1, 'th1')
-    _check_th(th2, 'th2')
+    _check_th(th1, "th1")
+    _check_th(th2, "th2")
     return _frame(x, _baf6(x, n, th1, a1, b1, th2, a2, b2))

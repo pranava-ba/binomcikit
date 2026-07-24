@@ -4,6 +4,7 @@ Each plot draws the coverage-probability curve against the hypothetical
 proportion p, with reference lines for the nominal level (1 - alp), the
 tolerance band (t1, t2), and the mean / minimum coverage.
 """
+
 import numpy as np
 import pandas as pd
 from plotnine import aes, geom_hline, geom_line, ggplot, labs
@@ -36,10 +37,10 @@ _S = 5000
 
 
 def _covp_plot(curve, alp, t1, t2, title):
-    mcp = curve['cp'].mean()
-    micp = curve['cp'].min()
+    mcp = curve["cp"].mean()
+    micp = curve["cp"].min()
     return (
-        ggplot(curve, aes(x='hp', y='cp'))
+        ggplot(curve, aes(x="hp", y="cp"))
         + labs(title=title, x="p", y="Coverage Probability")
         + geom_hline(yintercept=t1, color="red", linetype="dashed")
         + geom_hline(yintercept=t2, color="blue", linetype="dashed")
@@ -57,19 +58,27 @@ def _beta_hp(a, b, seed):
 
 # limit column names per method, for base / adjusted / continuity-corrected
 _BASE = {
-    "Wald": (ciwd, 'LWD', 'UWD'), "ArcSine": (cias, 'LAS', 'UAS'),
-    "Likelihood": (cilr, 'LLR', 'ULR'), "Score": (cisc, 'LSC', 'USC'),
-    "Wald-T": (citw, 'LTW', 'UTW'), "Logit-Wald": (cilt, 'LLT', 'ULT'),
+    "Wald": (ciwd, "LWD", "UWD"),
+    "ArcSine": (cias, "LAS", "UAS"),
+    "Likelihood": (cilr, "LLR", "ULR"),
+    "Score": (cisc, "LSC", "USC"),
+    "Wald-T": (citw, "LTW", "UTW"),
+    "Logit-Wald": (cilt, "LLT", "ULT"),
 }
 _ADJ = {
-    "Wald": (ciawd, 'LAWD', 'UAWD'), "ArcSine": (ciaas, 'LAAS', 'UAAS'),
-    "Likelihood": (cialr, 'LALR', 'UALR'), "Score": (ciasc, 'LASC', 'UASC'),
-    "Wald-T": (ciatw, 'LATW', 'UATW'), "Logit-Wald": (cialt, 'LALT', 'UALT'),
+    "Wald": (ciawd, "LAWD", "UAWD"),
+    "ArcSine": (ciaas, "LAAS", "UAAS"),
+    "Likelihood": (cialr, "LALR", "UALR"),
+    "Score": (ciasc, "LASC", "UASC"),
+    "Wald-T": (ciatw, "LATW", "UATW"),
+    "Logit-Wald": (cialt, "LALT", "UALT"),
 }
 _CC = {
-    "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),
-    "Score": (cicsc, 'LCS', 'UCS'), "Wald-T": (cictw, 'LCTW', 'UCTW'),
-    "Logit-Wald": (ciclt, 'LCLT', 'UCLT'),
+    "Wald": (cicwd, "LCW", "UCW"),
+    "ArcSine": (cicas, "LCA", "UCA"),
+    "Score": (cicsc, "LCS", "UCS"),
+    "Wald-T": (cictw, "LCTW", "UCTW"),
+    "Logit-Wald": (ciclt, "LCLT", "UCLT"),
 }
 
 
@@ -95,8 +104,8 @@ def _cc_curve(method, n, alp, c, a, b, seed):
 def _make_base_plot(method, label):
     def _plot(n, alp, a, b, t1, t2, seed=None):
         curve = _base_curve(method, n, alp, a, b, seed)
-        return _covp_plot(curve, alp, t1, t2,
-                          f"Coverage Probability for {label} method")
+        return _covp_plot(curve, alp, t1, t2, f"Coverage Probability for {label} method")
+
     return _plot
 
 
@@ -111,18 +120,17 @@ plotcovplt = _make_base_plot("Logit-Wald", "Logit Wald")
 def plotcovpall(n, alp, a, b, t1, t2, seed=None):
     """Coverage curves for all six base methods overlaid (R PlotcovpAll)."""
     import pandas as pd
-    curve = pd.concat(
-        [_base_curve(m, n, alp, a, b, seed) for m in _BASE], ignore_index=True)
-    return _covp_plot(curve, alp, t1, t2,
-                      "Coverage Probability for all base methods")
+
+    curve = pd.concat([_base_curve(m, n, alp, a, b, seed) for m in _BASE], ignore_index=True)
+    return _covp_plot(curve, alp, t1, t2, "Coverage Probability for all base methods")
 
 
 # --- Adjusted method plots (R file 213) --------------------------------------
 def _make_adj_plot(method, label):
     def _plot(n, alp, h, a, b, t1, t2, seed=None):
         curve = _adj_curve(method, n, alp, h, a, b, seed)
-        return _covp_plot(curve, alp, t1, t2,
-                          f"Coverage Probability for adjusted {label} method")
+        return _covp_plot(curve, alp, t1, t2, f"Coverage Probability for adjusted {label} method")
+
     return _plot
 
 
@@ -137,18 +145,19 @@ plotcovpalt = _make_adj_plot("Logit-Wald", "Logit Wald")
 def plotcovpaall(n, alp, h, a, b, t1, t2, seed=None):
     """Coverage curves for all six adjusted methods overlaid (R PlotcovpAAll)."""
     import pandas as pd
-    curve = pd.concat(
-        [_adj_curve(m, n, alp, h, a, b, seed) for m in _ADJ], ignore_index=True)
-    return _covp_plot(curve, alp, t1, t2,
-                      "Coverage Probability for all adjusted methods")
+
+    curve = pd.concat([_adj_curve(m, n, alp, h, a, b, seed) for m in _ADJ], ignore_index=True)
+    return _covp_plot(curve, alp, t1, t2, "Coverage Probability for all adjusted methods")
 
 
 # --- Continuity-corrected method plots (R file 222) --------------------------
 def _make_cc_plot(method, label):
     def _plot(n, alp, c, a, b, t1, t2, seed=None):
         curve = _cc_curve(method, n, alp, c, a, b, seed)
-        return _covp_plot(curve, alp, t1, t2,
-                          f"Coverage Probability for continuity-corrected {label} method")
+        return _covp_plot(
+            curve, alp, t1, t2, f"Coverage Probability for continuity-corrected {label} method"
+        )
+
     return _plot
 
 
@@ -162,10 +171,11 @@ plotcovpclt = _make_cc_plot("Logit-Wald", "Logit Wald")
 def plotcovpcall(n, alp, c, a, b, t1, t2, seed=None):
     """Coverage curves for all five CC methods overlaid (R PlotcovpCAll)."""
     import pandas as pd
-    curve = pd.concat(
-        [_cc_curve(m, n, alp, c, a, b, seed) for m in _CC], ignore_index=True)
-    return _covp_plot(curve, alp, t1, t2,
-                      "Coverage Probability for all continuity-corrected methods")
+
+    curve = pd.concat([_cc_curve(m, n, alp, c, a, b, seed) for m in _CC], ignore_index=True)
+    return _covp_plot(
+        curve, alp, t1, t2, "Coverage Probability for all continuity-corrected methods"
+    )
 
 
 # --- General plots (R files 224, 225) ----------------------------------------
@@ -189,18 +199,19 @@ def plotcovpsim(n, LL, UL, alp, s, a, b, t1, t2, seed=None):
 def plotcovpex(n, alp, e, a, b, t1, t2, seed=None):
     """Coverage curve for the Exact interval (R PlotcovpEX)."""
     df = ciex(n, alp, [e])
-    curve = _coverage_curve(n, df['LEX'], df['UEX'], _beta_hp(a, b, seed), "Exact")
-    return _covp_plot(curve, alp, t1, t2,
-                      "Coverage Probability for Exact method")
+    curve = _coverage_curve(n, df["LEX"], df["UEX"], _beta_hp(a, b, seed), "Exact")
+    return _covp_plot(curve, alp, t1, t2, "Coverage Probability for Exact method")
 
 
 def plotcovpba(n, alp, a, b, t1, t2, a1, a2, seed=None):
     """Coverage curves for the Bayesian credible interval, quantile+HPD (R PlotcovpBA)."""
     ba = ciba(n, alp, a1, a2)
     hp = _beta_hp(a, b, seed)
-    curve = pd.concat([
-        _coverage_curve(n, ba['LBAQ'], ba['UBAQ'], hp, "Quantile"),
-        _coverage_curve(n, ba['LBAH'], ba['UBAH'], hp, "HPD"),
-    ], ignore_index=True)
-    return _covp_plot(curve, alp, t1, t2,
-                      "Coverage Probability for Bayesian method")
+    curve = pd.concat(
+        [
+            _coverage_curve(n, ba["LBAQ"], ba["UBAQ"], hp, "Quantile"),
+            _coverage_curve(n, ba["LBAH"], ba["UBAH"], hp, "HPD"),
+        ],
+        ignore_index=True,
+    )
+    return _covp_plot(curve, alp, t1, t2, "Coverage Probability for Bayesian method")

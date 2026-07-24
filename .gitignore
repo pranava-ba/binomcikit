@@ -27,9 +27,11 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Dev-only reference material (R source, PDFs) — kept in a sibling folder,
-# never part of the package.
+# Dev-only reference material (R source, PDFs) — never part of the package.
 reference/
+# The copyrighted SoftwareX 2017 source paper (previous-work/) + any generated
+# paper.pdf — never commit (copyright + size).
+*.pdf
 
 # Never commit secrets
 *recovery*codes*.txt

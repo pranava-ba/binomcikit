@@ -5,6 +5,7 @@ Provides:
     plotciallx  - All six base methods given x, overlaid
     plotciallxg - All six base methods given x, faceted by method
 """
+
 import pandas as pd
 from plotnine import (
     aes,
@@ -22,21 +23,22 @@ from .base_n_x import ciallx, ciexx
 def _aberration_frame(ss):
     """Build the long-format frame of aberration points (Lower/Upper/ZWI)."""
     parts = []
-    ll = ss[ss['LowerAbb'] == "YES"]
+    ll = ss[ss["LowerAbb"] == "YES"]
     if len(ll) > 0:
-        parts.append(pd.DataFrame(
-            {'ID': ll['ID'], 'Value': ll['LowerLimit'], 'Aberration': "Lower"}))
-    ul = ss[ss['UpperAbb'] == "YES"]
+        parts.append(
+            pd.DataFrame({"ID": ll["ID"], "Value": ll["LowerLimit"], "Aberration": "Lower"})
+        )
+    ul = ss[ss["UpperAbb"] == "YES"]
     if len(ul) > 0:
-        parts.append(pd.DataFrame(
-            {'ID': ul['ID'], 'Value': ul['UpperLimit'], 'Aberration': "Upper"}))
-    zl = ss[ss['ZWI'] == "YES"]
+        parts.append(
+            pd.DataFrame({"ID": ul["ID"], "Value": ul["UpperLimit"], "Aberration": "Upper"})
+        )
+    zl = ss[ss["ZWI"] == "YES"]
     if len(zl) > 0:
-        parts.append(pd.DataFrame(
-            {'ID': zl['ID'], 'Value': zl['LowerLimit'], 'Aberration': "ZWI"}))
+        parts.append(pd.DataFrame({"ID": zl["ID"], "Value": zl["LowerLimit"], "Aberration": "ZWI"}))
     if parts:
         return pd.concat(parts, ignore_index=True)
-    return pd.DataFrame(columns=['ID', 'Value', 'Aberration'])
+    return pd.DataFrame(columns=["ID", "Value", "Aberration"])
 
 
 def plotciexx(x, n, alp, e):
@@ -60,31 +62,31 @@ def plotciexx(x, n, alp, e):
         raise ValueError("Plot of only 10 intervals of 'e' is possible")
 
     ss1 = ciexx(x, n, alp, e_list)
-    ss = pd.DataFrame({
-        'ID': range(1, len(ss1) + 1),
-        'x': x,
-        'LowerLimit': ss1['LEXx'].values,
-        'UpperLimit': ss1['UEXx'].values,
-        'LowerAbb': ss1['LABB'].values,
-        'UpperAbb': ss1['UABB'].values,
-        'ZWI': ss1['ZWI'].values,
-        'e': ss1['e'].values,
-    })
-    ss['e'] = ss['e'].astype('category')
+    ss = pd.DataFrame(
+        {
+            "ID": range(1, len(ss1) + 1),
+            "x": x,
+            "LowerLimit": ss1["LEXx"].values,
+            "UpperLimit": ss1["UEXx"].values,
+            "LowerAbb": ss1["LABB"].values,
+            "UpperAbb": ss1["UABB"].values,
+            "ZWI": ss1["ZWI"].values,
+            "e": ss1["e"].values,
+        }
+    )
+    ss["e"] = ss["e"].astype("category")
     ldf = _aberration_frame(ss)
 
     plot = (
-        ggplot(ss, aes(x='UpperLimit', y='ID'))
-        + labs(x="Lower and Upper limits", y="x values",
-               title="Exact method given x")
-        + geom_errorbarh(aes(xmin='LowerLimit', xmax='UpperLimit', color='e'),
-                         size=0.5)
+        ggplot(ss, aes(x="UpperLimit", y="ID"))
+        + labs(x="Lower and Upper limits", y="x values", title="Exact method given x")
+        + geom_errorbarh(aes(xmin="LowerLimit", xmax="UpperLimit", color="e"), size=0.5)
     )
     if len(ldf) > 0:
         plot += geom_point(
-            data=ldf, mapping=aes(x='Value', y='ID', shape='Aberration'),
-            size=4, fill="red")
-        plot += scale_shape_manual(values=['o', 's', 'D'])
+            data=ldf, mapping=aes(x="Value", y="ID", shape="Aberration"), size=4, fill="red"
+        )
+        plot += scale_shape_manual(values=["o", "s", "D"])
     return plot
 
 
@@ -105,21 +107,23 @@ def plotciallx(x, n, alp):
 
     ss1 = ciallx(x, n, alp)
     ss = ss1.copy()
-    ss['ID'] = range(1, len(ss) + 1)
+    ss["ID"] = range(1, len(ss) + 1)
     ldf = _aberration_frame(ss)
 
     plot = (
-        ggplot(ss, aes(x='UpperLimit', y='ID'))
-        + labs(x="Lower and Upper limits", y="Method",
-               title="Confidence interval for all methods given x")
-        + geom_errorbarh(aes(xmin='LowerLimit', xmax='UpperLimit', color='method'),
-                         size=0.5)
+        ggplot(ss, aes(x="UpperLimit", y="ID"))
+        + labs(
+            x="Lower and Upper limits",
+            y="Method",
+            title="Confidence interval for all methods given x",
+        )
+        + geom_errorbarh(aes(xmin="LowerLimit", xmax="UpperLimit", color="method"), size=0.5)
     )
     if len(ldf) > 0:
         plot += geom_point(
-            data=ldf, mapping=aes(x='Value', y='ID', shape='Aberration'),
-            size=4, fill="red")
-        plot += scale_shape_manual(values=['o', 's', 'D'])
+            data=ldf, mapping=aes(x="Value", y="ID", shape="Aberration"), size=4, fill="red"
+        )
+        plot += scale_shape_manual(values=["o", "s", "D"])
     return plot
 
 
@@ -140,13 +144,15 @@ def plotciallxg(x, n, alp):
 
     ss1 = ciallx(x, n, alp)
     ss = ss1.copy()
-    ss['ID'] = range(1, len(ss) + 1)
+    ss["ID"] = range(1, len(ss) + 1)
 
     return (
-        ggplot(ss, aes(x='UpperLimit', y='method'))
-        + labs(x="Lower and Upper limits", y="Method",
-               title="Confidence interval for all methods given x")
-        + geom_errorbarh(aes(xmin='LowerLimit', xmax='UpperLimit', color='method'),
-                         size=0.5)
-        + facet_grid('method ~ .')
+        ggplot(ss, aes(x="UpperLimit", y="method"))
+        + labs(
+            x="Lower and Upper limits",
+            y="Method",
+            title="Confidence interval for all methods given x",
+        )
+        + geom_errorbarh(aes(xmin="LowerLimit", xmax="UpperLimit", color="method"), size=0.5)
+        + facet_grid("method ~ .")
     )

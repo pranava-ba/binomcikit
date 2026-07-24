@@ -3,15 +3,18 @@
 Five methods (no Likelihood-Ratio). Note the R argument order is
 (n, alp, phi, c, f).
 """
+
 import pandas as pd
 
 from ..ci import cicas, ciclt, cicsc, cictw, cicwd
 from .base_all import _error, _validate
 
 _CC = {
-    "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),
-    "Score": (cicsc, 'LCS', 'UCS'), "Wald-T": (cictw, 'LCTW', 'UCTW'),
-    "Logit-Wald": (ciclt, 'LCLT', 'UCLT'),
+    "Wald": (cicwd, "LCW", "UCW"),
+    "ArcSine": (cicas, "LCA", "UCA"),
+    "Score": (cicsc, "LCS", "UCS"),
+    "Wald-T": (cictw, "LCTW", "UCTW"),
+    "Logit-Wald": (ciclt, "LCLT", "UCLT"),
 }
 
 
@@ -65,7 +68,6 @@ def errcall(n, alp, phi, c, f):
     frames = []
     for name in _CC:
         d = _cc(name, n, alp, phi, c, f)
-        d['method'] = name
+        d["method"] = name
         frames.append(d)
-    return pd.concat(frames, ignore_index=True)[
-        ['method', 'delalp', 'theta', 'Fail_Pass']]
+    return pd.concat(frames, ignore_index=True)[["method", "delalp", "theta", "Fail_Pass"]]

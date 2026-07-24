@@ -1,8 +1,9 @@
 """3xx family - General expected length (R file 328).
 
-    lengthgen  expected length for given limits over a given hp vector
-    lengthsim  expected length for given limits over s simulated Beta(a, b) draws
+lengthgen  expected length for given limits over a given hp vector
+lengthsim  expected length for given limits over s simulated Beta(a, b) draws
 """
+
 import numpy as np
 
 from .base_all import _expl_series, _expl_summary

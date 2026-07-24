@@ -2,6 +2,7 @@
 the Python package (matched case-insensitively), and a representative sample of
 the newly added plot functions must construct without error.
 """
+
 import os
 
 import pytest
@@ -20,10 +21,17 @@ def _r_exports():
         return {line.strip() for line in fh if line.strip()}
 
 
+# The R package misspells "empirical" as "emperical"; binomcikit uses the
+# corrected spelling, so map the R export names to their Python counterparts.
+_RENAMED = {"empericalba": "empiricalba", "empericalbax": "empiricalbax"}
+
+
 def test_all_r_exports_present():
     exports = _r_exports()
     pynames = {n.lower() for n in dir(b) if not n.startswith("_")}
-    missing = sorted(e for e in exports if e.lower() not in pynames)
+    missing = sorted(
+        e for e in exports if e.lower() not in pynames and _RENAMED.get(e.lower()) not in pynames
+    )
     assert missing == [], f"Missing {len(missing)} R exports: {missing}"
     assert len(exports) == 305
 
@@ -50,12 +58,12 @@ NEW_PLOTS = [
 @pytest.mark.parametrize("make", NEW_PLOTS)
 def test_new_plots_construct(make):
     from plotnine import ggplot
+
     assert isinstance(make(), ggplot)
 
 
-def test_emperical_aliases_match():
-    # R spells it "emperical"; both spellings must give identical results.
-    import numpy as np
-    a = b.empiricalba(5, 0.05, 0.1, 10)
-    c = b.empericalba(5, 0.05, 0.1, 10)
-    assert np.allclose(a.to_numpy(), c.to_numpy())
+def test_emperical_misspelling_corrected():
+    # The R package misspells this as "empericalBA"; binomcikit exposes only the
+    # corrected spelling and NOT the misspelled alias (see CHANGELOG 3.0.8).
+    assert hasattr(b, "empiricalba")
+    assert not hasattr(b, "empericalba")

@@ -5,6 +5,7 @@ cross-path equivalence rather than draw-for-draw equality with R.
 
 R example (man/lengthWD.Rd): n=5; alp=0.05; a=1; b=1
 """
+
 import pytest
 
 import binomcikit as b
@@ -12,8 +13,12 @@ import binomcikit as b
 COLS = {"sumLen", "explMean", "explSD", "explMax", "explLL", "explUL"}
 
 BASE = {
-    "wald": b.lengthwd, "score": b.lengthsc, "arcsine": b.lengthas,
-    "logit": b.lengthlt, "waldt": b.lengthtw, "lr": b.lengthlr,
+    "wald": b.lengthwd,
+    "score": b.lengthsc,
+    "arcsine": b.lengthas,
+    "logit": b.lengthlt,
+    "waldt": b.lengthtw,
+    "lr": b.lengthlr,
 }
 
 
@@ -28,9 +33,9 @@ def test_base_runs_and_columns(name):
 def test_lengths_are_nonnegative_and_consistent(name):
     row = BASE[name](5, 0.05, 1, 1, seed=0).iloc[0]
     assert row["sumLen"] >= 0
-    assert row["explMax"] >= row["explMean"]          # max >= mean
+    assert row["explMax"] >= row["explMean"]  # max >= mean
     assert row["explLL"] <= row["explMean"] <= row["explUL"]
-    assert 0 <= row["explMean"] <= 1                  # a length on [0,1] scale
+    assert 0 <= row["explMean"] <= 1  # a length on [0,1] scale
 
 
 def test_sumlen_equals_sum_of_interval_widths():
@@ -45,24 +50,22 @@ def test_sumlen_equals_sum_of_interval_widths():
 def test_exact_and_all_and_general():
     assert COLS.issubset(b.lengthex(5, 0.05, 0.5, 1, 1, seed=0).columns)
     la = b.lengthall(5, 0.05, 1, 1, seed=0)
-    assert set(la["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(la["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
     lc = b.lengthcall(5, 0.05, 0.1, 1, 1, seed=0)
-    assert set(lc["method"]) == {
-        "Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR
+    assert set(lc["method"]) == {"Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR
 
 
 def test_lengthgen_matches_lengthwd_on_same_hp():
     # lengthgen with the Wald limits and the same hp draws must reproduce
     # lengthwd's expected-length summary exactly.
     from binomcikit.expl.base_all import _beta_hp
+
     n, alp = 5, 0.05
     wd = b.ciwd(n, alp)
     hp = _beta_hp(1, 1, seed=11)
     gen = b.lengthgen(n, wd["LWD"].values, wd["UWD"].values, hp)
     direct = b.lengthwd(n, alp, 1, 1, seed=11)
-    assert gen.iloc[0]["explMean"] == pytest.approx(
-        direct.iloc[0]["explMean"], abs=1e-12)
+    assert gen.iloc[0]["explMean"] == pytest.approx(direct.iloc[0]["explMean"], abs=1e-12)
     assert gen.iloc[0]["sumLen"] == pytest.approx(direct.iloc[0]["sumLen"])
 
 
@@ -70,7 +73,13 @@ def test_adjusted_and_cc_run():
     assert COLS.issubset(b.lengthawd(5, 0.05, 2, 1, 1, seed=0).columns)
     assert COLS.issubset(b.lengthcwd(5, 0.05, 0.1, 1, 1, seed=0).columns)
     assert set(b.lengthaall(5, 0.05, 2, 1, 1, seed=0)["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+        "Wald",
+        "ArcSine",
+        "Likelihood",
+        "Score",
+        "Wald-T",
+        "Logit-Wald",
+    }
 
 
 def test_expl_curves_have_expected_columns():
@@ -81,6 +90,7 @@ def test_expl_curves_have_expected_columns():
 
 def test_plots_construct():
     from plotnine import ggplot
+
     wd = b.ciwd(5, 0.05)
     plots = [
         b.plotexplall(5, 0.05, 1, 1, seed=0),

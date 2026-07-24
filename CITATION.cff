@@ -8,6 +8,6 @@ authors:
     given-names: "Pranava"
   - family-names: "Justindhas"
     given-names: "Y"
-version: "2.0.9"
+version: "3.0.8"
 license: "GPL-3.0"
 description: "A Python package for computing confidence intervals in binomial statistics."

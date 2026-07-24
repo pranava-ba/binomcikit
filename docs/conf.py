@@ -7,8 +7,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 project = "binomcikit"
 author = "Vyasa R Rajeswaran, Pranava BA, Justindhas Y"
 copyright = "2026, " + author
-release = "2.0.9"
-version = "2.0.9"
+release = "3.0.8"
+version = "3.0.8"
 
 extensions = [
     "myst_parser",

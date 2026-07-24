@@ -5,6 +5,7 @@ throughout the R package: it finds the shortest interval [lo, hi] whose Beta
 probability mass equals ``conf`` by minimising the width over the lower-tail
 probability.
 """
+
 import numpy as np
 from scipy.optimize import minimize_scalar
 from scipy.stats import beta
@@ -21,8 +22,7 @@ def hpd_beta(a, b, conf=0.95):
         hi = beta.ppf(p + conf, a, b)
         return hi - lo
 
-    res = minimize_scalar(width, bounds=(0.0, alpha), method="bounded",
-                          options={"xatol": 1e-8})
+    res = minimize_scalar(width, bounds=(0.0, alpha), method="bounded", options={"xatol": 1e-8})
     p = res.x
     lo = float(beta.ppf(p, a, b))
     hi = float(beta.ppf(p + conf, a, b))

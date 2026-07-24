@@ -4,6 +4,7 @@ Reports the expected length for both the quantile-based and HPD credible
 intervals (from the 1xx ``ciba``), over hypothetical p drawn from Beta(a, b).
 The ``a1, a2`` prior defines the credible interval; ``a, b`` the simulation prior.
 """
+
 import pandas as pd
 
 from ..ci import ciba
@@ -21,12 +22,11 @@ def lengthba(n, alp, a, b, a1, a2, seed=None):
     ba = ciba(n, alp, a1, a2)
     hp = _beta_hp(a, b, seed)
     rows = []
-    for label, lo, hi in [("Quantile", 'LBAQ', 'UBAQ'), ("HPD", 'LBAH', 'UBAH')]:
+    for label, lo, hi in [("Quantile", "LBAQ", "UBAQ"), ("HPD", "LBAH", "UBAH")]:
         lengths = ba[hi].to_numpy() - ba[lo].to_numpy()
         ew = _expl_series(n, lengths, hp)
         row = _expl_summary(lengths, ew).iloc[0].to_dict()
-        row['method'] = label
+        row["method"] = label
         rows.append(row)
     out = pd.DataFrame(rows)
-    return out[['method', 'sumLen', 'explMean', 'explSD', 'explMax',
-                'explLL', 'explUL']]
+    return out[["method", "sumLen", "explMean", "explSD", "explMax", "explLL", "explUL"]]

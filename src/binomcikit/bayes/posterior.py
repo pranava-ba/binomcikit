@@ -3,6 +3,7 @@
 Posterior probability that the proportion is below a threshold ``th`` under the
 Beta(x+a, n-x+b) posterior, i.e. the posterior CDF at ``th``.
 """
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -32,7 +33,7 @@ def probpos(n, a, b, th):
     _validate_ab(a, b, th)
     x = np.arange(n + 1)
     posprob = stats.beta.cdf(th, x + a, n - x + b)
-    return pd.DataFrame({'x': x, 'PosProb': posprob})
+    return pd.DataFrame({"x": x, "PosProb": posprob})
 
 
 def probposx(x, n, a, b, th):
@@ -47,4 +48,4 @@ def probposx(x, n, a, b, th):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     _validate_ab(a, b, th)
     posprob = float(stats.beta.cdf(th, x + a, n - x + b))
-    return pd.DataFrame([{'x': x, 'PosProb': posprob}])
+    return pd.DataFrame([{"x": x, "PosProb": posprob}])

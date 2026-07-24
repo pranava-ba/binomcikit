@@ -7,6 +7,7 @@ general given-limits (general). Plots: plots. These quantities are deterministic
 Note: the Bayesian variant (pCOpBIBA / PlotpCOpBIBA) depends on the 6xx Bayesian
 credible interval and is deferred until that family is ported.
 """
+
 from .adj_all import (
     pcopbiaall,
     pcopbiaas,
@@ -36,31 +37,35 @@ from .cc_all import (
     pcopbicwd,
 )
 from .general import pcopbigen
-from .plots import (
-    plotpcopbiaall,
-    plotpcopbiaas,
-    plotpcopbiall,
-    plotpcopbialr,
-    plotpcopbialt,
-    plotpcopbias,
-    plotpcopbiasc,
-    plotpcopbiatw,
-    plotpcopbiawd,
-    plotpcopbiba,
-    plotpcopbicall,
-    plotpcopbicas,
-    plotpcopbiclt,
-    plotpcopbicsc,
-    plotpcopbictw,
-    plotpcopbicwd,
-    plotpcopbiex,
-    plotpcopbigen,
-    plotpcopbilr,
-    plotpcopbilt,
-    plotpcopbisc,
-    plotpcopbitw,
-    plotpcopbiwd,
-)
+
+try:
+    from .plots import (
+        plotpcopbiaall,
+        plotpcopbiaas,
+        plotpcopbiall,
+        plotpcopbialr,
+        plotpcopbialt,
+        plotpcopbias,
+        plotpcopbiasc,
+        plotpcopbiatw,
+        plotpcopbiawd,
+        plotpcopbiba,
+        plotpcopbicall,
+        plotpcopbicas,
+        plotpcopbiclt,
+        plotpcopbicsc,
+        plotpcopbictw,
+        plotpcopbicwd,
+        plotpcopbiex,
+        plotpcopbigen,
+        plotpcopbilr,
+        plotpcopbilt,
+        plotpcopbisc,
+        plotpcopbitw,
+        plotpcopbiwd,
+    )
+except ImportError:  # plotnine is optional; plotting needs the [plots] extra
+    pass
 
 # Public API = every function bound above (submodules excluded).
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))

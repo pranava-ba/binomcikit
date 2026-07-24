@@ -10,6 +10,7 @@ Three kinds of checks, matching the porting strategy:
 3. Property tests: limits stay in [0, 1], lower <= upper, and the interval
    brackets the point estimate p-hat where the method guarantees it.
 """
+
 import pytest
 from statsmodels.stats.proportion import proportion_confint as sm_ci
 
@@ -83,15 +84,13 @@ def test_given_x_runs_and_has_columns(name):
 
 def test_ciall_combines_six_methods():
     df = b.ciall(5, ALP)
-    assert set(df["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(df["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
     assert len(df) == 6 * 6  # 6 methods x (n+1)=6 rows
 
 
 def test_ciallx_combines_six_methods():
     df = b.ciallx(2, 10, ALP)
-    assert set(df["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(df["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
     assert len(df) == 6
 
 

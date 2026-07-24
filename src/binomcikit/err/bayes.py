@@ -3,6 +3,7 @@
 Reports the error/failure summary for both the quantile-based and HPD credible
 intervals from the 1xx ``ciba``.
 """
+
 import pandas as pd
 
 from ..ci import ciba
@@ -19,9 +20,9 @@ def errba(n, alp, phi, f, a, b):
 
     ba = ciba(n, alp, a, b)
     rows = []
-    for label, lo, hi in [("Quantile", 'LBAQ', 'UBAQ'), ("HPD", 'LBAH', 'UBAH')]:
+    for label, lo, hi in [("Quantile", "LBAQ", "UBAQ"), ("HPD", "LBAH", "UBAH")]:
         row = _error(n, alp, phi, f, ba[lo], ba[hi]).iloc[0].to_dict()
-        row['method'] = label
+        row["method"] = label
         rows.append(row)
     out = pd.DataFrame(rows)
-    return out[['method', 'delalp', 'theta', 'Fail_Pass']]
+    return out[["method", "delalp", "theta", "Fail_Pass"]]

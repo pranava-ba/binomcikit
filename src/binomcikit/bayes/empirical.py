@@ -5,6 +5,7 @@ Beta-Binomial marginal likelihood (bounded to [sL, sU]); the resulting
 Beta(x+a, n-x+b) posterior then gives the posterior mean, a quantile-based
 credible interval and an HPD interval.
 """
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -17,15 +18,21 @@ from .._hpd import hpd_beta
 
 def _neg_marginal_loglik(n, xi):
     """Negative Beta-Binomial marginal likelihood as a function of (a, b)."""
+
     def fun(y):
         a, b = y
         return -(comb(n, xi) / beta_fn(a, b)) * beta_fn(xi + a, n - xi + b)
+
     return fun
 
 
 def _mle_ab(n, xi, sL, sU):
-    res = minimize(_neg_marginal_loglik(n, xi), x0=np.array([0.1, 0.1]),
-                   method="L-BFGS-B", bounds=[(sL, sU), (sL, sU)])
+    res = minimize(
+        _neg_marginal_loglik(n, xi),
+        x0=np.array([0.1, 0.1]),
+        method="L-BFGS-B",
+        bounds=[(sL, sU), (sL, sU)],
+    )
     return res.x[0], res.x[1]
 
 
@@ -62,8 +69,9 @@ def empiricalba(n, alp, sL, sU):
         lq[i] = stats.beta.ppf(alp / 2, s1, s2)
         uq[i] = stats.beta.ppf(1 - alp / 2, s1, s2)
         lh[i], uh[i] = hpd_beta(s1, s2, conf=1 - alp)
-    df = pd.DataFrame({'x': x, 'pomean': pomean, 'LEBAQ': lq, 'UEBAQ': uq,
-                       'LEBAH': lh, 'UEBAH': uh})
+    df = pd.DataFrame(
+        {"x": x, "pomean": pomean, "LEBAQ": lq, "UEBAQ": uq, "LEBAH": lh, "UEBAH": uh}
+    )
     return df.round(4)
 
 
@@ -80,6 +88,7 @@ def empiricalbax(x, n, alp, sL, sU):
     lq = stats.beta.ppf(alp / 2, s1, s2)
     uq = stats.beta.ppf(1 - alp / 2, s1, s2)
     lh, uh = hpd_beta(s1, s2, conf=1 - alp)
-    df = pd.DataFrame([{'x': x, 'pomean': pomean, 'LEBAQx': lq, 'UEBAQx': uq,
-                        'LEBAHx': lh, 'UEBAHx': uh}])
+    df = pd.DataFrame(
+        [{"x": x, "pomean": pomean, "LEBAQx": lq, "UEBAQx": uq, "LEBAHx": lh, "UEBAHx": uh}]
+    )
     return df.round(4)

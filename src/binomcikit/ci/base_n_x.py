@@ -10,7 +10,12 @@ def ciwdx(x=None, n=None, alp=None):
         raise ValueError("'n' is missing")
     if alp is None:
         raise ValueError("'alpha' is missing")
-    if (not isinstance(x, int) and not isinstance(x, float)) or x < 0 or x > n or not isinstance(x, (int, float)):
+    if (
+        (not isinstance(x, int) and not isinstance(x, float))
+        or x < 0
+        or x > n
+        or not isinstance(x, (int, float))
+    ):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     if (not isinstance(n, int) and not isinstance(n, float)) or n <= 0:
         raise ValueError("'n' has to be greater than 0")
@@ -35,14 +40,9 @@ def ciwdx(x=None, n=None, alp=None):
     ZWI = "YES" if UWDx - LWDx == 0 else "NO"
 
     # Return as a DataFrame
-    return pd.DataFrame({
-        'x': [x],
-        'LWDx': [LWDx],
-        'UWDx': [UWDx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LWDx": [LWDx], "UWDx": [UWDx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
 
 
 def ciscx(x=None, n=None, alp=None):
@@ -53,7 +53,12 @@ def ciscx(x=None, n=None, alp=None):
         raise ValueError("'n' is missing")
     if alp is None:
         raise ValueError("'alpha' is missing")
-    if (not isinstance(x, int) and not isinstance(x, float)) or x < 0 or x > n or not isinstance(x, (int, float)):
+    if (
+        (not isinstance(x, int) and not isinstance(x, float))
+        or x < 0
+        or x > n
+        or not isinstance(x, (int, float))
+    ):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     if (not isinstance(n, int) and not isinstance(n, float)) or n <= 0:
         raise ValueError("'n' has to be greater than 0")
@@ -62,15 +67,15 @@ def ciscx(x=None, n=None, alp=None):
 
     # Critical value
     cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
-    cv1 = (cv ** 2) / (2 * n)
+    cv1 = (cv**2) / (2 * n)
     cv2 = (cv / (2 * n)) ** 2
 
     # Score (Wilson) method
     pS = x / n
     qS = 1 - (x / n)
     seS = ((pS * qS / n) + cv2) ** 0.5
-    LSCx = (n / (n + (cv ** 2))) * ((pS + cv1) - (cv * seS))
-    USCx = (n / (n + (cv ** 2))) * ((pS + cv1) + (cv * seS))
+    LSCx = (n / (n + (cv**2))) * ((pS + cv1) - (cv * seS))
+    USCx = (n / (n + (cv**2))) * ((pS + cv1) + (cv * seS))
 
     # Adjustments for bounds
     LABB = "YES" if LSCx < 0 else "NO"
@@ -80,14 +85,10 @@ def ciscx(x=None, n=None, alp=None):
     ZWI = "YES" if USCx - LSCx == 0 else "NO"
 
     # Return as a DataFrame
-    return pd.DataFrame({
-        'x': [x],
-        'LSCx': [LSCx],
-        'USCx': [USCx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LSCx": [LSCx], "USCx": [USCx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
+
 
 import numpy as np
 
@@ -100,7 +101,12 @@ def ciasx(x=None, n=None, alp=None):
         raise ValueError("'n' is missing")
     if alp is None:
         raise ValueError("'alpha' is missing")
-    if (not isinstance(x, int) and not isinstance(x, float)) or x < 0 or x > n or not isinstance(x, (int, float)):
+    if (
+        (not isinstance(x, int) and not isinstance(x, float))
+        or x < 0
+        or x > n
+        or not isinstance(x, (int, float))
+    ):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     if (not isinstance(n, int) and not isinstance(n, float)) or n <= 0:
         raise ValueError("'n' has to be greater than 0")
@@ -124,14 +130,10 @@ def ciasx(x=None, n=None, alp=None):
     ZWI = "YES" if UASx - LASx == 0 else "NO"
 
     # Return as a DataFrame
-    return pd.DataFrame({
-        'x': [x],
-        'LASx': [LASx],
-        'UASx': [UASx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LASx": [LASx], "UASx": [UASx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
+
 
 from scipy.optimize import minimize_scalar
 
@@ -144,7 +146,12 @@ def cilrx(x=None, n=None, alp=None):
         raise ValueError("'n' is missing")
     if alp is None:
         raise ValueError("'alpha' is missing")
-    if (not isinstance(x, int) and not isinstance(x, float)) or x < 0 or x > n or not isinstance(x, (int, float)):
+    if (
+        (not isinstance(x, int) and not isinstance(x, float))
+        or x < 0
+        or x > n
+        or not isinstance(x, (int, float))
+    ):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     if (not isinstance(n, int) and not isinstance(n, float)) or n <= 0:
         raise ValueError("'n' has to be greater than 0")
@@ -164,7 +171,7 @@ def cilrx(x=None, n=None, alp=None):
         return stats.binom.logpmf(y, n, p)
 
     # Find MLE (maximum likelihood estimate)
-    mle_result = minimize_scalar(lambda p: -likelhd(p), bounds=(0, 1), method='bounded')
+    mle_result = minimize_scalar(lambda p: -likelhd(p), bounds=(0, 1), method="bounded")
     mle = mle_result.x
 
     # Calculate cutoff
@@ -174,10 +181,10 @@ def cilrx(x=None, n=None, alp=None):
         return abs(cutoff - loglik(p))
 
     # Find lower and upper bounds
-    LLRx_result = minimize_scalar(loglik_optim, bounds=(0, mle), method='bounded')
+    LLRx_result = minimize_scalar(loglik_optim, bounds=(0, mle), method="bounded")
     LLRx = LLRx_result.x
 
-    ULRx_result = minimize_scalar(loglik_optim, bounds=(mle, 1), method='bounded')
+    ULRx_result = minimize_scalar(loglik_optim, bounds=(mle, 1), method="bounded")
     ULRx = ULRx_result.x
 
     # Adjustments for bounds
@@ -188,14 +195,10 @@ def cilrx(x=None, n=None, alp=None):
     ZWI = "YES" if ULRx - LLRx == 0 else "NO"
 
     # Return as a DataFrame
-    return pd.DataFrame({
-        'x': [x],
-        'LLRx': [LLRx],
-        'ULRx': [ULRx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LLRx": [LLRx], "ULRx": [ULRx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
+
 
 # Example usage:
 # result = ciLRx(x=10, n=100, alp=0.05)
@@ -247,7 +250,9 @@ def lufn103(x, n, alp, e):
 
     ZWI = "YES" if UEXx - LEXx == 0 else "NO"
 
-    resx = pd.DataFrame([{"x": x, "LEXx": LEXx, "UEXx": UEXx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI, "e": e}])
+    resx = pd.DataFrame(
+        [{"x": x, "LEXx": LEXx, "UEXx": UEXx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI, "e": e}]
+    )
     return resx
 
 
@@ -260,7 +265,11 @@ def exlim103l(x, n, alp, e):
         z = np.arange(0, x)
 
         def f1(p):
-            return (1 - e) * stats.binom.pmf(x, n, p) + np.sum(stats.binom.pmf(z, n, p)) - (1 - (alp / 2))
+            return (
+                (1 - e) * stats.binom.pmf(x, n, p)
+                + np.sum(stats.binom.pmf(z, n, p))
+                - (1 - (alp / 2))
+            )
 
         return optimize.brentq(f1, 0, 1)
 
@@ -277,8 +286,6 @@ def exlim103u(x, n, alp, e):
             return e * stats.binom.pmf(x, n, p) + np.sum(stats.binom.pmf(z, n, p)) - (alp / 2)
 
         return optimize.brentq(f2, 0, 1)
-
-
 
 
 def ciltx(x, n, alp):
@@ -331,7 +338,10 @@ def ciltx(x, n, alp):
     if ULTx - LLTx == 0:
         ZWI = "YES"
 
-    return pd.DataFrame([{"x": x, "LLTx": LLTx, "ULTx": ULTx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}])
+    return pd.DataFrame(
+        [{"x": x, "LLTx": LLTx, "ULTx": ULTx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}]
+    )
+
 
 from scipy.stats import t
 
@@ -343,7 +353,12 @@ def citwx(x, n, alp):
         raise ValueError("'n' is missing")
     if alp is None:
         raise ValueError("'alpha' is missing")
-    if not (isinstance(x, int) or isinstance(x, float)) or x < 0 or x > n or not isinstance(x, (int, float)):
+    if (
+        not (isinstance(x, int) or isinstance(x, float))
+        or x < 0
+        or x > n
+        or not isinstance(x, (int, float))
+    ):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     if not (isinstance(n, int) or isinstance(n, float)) or n <= 0:
         raise ValueError("'n' has to be greater than 0")
@@ -360,12 +375,17 @@ def citwx(x, n, alp):
         return p * (1 - p) / n
 
     def f2(p, n):
-        return (p * (1 - p) / (n ** 3)) + \
-               (p + ((6 * n) - 7) * (p ** 2) + \
-                4 * (n - 1) * (n - 3) * (p ** 3) - \
-                2 * (n - 1) * ((2 * n) - 3) * (p ** 4)) / (n ** 5) - \
-               (2 * (p + ((2 * n) - 3) * (p ** 2) - \
-                2 * (n - 1) * (p ** 3))) / (n ** 4)
+        return (
+            (p * (1 - p) / (n**3))
+            + (
+                p
+                + ((6 * n) - 7) * (p**2)
+                + 4 * (n - 1) * (n - 3) * (p**3)
+                - 2 * (n - 1) * ((2 * n) - 3) * (p**4)
+            )
+            / (n**5)
+            - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+        )
 
     DOFx = 2 * (f1(pTWx, n) ** 2) / f2(pTWx, n)
     cvx = t.ppf(1 - (alp / 2), df=DOFx)
@@ -383,17 +403,9 @@ def citwx(x, n, alp):
 
     ZWI = "YES" if UTWx - LTWx == 0 else "NO"
 
-    result_dict= {
-        "x": x,
-        "LTWx": LTWx,
-        "UTWx": UTWx,
-        "LABB": LABB,
-        "UABB": UABB,
-        "ZWI": ZWI
-    }
+    result_dict = {"x": x, "LTWx": LTWx, "UTWx": UTWx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
     result_df = pd.DataFrame([result_dict])  # Wrap the dictionary in a list for a single row
     return result_df
-
 
 
 def ciallx(x=None, n=None, alp=None):
@@ -417,23 +429,28 @@ def ciallx(x=None, n=None, alp=None):
         raise ValueError("'alpha' has to be between 0 and 1")
 
     def generic(df, method, lower_col, upper_col):
-        return pd.DataFrame({
-            'method': method,
-            'x': df['x'],
-            'LowerLimit': df[lower_col],
-            'UpperLimit': df[upper_col],
-            'LowerAbb': df['LABB'],
-            'UpperAbb': df['UABB'],
-            'ZWI': df['ZWI'],
-        })
+        return pd.DataFrame(
+            {
+                "method": method,
+                "x": df["x"],
+                "LowerLimit": df[lower_col],
+                "UpperLimit": df[upper_col],
+                "LowerAbb": df["LABB"],
+                "UpperAbb": df["UABB"],
+                "ZWI": df["ZWI"],
+            }
+        )
 
-    final_df = pd.concat([
-        generic(ciwdx(x, n, alp), "Wald", 'LWDx', 'UWDx'),
-        generic(ciasx(x, n, alp), "ArcSine", 'LASx', 'UASx'),
-        generic(cilrx(x, n, alp), "Likelihood", 'LLRx', 'ULRx'),
-        generic(ciscx(x, n, alp), "Score", 'LSCx', 'USCx'),
-        generic(ciltx(x, n, alp), "Logit-Wald", 'LLTx', 'ULTx'),
-        generic(citwx(x, n, alp), "Wald-T", 'LTWx', 'UTWx'),
-    ], ignore_index=True)
+    final_df = pd.concat(
+        [
+            generic(ciwdx(x, n, alp), "Wald", "LWDx", "UWDx"),
+            generic(ciasx(x, n, alp), "ArcSine", "LASx", "UASx"),
+            generic(cilrx(x, n, alp), "Likelihood", "LLRx", "ULRx"),
+            generic(ciscx(x, n, alp), "Score", "LSCx", "USCx"),
+            generic(ciltx(x, n, alp), "Logit-Wald", "LLTx", "ULTx"),
+            generic(citwx(x, n, alp), "Wald-T", "LTWx", "UTWx"),
+        ],
+        ignore_index=True,
+    )
     final_df.index = range(1, len(final_df) + 1)
     return final_df

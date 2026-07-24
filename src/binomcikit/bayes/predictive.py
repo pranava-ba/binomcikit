@@ -3,6 +3,7 @@
 Beta-Binomial predictive probability of observing ``xnew`` successes in ``m``
 future trials, given x successes in n past trials under a Beta(a1, a2) prior.
 """
+
 import numpy as np
 import pandas as pd
 from scipy.special import beta as beta_fn
@@ -29,10 +30,13 @@ def probpre(n, m, a1, a2):
     _validate(n, m, a1, a2)
     x = np.arange(n + 1)
     xnew = np.arange(m + 1)
-    data = {'xnew': xnew}
+    data = {"xnew": xnew}
     for xi in x:
-        col = (comb(m, xnew) / beta_fn(xi + a1, n - xi + a2)
-               * beta_fn(xnew + xi + a1, m + n - xnew - xi + a2))
+        col = (
+            comb(m, xnew)
+            / beta_fn(xi + a1, n - xi + a2)
+            * beta_fn(xnew + xi + a1, m + n - xnew - xi + a2)
+        )
         data[str(int(xi))] = col
     return pd.DataFrame(data)
 
@@ -48,7 +52,7 @@ def probprex(x, n, xnew, m, a1, a2):
         raise ValueError("'x' has to be a positive integer between 0 and n")
     if not isinstance(xnew, (int, float)) or xnew < 0 or xnew > m:
         raise ValueError("'xnew' has to be a positive integer between 0 and m")
-    preprb = float(comb(m, xnew) / beta_fn(x + a1, n - x + a2)
-                   * beta_fn(xnew + x + a1, m + n - xnew - x + a2))
-    return pd.DataFrame([{'x': x, 'n': n, 'xnew': xnew, 'm': m,
-                          'preprb': preprb}])
+    preprb = float(
+        comb(m, xnew) / beta_fn(x + a1, n - x + a2) * beta_fn(xnew + x + a1, m + n - xnew - x + a2)
+    )
+    return pd.DataFrame([{"x": x, "n": n, "xnew": xnew, "m": m, "preprb": preprb}])

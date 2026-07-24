@@ -5,6 +5,7 @@ These take user-supplied interval limits (LL, UL) rather than a built-in method:
     covpgen  coverage over a user-supplied vector of hypothetical p (hp)
     covpsim  coverage over s simulated Beta(a, b) draws of hypothetical p
 """
+
 import numpy as np
 
 from .base_all import _coverage_core

@@ -54,14 +54,10 @@ def ciawdx(x, n, alp, h):
     else:
         ZWI = "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LAWDx': [LAWDx],
-        'UAWDx': [UAWDx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LAWDx": [LAWDx], "UAWDx": [UAWDx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
+
 
 def ciascx(x, n, alp, h):
     # Input validation
@@ -88,13 +84,13 @@ def ciascx(x, n, alp, h):
     # Calculate score method
     y = x + h
     m = n + (2 * h)
-    cv1 = (cv ** 2) / (2 * m)
+    cv1 = (cv**2) / (2 * m)
     cv2 = (cv / (2 * m)) ** 2
     pAS = y / m
     qAS = 1 - pAS
     seAS = np.sqrt((pAS * qAS / m) + cv2)
-    LASCx = (m / (m + (cv ** 2))) * ((pAS + cv1) - (cv * seAS))
-    UASCx = (m / (m + (cv ** 2))) * ((pAS + cv1) + (cv * seAS))
+    LASCx = (m / (m + (cv**2))) * ((pAS + cv1) - (cv * seAS))
+    UASCx = (m / (m + (cv**2))) * ((pAS + cv1) + (cv * seAS))
 
     # Check for aberrations
     if LASCx < 0:
@@ -115,15 +111,9 @@ def ciascx(x, n, alp, h):
     else:
         ZWI = "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LASCx': [LASCx],
-        'UASCx': [UASCx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
-
+    return pd.DataFrame(
+        {"x": [x], "LASCx": [LASCx], "UASCx": [UASCx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
 
 
 def ciaasx(x, n, alp, h):
@@ -175,28 +165,9 @@ def ciaasx(x, n, alp, h):
     else:
         ZWI = "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LAASx': [LAASx],
-        'UAASx': [UAASx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return pd.DataFrame(
+        {"x": [x], "LAASx": [LAASx], "UAASx": [UAASx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
 
 
 def cialrx(x, n, alp, h):
@@ -232,15 +203,15 @@ def cialrx(x, n, alp, h):
     def likelhd(p):
         return -loglik(p)
 
-    mle = optimize.minimize_scalar(likelhd, bounds=(0, 1), method='bounded').x
+    mle = optimize.minimize_scalar(likelhd, bounds=(0, 1), method="bounded").x
 
-    cutoff = loglik(mle) - (cv ** 2 / 2)
+    cutoff = loglik(mle) - (cv**2 / 2)
 
     def loglik_optim(p):
         return abs(cutoff - loglik(p))
 
-    LALRx = optimize.minimize_scalar(loglik_optim, bounds=(0, mle), method='bounded').x
-    UALRx = optimize.minimize_scalar(loglik_optim, bounds=(mle, 1), method='bounded').x
+    LALRx = optimize.minimize_scalar(loglik_optim, bounds=(0, mle), method="bounded").x
+    UALRx = optimize.minimize_scalar(loglik_optim, bounds=(mle, 1), method="bounded").x
 
     # Check for aberrations
     if LALRx < 0:
@@ -261,24 +232,9 @@ def cialrx(x, n, alp, h):
     else:
         ZWI = "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LALRx': [LALRx],
-        'UALRx': [UALRx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
-
-
-
-
-
-
-
-
-
-
+    return pd.DataFrame(
+        {"x": [x], "LALRx": [LALRx], "UALRx": [UALRx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
 
 
 def ciatwx(x, n, alp, h):
@@ -309,7 +265,16 @@ def ciatwx(x, n, alp, h):
         return p * (1 - p) / n
 
     def f2(p, n):
-        return (p * (1 - p) / (n ** 3)) + ((p + ((6 * n) - 7) * (p ** 2)) + (4 * (n - 1) * (n - 3) * (p ** 3)) - (2 * (n - 1) * ((2 * n) - 3) * (p ** 4))) / (n ** 5) - (2 * (p + ((2 * n) - 3) * (p ** 2) - 2 * (n - 1) * (p ** 3))) / (n ** 4)
+        return (
+            (p * (1 - p) / (n**3))
+            + (
+                (p + ((6 * n) - 7) * (p**2))
+                + (4 * (n - 1) * (n - 3) * (p**3))
+                - (2 * (n - 1) * ((2 * n) - 3) * (p**4))
+            )
+            / (n**5)
+            - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+        )
 
     DOFx = 2 * ((f1(pATWx, n1)) ** 2) / f2(pATWx, n1)
     cvx = stats.t.ppf(1 - (alp / 2), df=DOFx)
@@ -336,14 +301,10 @@ def ciatwx(x, n, alp, h):
     else:
         ZWI = "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LATWx': [LATWx],
-        'UATWx': [UATWx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LATWx": [LATWx], "UATWx": [UATWx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
+
 
 def cialtx(x, n, alp, h):
     # Input validation
@@ -396,14 +357,10 @@ def cialtx(x, n, alp, h):
     else:
         ZWI = "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LALTx': [LALTx],
-        'UALTx': [UALTx],
-        'LABB': [LABB],
-        'UABB': [UABB],
-        'ZWI': [ZWI]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LALTx": [LALTx], "UALTx": [UALTx], "LABB": [LABB], "UABB": [UABB], "ZWI": [ZWI]}
+    )
+
 
 def ciaallx(x, n, alp, h):
     # Error handling
@@ -434,74 +391,88 @@ def ciaallx(x, n, alp, h):
     AdWaldCI_df = ciatwx(x, n, alp, h)
 
     # Assign methods to each DataFrame
-    WaldCI_df['method'] = "Adj-Wald"
-    ArcSineCI_df['method'] = "Adj-ArcSine"
-    LRCI_df['method'] = "Adj-Likelihood"
-    WaldLCI_df['method'] = "Adj-Logit Wald"
-    ScoreCI_df['method'] = "Adj-Score"
-    AdWaldCI_df['method'] = "Adj-Wald-T"
+    WaldCI_df["method"] = "Adj-Wald"
+    ArcSineCI_df["method"] = "Adj-ArcSine"
+    LRCI_df["method"] = "Adj-Likelihood"
+    WaldLCI_df["method"] = "Adj-Logit Wald"
+    ScoreCI_df["method"] = "Adj-Score"
+    AdWaldCI_df["method"] = "Adj-Wald-T"
 
     # Generic DataFrames to store the common structure
-    Generic_1 = pd.DataFrame({
-        'method': WaldCI_df['method'],
-        'x': WaldCI_df['x'],
-        'LowerLimit': WaldCI_df['LAWDx'],
-        'UpperLimit': WaldCI_df['UAWDx'],
-        'LowerAbb': WaldCI_df['LABB'],
-        'UpperAbb': WaldCI_df['UABB'],
-        'ZWI': WaldCI_df['ZWI']
-    })
+    Generic_1 = pd.DataFrame(
+        {
+            "method": WaldCI_df["method"],
+            "x": WaldCI_df["x"],
+            "LowerLimit": WaldCI_df["LAWDx"],
+            "UpperLimit": WaldCI_df["UAWDx"],
+            "LowerAbb": WaldCI_df["LABB"],
+            "UpperAbb": WaldCI_df["UABB"],
+            "ZWI": WaldCI_df["ZWI"],
+        }
+    )
 
-    Generic_2 = pd.DataFrame({
-        'method': ArcSineCI_df['method'],
-        'x': ArcSineCI_df['x'],
-        'LowerLimit': ArcSineCI_df['LAASx'],
-        'UpperLimit': ArcSineCI_df['UAASx'],
-        'LowerAbb': ArcSineCI_df['LABB'],
-        'UpperAbb': ArcSineCI_df['UABB'],
-        'ZWI': ArcSineCI_df['ZWI']
-    })
+    Generic_2 = pd.DataFrame(
+        {
+            "method": ArcSineCI_df["method"],
+            "x": ArcSineCI_df["x"],
+            "LowerLimit": ArcSineCI_df["LAASx"],
+            "UpperLimit": ArcSineCI_df["UAASx"],
+            "LowerAbb": ArcSineCI_df["LABB"],
+            "UpperAbb": ArcSineCI_df["UABB"],
+            "ZWI": ArcSineCI_df["ZWI"],
+        }
+    )
 
-    Generic_3 = pd.DataFrame({
-        'method': LRCI_df['method'],
-        'x': LRCI_df['x'],
-        'LowerLimit': LRCI_df['LALRx'],
-        'UpperLimit': LRCI_df['UALRx'],
-        'LowerAbb': LRCI_df['LABB'],
-        'UpperAbb': LRCI_df['UABB'],
-        'ZWI': LRCI_df['ZWI']
-    })
+    Generic_3 = pd.DataFrame(
+        {
+            "method": LRCI_df["method"],
+            "x": LRCI_df["x"],
+            "LowerLimit": LRCI_df["LALRx"],
+            "UpperLimit": LRCI_df["UALRx"],
+            "LowerAbb": LRCI_df["LABB"],
+            "UpperAbb": LRCI_df["UABB"],
+            "ZWI": LRCI_df["ZWI"],
+        }
+    )
 
-    Generic_4 = pd.DataFrame({
-        'method': ScoreCI_df['method'],
-        'x': ScoreCI_df['x'],
-        'LowerLimit': ScoreCI_df['LASCx'],
-        'UpperLimit': ScoreCI_df['UASCx'],
-        'LowerAbb': ScoreCI_df['LABB'],
-        'UpperAbb': ScoreCI_df['UABB'],
-        'ZWI': ScoreCI_df['ZWI']
-    })
+    Generic_4 = pd.DataFrame(
+        {
+            "method": ScoreCI_df["method"],
+            "x": ScoreCI_df["x"],
+            "LowerLimit": ScoreCI_df["LASCx"],
+            "UpperLimit": ScoreCI_df["UASCx"],
+            "LowerAbb": ScoreCI_df["LABB"],
+            "UpperAbb": ScoreCI_df["UABB"],
+            "ZWI": ScoreCI_df["ZWI"],
+        }
+    )
 
-    Generic_5 = pd.DataFrame({
-        'method': WaldLCI_df['method'],
-        'x': WaldLCI_df['x'],
-        'LowerLimit': WaldLCI_df['LALTx'],
-        'UpperLimit': WaldLCI_df['UALTx'],
-        'LowerAbb': WaldLCI_df['LABB'],
-        'UpperAbb': WaldLCI_df['UABB'],
-        'ZWI': WaldLCI_df['ZWI']
-    })
+    Generic_5 = pd.DataFrame(
+        {
+            "method": WaldLCI_df["method"],
+            "x": WaldLCI_df["x"],
+            "LowerLimit": WaldLCI_df["LALTx"],
+            "UpperLimit": WaldLCI_df["UALTx"],
+            "LowerAbb": WaldLCI_df["LABB"],
+            "UpperAbb": WaldLCI_df["UABB"],
+            "ZWI": WaldLCI_df["ZWI"],
+        }
+    )
 
-    Generic_6 = pd.DataFrame({
-        'method': AdWaldCI_df['method'],
-        'x': AdWaldCI_df['x'],
-        'LowerLimit': AdWaldCI_df['LATWx'],
-        'UpperLimit': AdWaldCI_df['UATWx'],
-        'LowerAbb': AdWaldCI_df['LABB'],
-        'UpperAbb': AdWaldCI_df['UABB'],
-        'ZWI': AdWaldCI_df['ZWI']
-    })
+    Generic_6 = pd.DataFrame(
+        {
+            "method": AdWaldCI_df["method"],
+            "x": AdWaldCI_df["x"],
+            "LowerLimit": AdWaldCI_df["LATWx"],
+            "UpperLimit": AdWaldCI_df["UATWx"],
+            "LowerAbb": AdWaldCI_df["LABB"],
+            "UpperAbb": AdWaldCI_df["UABB"],
+            "ZWI": AdWaldCI_df["ZWI"],
+        }
+    )
     Final_df = pd.concat([Generic_1, Generic_2, Generic_3, Generic_4, Generic_5, Generic_6])
 
     return Final_df
-#SJTP
+
+
+# SJTP

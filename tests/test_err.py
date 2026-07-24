@@ -5,6 +5,7 @@ possible.
 
 R example (man/errWD.Rd): n=20; alp=0.05; phi=0.05; f=-2
 """
+
 import pytest
 
 import binomcikit as b
@@ -12,8 +13,12 @@ import binomcikit as b
 COLS = {"delalp", "theta", "Fail_Pass"}
 
 BASE = {
-    "wald": b.errwd, "score": b.errsc, "arcsine": b.erras,
-    "lr": b.errlr, "logit": b.errlt, "waldt": b.errtw,
+    "wald": b.errwd,
+    "score": b.errsc,
+    "arcsine": b.erras,
+    "lr": b.errlr,
+    "logit": b.errlt,
+    "waldt": b.errtw,
 }
 
 
@@ -45,18 +50,22 @@ def test_failpass_threshold_logic():
 
 def test_all_and_cc_method_sets():
     allm = b.errall(20, 0.05, 0.5, -2)
-    assert set(allm["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(allm["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
     cc = b.errcall(20, 0.05, 0.5, 0.02, -2)
-    assert set(cc["method"]) == {
-        "Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR
+    assert set(cc["method"]) == {"Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR
 
 
 def test_exact_and_adjusted_run():
     assert COLS.issubset(b.errex(20, 0.05, 0.5, -2, 0.5).columns)
     assert COLS.issubset(b.errawd(20, 0.05, 2, 0.5, -2).columns)
     assert set(b.erraall(20, 0.05, 2, 0.5, -2)["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+        "Wald",
+        "ArcSine",
+        "Likelihood",
+        "Score",
+        "Wald-T",
+        "Logit-Wald",
+    }
 
 
 def test_general_matches_base_on_same_limits():
@@ -71,6 +80,7 @@ def test_general_matches_base_on_same_limits():
 
 def test_plots_construct():
     from plotnine import ggplot
+
     wd = b.ciwd(20, 0.05)
     plots = [
         b.ploterrwd(20, 0.05, 0.05, -2),
@@ -87,7 +97,7 @@ def test_bad_inputs_raise():
     with pytest.raises(ValueError):
         b.errwd(-1, 0.05, 0.5, -2)
     with pytest.raises(ValueError):
-        b.errwd(20, 0.05, 1.5, -2)      # phi out of range
+        b.errwd(20, 0.05, 1.5, -2)  # phi out of range
     with pytest.raises(ValueError):
         b.errawd(20, 0.05, -1, 0.5, -2)  # h < 0
     with pytest.raises(ValueError):

@@ -79,6 +79,9 @@ getting_started
 :hidden:
 :caption: Learn
 
+foundations/index
+methods/index
+method_selection
 user_guide/index
 theory/index
 gallery
@@ -89,6 +92,8 @@ gallery
 :caption: Reference
 
 api/index
+under_the_hood
+glossary
 migrating_from_r
 ```
 

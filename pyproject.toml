@@ -1,25 +1,47 @@
 [project]
 name = "binomcikit"
-version = "2.0.9"
+version = "3.0.8"
 authors = [
-    { name = "Vyasa R Rajeswaran, Pranava BA, Justindhas Y", email = "pranavabaascaran@gmail.com" },
+    { name = "Vyasa R Rajeswaran" },
+    { name = "Pranava BA", email = "pranavabaascaran@gmail.com" },
+    { name = "Justindhas Y" },
 ]
-description = "Used to calculate Confidence Intervals"
+description = "Confidence intervals, evaluation metrics (coverage, expected length, p-confidence, error) and Bayesian tools for a single binomial proportion — a Python port of the R 'proportion' package."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "GPL-3.0" }
+keywords = [
+    "binomial",
+    "proportion",
+    "confidence interval",
+    "statistics",
+    "coverage probability",
+    "expected length",
+    "bayesian",
+    "wilson",
+    "clopper-pearson",
+    "agresti-coull",
+    "biostatistics",
+]
 
 dependencies = [
-    "numpy",
-    "pandas",
-    "scipy",
-    "plotnine"
+    "numpy>=1.22",
+    "scipy>=1.8",
+    "pandas>=1.4",
 ]
 
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 
 [project.urls]
@@ -39,19 +61,29 @@ where = ["src"]
 "" = "src"
 
 [project.optional-dependencies]
-test = ["pytest", "statsmodels"]
-dev = ["pytest", "statsmodels", "pytest-cov", "ruff", "black", "build", "twine"]
+# Plotting is optional — the core install is numeric-only. plotnine renders the
+# current figures; plotly is the migration target (Streamlit app + PyQt embedding).
+plots = ["plotnine>=0.10", "plotly>=5.0"]
+# Compiled acceleration for the large-n metric kernels (see benchmarks/). Optional;
+# everything falls back to numpy when it is absent. The python_version marker lets
+# `pip install binomcikit[fast]` degrade gracefully (skip numba, no install error) on a
+# Python too new for numba.
+# >>> MAINTENANCE: bump the "3.14" upper bound when numba ships support for the next
+# >>> Python release (check https://numba.readthedocs.io release notes first). <<<
+fast = ["numba>=0.59; python_version < '3.14'"]
+test = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10"]
+dev = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10", "numba>=0.59", "pytest-cov", "ruff", "black", "build", "twine"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "tests"]
 testpaths = ["tests"]
 filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py39"
-# The reference material and generated docs are not linted.
-extend-exclude = ["reference", "docs"]
+# Reference material, generated docs, and planning notes are not linted.
+extend-exclude = ["reference", "docs", "previous-work", "planning"]
 
 [tool.ruff.lint]
 # Start lenient: catch real problems (pyflakes F, import order I) but not the
@@ -67,4 +99,4 @@ ignore = ["F403", "F405"]   # star-imports are intentional in some __init__ file
 [tool.black]
 line-length = 100
 target-version = ["py39"]
-extend-exclude = "reference"
+extend-exclude = "reference|previous-work|planning"

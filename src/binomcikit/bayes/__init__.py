@@ -8,11 +8,11 @@
 The Bayesian credible interval itself (ciba / cibax) lives in the 1xx ``ci``
 family, since the R package defines it there.
 """
-from .empirical import empiricalba, empiricalbax
 
-# Aliases matching the R package's spelling ("emperical").
-empericalba = empiricalba
-empericalbax = empiricalbax
+# NOTE: the original R package MISSPELLS these as "empericalBA"/"empericalBAx".
+# binomcikit deliberately uses the CORRECTED spelling (empiricalba/empiricalbax)
+# and does NOT expose the misspelled aliases. The R spelling is kept only as
+# provenance (docstrings + tests/r_exports.txt). See CHANGELOG.md (3.0.8).
 from .bayesfactors import (
     hypotestbaf1,
     hypotestbaf1x,
@@ -27,6 +27,7 @@ from .bayesfactors import (
     hypotestbaf6,
     hypotestbaf6x,
 )
+from .empirical import empiricalba, empiricalbax
 from .posterior import probpos, probposx
 from .predictive import probpre, probprex
 

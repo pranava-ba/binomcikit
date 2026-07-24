@@ -6,6 +6,7 @@ contracts instead, with a fixed seed for reproducibility.
 
 R example (from man/covpWD.Rd): n=5; alp=0.05; a=1; b=1; t1=0.93; t2=0.97
 """
+
 import pytest
 
 import binomcikit as b
@@ -14,8 +15,12 @@ ARGS = dict(n=5, alp=0.05, a=1, b=1, t1=0.93, t2=0.97)
 COLS = {"mcp", "micp", "RMSE_N", "RMSE_M", "RMSE_MI", "tol"}
 
 BASE = {
-    "wald": b.covpwd, "score": b.covpsc, "arcsine": b.covpas,
-    "lr": b.covplr, "waldt": b.covptw, "logit": b.covplt,
+    "wald": b.covpwd,
+    "score": b.covpsc,
+    "arcsine": b.covpas,
+    "lr": b.covplr,
+    "waldt": b.covptw,
+    "logit": b.covplt,
 }
 
 
@@ -50,8 +55,7 @@ def test_wald_undercovers_relative_to_score():
 
 def test_covpall_has_six_methods():
     df = b.covpall(seed=0, **ARGS)
-    assert set(df["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(df["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
 
 
 def test_bad_inputs_raise():
@@ -67,27 +71,32 @@ def test_bad_inputs_raise():
 # Adjusted and continuity-corrected variants                                  #
 # --------------------------------------------------------------------------- #
 ADJ = {
-    "wald": b.covpawd, "score": b.covpasc, "arcsine": b.covpaas,
-    "lr": b.covpalr, "waldt": b.covpatw, "logit": b.covpalt,
+    "wald": b.covpawd,
+    "score": b.covpasc,
+    "arcsine": b.covpaas,
+    "lr": b.covpalr,
+    "waldt": b.covpatw,
+    "logit": b.covpalt,
 }
 CC = {
-    "wald": b.covpcwd, "score": b.covpcsc, "arcsine": b.covpcas,
-    "waldt": b.covpctw, "logit": b.covpclt,
+    "wald": b.covpcwd,
+    "score": b.covpcsc,
+    "arcsine": b.covpcas,
+    "waldt": b.covpctw,
+    "logit": b.covpclt,
 }
 
 
 @pytest.mark.parametrize("name", list(ADJ))
 def test_adjusted_is_a_probability(name):
-    row = ADJ[name](n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97,
-                    seed=0).iloc[0]
+    row = ADJ[name](n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97, seed=0).iloc[0]
     assert COLS.issubset(row.index)
     assert 0.0 <= row["micp"] <= row["mcp"] <= 1.0
 
 
 @pytest.mark.parametrize("name", list(CC))
 def test_cc_is_a_probability(name):
-    row = CC[name](n=5, alp=0.05, c=0.1, a=1, b=1, t1=0.93, t2=0.97,
-                   seed=0).iloc[0]
+    row = CC[name](n=5, alp=0.05, c=0.1, a=1, b=1, t1=0.93, t2=0.97, seed=0).iloc[0]
     assert COLS.issubset(row.index)
     assert 0.0 <= row["micp"] <= row["mcp"] <= 1.0
 
@@ -95,18 +104,21 @@ def test_cc_is_a_probability(name):
 def test_adjusted_wald_improves_coverage_over_plain_wald():
     # Adding pseudo-counts (h>0) is known to raise Wald coverage toward nominal.
     plain = b.covpwd(seed=1, **ARGS).iloc[0]["mcp"]
-    adj = b.covpawd(n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97,
-                    seed=1).iloc[0]["mcp"]
+    adj = b.covpawd(n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97, seed=1).iloc[0]["mcp"]
     assert adj > plain
 
 
 def test_covpaall_and_covpcall_method_sets():
     aall = b.covpaall(n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97, seed=0)
-    assert set(aall["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(aall["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
     call = b.covpcall(n=5, alp=0.05, c=0.1, a=1, b=1, t1=0.93, t2=0.97, seed=0)
     assert set(call["method"]) == {
-        "Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR for CC
+        "Wald",
+        "ArcSine",
+        "Score",
+        "Wald-T",
+        "Logit-Wald",
+    }  # no LR for CC
 
 
 # --------------------------------------------------------------------------- #
@@ -118,13 +130,13 @@ def test_covpgen_matches_covpwd_on_same_hp():
     import numpy as np
 
     from binomcikit.covp.base_all import _coverage
+
     n, alp = 5, 0.05
     wd = b.ciwd(n, alp)
     hp = np.sort(np.random.default_rng(3).beta(1, 1, 200))
     gen = b.covpgen(n, wd["LWD"].values, wd["UWD"].values, alp, hp, 0.93, 0.97)
     # Recreate the same hp inside covpwd via the shared engine:
-    direct = _coverage(n, alp, 1, 1, 0.93, 0.97, wd["LWD"], wd["UWD"],
-                       seed=3, s=200)
+    direct = _coverage(n, alp, 1, 1, 0.93, 0.97, wd["LWD"], wd["UWD"], seed=3, s=200)
     assert gen.iloc[0]["mcp"] == pytest.approx(direct.iloc[0]["mcp"], abs=1e-12)
 
 
@@ -135,8 +147,7 @@ def test_covpgen_validates_limit_length():
 
 def test_covpsim_runs():
     wd = b.ciwd(5, 0.05)
-    df = b.covpsim(5, wd["LWD"].values, wd["UWD"].values, 0.05, 500, 1, 1,
-                   0.93, 0.97, seed=0)
+    df = b.covpsim(5, wd["LWD"].values, wd["UWD"].values, 0.05, 500, 1, 1, 0.93, 0.97, seed=0)
     assert COLS.issubset(df.columns)
 
 
@@ -145,18 +156,18 @@ def test_covpsim_runs():
 # --------------------------------------------------------------------------- #
 def test_plots_construct():
     from plotnine import ggplot
+
     assert isinstance(b.plotcovpwd(seed=0, **ARGS), ggplot)
     assert isinstance(b.plotcovpall(seed=0, **ARGS), ggplot)
+    assert isinstance(b.plotcovpawd(n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97, seed=0), ggplot)
     assert isinstance(
-        b.plotcovpawd(n=5, alp=0.05, h=2, a=1, b=1, t1=0.93, t2=0.97, seed=0),
-        ggplot)
-    assert isinstance(
-        b.plotcovpcall(n=5, alp=0.05, c=0.1, a=1, b=1, t1=0.93, t2=0.97, seed=0),
-        ggplot)
+        b.plotcovpcall(n=5, alp=0.05, c=0.1, a=1, b=1, t1=0.93, t2=0.97, seed=0), ggplot
+    )
     wd = b.ciwd(5, 0.05)
     assert isinstance(
-        b.plotcovpgen(5, wd["LWD"].values, wd["UWD"].values, 0.05,
-                      [0.2, 0.5, 0.8], 0.93, 0.97), ggplot)
+        b.plotcovpgen(5, wd["LWD"].values, wd["UWD"].values, 0.05, [0.2, 0.5, 0.8], 0.93, 0.97),
+        ggplot,
+    )
 
 
 def test_exact_and_bayesian_coverage():
@@ -167,7 +178,6 @@ def test_exact_and_bayesian_coverage():
     ba = b.covpba(5, 0.05, 1, 1, 0.93, 0.97, 0.5, 0.5, seed=0)
     assert set(ba["method"]) == {"Quantile", "HPD"}
     from plotnine import ggplot
-    assert isinstance(
-        b.plotcovpex(5, 0.05, 0.5, 1, 1, 0.93, 0.97, seed=0), ggplot)
-    assert isinstance(
-        b.plotcovpba(5, 0.05, 1, 1, 0.93, 0.97, 0.5, 0.5, seed=0), ggplot)
+
+    assert isinstance(b.plotcovpex(5, 0.05, 0.5, 1, 1, 0.93, 0.97, seed=0), ggplot)
+    assert isinstance(b.plotcovpba(5, 0.05, 1, 1, 0.93, 0.97, 0.5, 0.5, seed=0), ggplot)

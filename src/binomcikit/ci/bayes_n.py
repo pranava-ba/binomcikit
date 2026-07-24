@@ -5,6 +5,7 @@ gives the posterior mean, a quantile-based credible interval (LBAQ, UBAQ) and an
 HPD interval (LBAH, UBAH). ``a`` and ``b`` may be scalars (same prior for every
 x) or length-(n+1) vectors (per-x priors, R's ciBAD path).
 """
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -46,7 +47,13 @@ def ciba(n, alp, a, b):
         ubaq[i] = stats.beta.ppf(1 - alp / 2, s1, s2)
         lbah[i], ubah[i] = hpd_beta(s1, s2, conf=1 - alp)
 
-    return pd.DataFrame({
-        'x': x, 'pomean': pomean,
-        'LBAQ': lbaq, 'UBAQ': ubaq, 'LBAH': lbah, 'UBAH': ubah,
-    })
+    return pd.DataFrame(
+        {
+            "x": x,
+            "pomean": pomean,
+            "LBAQ": lbaq,
+            "UBAQ": ubaq,
+            "LBAH": lbah,
+            "UBAH": ubah,
+        }
+    )

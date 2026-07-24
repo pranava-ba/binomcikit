@@ -1,7 +1,8 @@
 """5xx family - General error and failure (R file 523).
 
-    errgen  error/failure summary for user-supplied interval limits
+errgen  error/failure summary for user-supplied interval limits
 """
+
 import numpy as np
 
 from .base_all import _error

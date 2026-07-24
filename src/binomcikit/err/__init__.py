@@ -7,6 +7,7 @@ R package up to floating point.
 Note: the Bayesian variant (errBA / PloterrBA) depends on the 6xx Bayesian
 credible interval and is deferred until that family is ported.
 """
+
 from .adj_all import (
     erraall,
     erraas,
@@ -36,31 +37,35 @@ from .cc_all import (
     errcwd,
 )
 from .general import errgen
-from .plots import (
-    ploterraall,
-    ploterraas,
-    ploterrall,
-    ploterralr,
-    ploterralt,
-    ploterras,
-    ploterrasc,
-    ploterratw,
-    ploterrawd,
-    ploterrba,
-    ploterrcall,
-    ploterrcas,
-    ploterrclt,
-    ploterrcsc,
-    ploterrctw,
-    ploterrcwd,
-    ploterrex,
-    ploterrgen,
-    ploterrlr,
-    ploterrlt,
-    ploterrsc,
-    ploterrtw,
-    ploterrwd,
-)
+
+try:
+    from .plots import (
+        ploterraall,
+        ploterraas,
+        ploterrall,
+        ploterralr,
+        ploterralt,
+        ploterras,
+        ploterrasc,
+        ploterratw,
+        ploterrawd,
+        ploterrba,
+        ploterrcall,
+        ploterrcas,
+        ploterrclt,
+        ploterrcsc,
+        ploterrctw,
+        ploterrcwd,
+        ploterrex,
+        ploterrgen,
+        ploterrlr,
+        ploterrlt,
+        ploterrsc,
+        ploterrtw,
+        ploterrwd,
+    )
+except ImportError:  # plotnine is optional; plotting needs the [plots] extra
+    pass
 
 # Public API = every function bound above (submodules excluded).
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))

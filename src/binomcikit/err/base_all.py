@@ -9,6 +9,7 @@ For a null hypothesis proportion ``phi`` and a failure threshold ``f``:
 These quantities are deterministic (no simulation). Interval limits are reused
 from the 1xx ``ci`` family.
 """
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -48,14 +49,16 @@ def _error(n, alp, phi, f, lower, upper):
     delalp = round((alp - np.sum(alpstar)) * 100, 2)
     theta = round(100.0 * thetactr / (n + 1), 2)
     fail_pass = "failure" if delalp < f else "success"
-    return pd.DataFrame([{'delalp': delalp, 'theta': theta,
-                          'Fail_Pass': fail_pass}])
+    return pd.DataFrame([{"delalp": delalp, "theta": theta, "Fail_Pass": fail_pass}])
 
 
 _BASE = {
-    "Wald": (ciwd, 'LWD', 'UWD'), "ArcSine": (cias, 'LAS', 'UAS'),
-    "Likelihood": (cilr, 'LLR', 'ULR'), "Score": (cisc, 'LSC', 'USC'),
-    "Wald-T": (citw, 'LTW', 'UTW'), "Logit-Wald": (cilt, 'LLT', 'ULT'),
+    "Wald": (ciwd, "LWD", "UWD"),
+    "ArcSine": (cias, "LAS", "UAS"),
+    "Likelihood": (cilr, "LLR", "ULR"),
+    "Score": (cisc, "LSC", "USC"),
+    "Wald-T": (citw, "LTW", "UTW"),
+    "Logit-Wald": (cilt, "LLT", "ULT"),
 }
 
 
@@ -107,7 +110,7 @@ def errex(n, alp, phi, f, e):
     if e is None:
         raise ValueError("'e' is missing")
     df = ciex(n, alp, [e])
-    return _error(n, alp, phi, f, df['LEX'], df['UEX'])
+    return _error(n, alp, phi, f, df["LEX"], df["UEX"])
 
 
 def errall(n, alp, phi, f):
@@ -116,7 +119,6 @@ def errall(n, alp, phi, f):
     frames = []
     for name in _BASE:
         d = _base(name, n, alp, phi, f)
-        d['method'] = name
+        d["method"] = name
         frames.append(d)
-    return pd.concat(frames, ignore_index=True)[
-        ['method', 'delalp', 'theta', 'Fail_Pass']]
+    return pd.concat(frames, ignore_index=True)[["method", "delalp", "theta", "Fail_Pass"]]

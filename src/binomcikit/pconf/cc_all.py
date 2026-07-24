@@ -2,15 +2,18 @@
 
 Five methods (no Likelihood-Ratio).
 """
+
 import pandas as pd
 
 from ..ci import cicas, ciclt, cicsc, cictw, cicwd
 from .base_all import _pconf_pbias, _validate
 
 _CC = {
-    "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),
-    "Score": (cicsc, 'LCS', 'UCS'), "Wald-T": (cictw, 'LCTW', 'UCTW'),
-    "Logit-Wald": (ciclt, 'LCLT', 'UCLT'),
+    "Wald": (cicwd, "LCW", "UCW"),
+    "ArcSine": (cicas, "LCA", "UCA"),
+    "Score": (cicsc, "LCS", "UCS"),
+    "Wald-T": (cictw, "LCTW", "UCTW"),
+    "Logit-Wald": (ciclt, "LCLT", "UCLT"),
 }
 
 
@@ -64,7 +67,6 @@ def pcopbicall(n, alp, c):
     frames = []
     for name in _CC:
         d = _cc(name, n, alp, c)
-        d['method'] = name
+        d["method"] = name
         frames.append(d)
-    return pd.concat(frames, ignore_index=True)[
-        ['method', 'x1', 'pconf', 'pbias']]
+    return pd.concat(frames, ignore_index=True)[["method", "x1", "pconf", "pbias"]]

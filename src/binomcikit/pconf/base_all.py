@@ -7,6 +7,7 @@ the R package exactly (up to floating point).
 
 Interval limits are reused from the 1xx ``ci`` family.
 """
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -42,13 +43,16 @@ def _pconf_pbias(n, lower, upper):
         lo = min(pcon, pconC)
         pconf[idx] = (1.0 - hi) * 100.0
         pbias[idx] = max(0.0, hi - lo) * 100.0
-    return pd.DataFrame({'x1': x1, 'pconf': pconf, 'pbias': pbias})
+    return pd.DataFrame({"x1": x1, "pconf": pconf, "pbias": pbias})
 
 
 _BASE = {
-    "Wald": (ciwd, 'LWD', 'UWD'), "ArcSine": (cias, 'LAS', 'UAS'),
-    "Likelihood": (cilr, 'LLR', 'ULR'), "Score": (cisc, 'LSC', 'USC'),
-    "Wald-T": (citw, 'LTW', 'UTW'), "Logit-Wald": (cilt, 'LLT', 'ULT'),
+    "Wald": (ciwd, "LWD", "UWD"),
+    "ArcSine": (cias, "LAS", "UAS"),
+    "Likelihood": (cilr, "LLR", "ULR"),
+    "Score": (cisc, "LSC", "USC"),
+    "Wald-T": (citw, "LTW", "UTW"),
+    "Logit-Wald": (cilt, "LLT", "ULT"),
 }
 
 
@@ -100,7 +104,7 @@ def pcopbiex(n, alp, e):
     if e is None:
         raise ValueError("'e' is missing")
     df = ciex(n, alp, [e])
-    return _pconf_pbias(n, df['LEX'], df['UEX'])
+    return _pconf_pbias(n, df["LEX"], df["UEX"])
 
 
 def pcopbiall(n, alp):
@@ -109,7 +113,6 @@ def pcopbiall(n, alp):
     frames = []
     for name in _BASE:
         d = _base(name, n, alp)
-        d['method'] = name
+        d["method"] = name
         frames.append(d)
-    return pd.concat(frames, ignore_index=True)[
-        ['method', 'x1', 'pconf', 'pbias']]
+    return pd.concat(frames, ignore_index=True)[["method", "x1", "pconf", "pbias"]]

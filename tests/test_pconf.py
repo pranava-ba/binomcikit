@@ -5,6 +5,7 @@ golden values as well as structural and statistical properties.
 
 R example (man/pCOpBIWD.Rd): n=5; alp=0.05
 """
+
 import numpy as np
 import pytest
 
@@ -13,8 +14,12 @@ import binomcikit as b
 COLS = {"x1", "pconf", "pbias"}
 
 BASE = {
-    "wald": b.pcopbiwd, "score": b.pcopbisc, "arcsine": b.pcopbias,
-    "lr": b.pcopbilr, "logit": b.pcopbilt, "waldt": b.pcopbitw,
+    "wald": b.pcopbiwd,
+    "score": b.pcopbisc,
+    "arcsine": b.pcopbias,
+    "lr": b.pcopbilr,
+    "logit": b.pcopbilt,
+    "waldt": b.pcopbitw,
 }
 
 
@@ -22,7 +27,7 @@ BASE = {
 def test_runs_shape_and_ranges(name):
     df = BASE[name](5, 0.05)
     assert COLS.issubset(df.columns)
-    assert list(df["x1"]) == [1, 2, 3, 4]      # interior successes 1..n-1
+    assert list(df["x1"]) == [1, 2, 3, 4]  # interior successes 1..n-1
     assert (df["pconf"] >= -1e-9).all() and (df["pconf"] <= 100 + 1e-9).all()
     assert (df["pbias"] >= -1e-9).all()
 
@@ -45,18 +50,22 @@ def test_symmetric_method_is_palindromic():
 
 def test_all_and_cc_method_sets():
     allm = b.pcopbiall(5, 0.05)
-    assert set(allm["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+    assert set(allm["method"]) == {"Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
     cc = b.pcopbicall(5, 0.05, 0.1)
-    assert set(cc["method"]) == {
-        "Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR
+    assert set(cc["method"]) == {"Wald", "ArcSine", "Score", "Wald-T", "Logit-Wald"}  # no LR
 
 
 def test_exact_and_adjusted_run():
     assert COLS.issubset(b.pcopbiex(5, 0.05, 0.5).columns)
     assert COLS.issubset(b.pcopbiawd(5, 0.05, 2).columns)
     assert set(b.pcopbiaall(5, 0.05, 2)["method"]) == {
-        "Wald", "ArcSine", "Likelihood", "Score", "Wald-T", "Logit-Wald"}
+        "Wald",
+        "ArcSine",
+        "Likelihood",
+        "Score",
+        "Wald-T",
+        "Logit-Wald",
+    }
 
 
 def test_general_matches_base_on_same_limits():
@@ -71,6 +80,7 @@ def test_general_matches_base_on_same_limits():
 
 def test_plots_construct():
     from plotnine import ggplot
+
     wd = b.ciwd(5, 0.05)
     plots = [
         b.plotpcopbiwd(5, 0.05),
@@ -89,6 +99,6 @@ def test_bad_inputs_raise():
     with pytest.raises(ValueError):
         b.pcopbiwd(5, 1.5)
     with pytest.raises(ValueError):
-        b.pcopbiawd(5, 0.05, -1)       # h < 0
+        b.pcopbiawd(5, 0.05, -1)  # h < 0
     with pytest.raises(ValueError):
-        b.pcopbigen(5, [0, 0, 0], [1, 1, 1])   # limits too short
+        b.pcopbigen(5, [0, 0, 0], [1, 1, 1])  # limits too short

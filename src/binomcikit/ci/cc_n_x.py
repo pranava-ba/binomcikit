@@ -47,24 +47,19 @@ def cicwdx(x, n, alp, c):
 
     zwi = "YES" if uc_wx - lc_wx == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LCWx': [lc_wx],
-        'UCWx': [uc_wx],
-        'LABB': [labb],
-        'UABB': [uabb],
-        'ZWI': [zwi]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LCWx": [lc_wx], "UCWx": [uc_wx], "LABB": [labb], "UABB": [uabb], "ZWI": [zwi]}
+    )
 
 
 # Example usage
-'''x = 5
+"""x = 5
 n = 5
 alp = 0.05
 c = 1 / (2 * n)
 
 result = ci_cwd_x(x, n, alp, c)
-print(result)'''
+print(result)"""
 ######################################################################################################
 
 
@@ -96,16 +91,16 @@ def cicscx(x, n, alp, c):
 
     # Critical values
     cv = norm.ppf(1 - (alp / 2))
-    cv1 = (cv ** 2) / (2 * n)
+    cv1 = (cv**2) / (2 * n)
     cv2 = cv / (2 * n)
 
     # Score (Wilson) method
     p_cs_x = x / n
-    se_cs_lx = np.sqrt((cv ** 2) - (4 * n * (c + c ** 2)) + (4 * n * p_cs_x * (1 - p_cs_x + 2 * c)))
-    se_cs_ux = np.sqrt((cv ** 2) + (4 * n * (c - c ** 2)) + (4 * n * p_cs_x * (1 - p_cs_x - 2 * c)))
+    se_cs_lx = np.sqrt((cv**2) - (4 * n * (c + c**2)) + (4 * n * p_cs_x * (1 - p_cs_x + 2 * c)))
+    se_cs_ux = np.sqrt((cv**2) + (4 * n * (c - c**2)) + (4 * n * p_cs_x * (1 - p_cs_x - 2 * c)))
 
-    l_cs_x = (n / (n + (cv ** 2))) * ((p_cs_x - c + cv1) - (cv2 * se_cs_lx))
-    u_cs_x = (n / (n + (cv ** 2))) * ((p_cs_x + c + cv1) + (cv2 * se_cs_ux))
+    l_cs_x = (n / (n + (cv**2))) * ((p_cs_x - c + cv1) - (cv2 * se_cs_lx))
+    u_cs_x = (n / (n + (cv**2))) * ((p_cs_x + c + cv1) + (cv2 * se_cs_ux))
 
     labb = "YES" if l_cs_x < 0 else "NO"
     l_cs_x = max(l_cs_x, 0)
@@ -115,25 +110,22 @@ def cicscx(x, n, alp, c):
 
     zwi = "YES" if u_cs_x - l_cs_x == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LCSx': [l_cs_x],
-        'UCSx': [u_cs_x],
-        'LABB': [labb],
-        'UABB': [uabb],
-        'ZWI': [zwi]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LCSx": [l_cs_x], "UCSx": [u_cs_x], "LABB": [labb], "UABB": [uabb], "ZWI": [zwi]}
+    )
 
 
 # Example usage
-'''x = 5
+"""x = 5
 n = 5
 alp = 0.05
 c = 1 / (2 * n)
 
 result = ci_csc_x(x, n, alp, c)
 print(result)
-'''
+"""
+
+
 ##########################################################################################
 def cicasx(x, n, alp, c):
     if x is None:
@@ -174,25 +166,21 @@ def cicasx(x, n, alp, c):
 
     zwi = "YES" if u_ca_x - l_ca_x == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LCAx': [l_ca_x],
-        'UCAx': [u_ca_x],
-        'LABB': [labb],
-        'UABB': [uabb],
-        'ZWI': [zwi]
-    })
+    return pd.DataFrame(
+        {"x": [x], "LCAx": [l_ca_x], "UCAx": [u_ca_x], "LABB": [labb], "UABB": [uabb], "ZWI": [zwi]}
+    )
 
 
 # Example usage
-'''x = 5
+"""x = 5
 n = 5
 alp = 0.05
 c = 1 / (2 * n)
 
 result = ci_cas_x(x, n, alp, c)
-print(result)'''
+print(result)"""
 #########################################################################################################################################
+
 
 def cicltx(x, n, alp, c):
     if x is None:
@@ -245,17 +233,19 @@ def cicltx(x, n, alp, c):
 
     zwi = "YES" if ucl_t_x - lcl_t_x == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LCLTx': [lcl_t_x],
-        'UCLTx': [ucl_t_x],
-        'LABB': [labb],
-        'UABB': [uabb],
-        'ZWI': [zwi]
-    })
+    return pd.DataFrame(
+        {
+            "x": [x],
+            "LCLTx": [lcl_t_x],
+            "UCLTx": [ucl_t_x],
+            "LABB": [labb],
+            "UABB": [uabb],
+            "ZWI": [zwi],
+        }
+    )
+
 
 #############################################################################################################
-
 
 
 def cictwx(x, n, alp, c):
@@ -287,11 +277,17 @@ def cictwx(x, n, alp, c):
         return p * (1 - p) / n
 
     def f2(p, n):
-        return (p * (1 - p) / (n ** 3) +
-                (p + ((6 * n) - 7) * (p ** 2) +
-                 (4 * (n - 1) * (n - 3) * (p ** 3)) -
-                 (2 * (n - 1) * ((2 * n) - 3) * (p ** 4))) / (n ** 5) -
-                (2 * (p + ((2 * n) - 3) * (p ** 2) - 2 * (n - 1) * (p ** 3))) / (n ** 4))
+        return (
+            p * (1 - p) / (n**3)
+            + (
+                p
+                + ((6 * n) - 7) * (p**2)
+                + (4 * (n - 1) * (n - 3) * (p**3))
+                - (2 * (n - 1) * ((2 * n) - 3) * (p**4))
+            )
+            / (n**5)
+            - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+        )
 
     dof_x = 2 * (f1(p_ctw_x, n) ** 2) / f2(p_ctw_x, n)
     cv_x = t.ppf(1 - (alp / 2), df=dof_x)
@@ -309,14 +305,17 @@ def cictwx(x, n, alp, c):
 
     zwi = "YES" if uctw_x - lctw_x == 0 else "NO"
 
-    return pd.DataFrame({
-        'x': [x],
-        'LCTWx': [lctw_x],
-        'UCTWx': [uctw_x],
-        'LABB': [labb],
-        'UABB': [uabb],
-        'ZWI': [zwi]
-    })
+    return pd.DataFrame(
+        {
+            "x": [x],
+            "LCTWx": [lctw_x],
+            "UCTWx": [uctw_x],
+            "LABB": [labb],
+            "UABB": [uabb],
+            "ZWI": [zwi],
+        }
+    )
+
 
 #############################################################################################################
 
@@ -349,25 +348,25 @@ def cicallx(x, n, alp, c):
     wald_tci_df = cictwx(x, n, alp, c)
 
     # Adding method column
-    wald_ci_df['method'] = "Wald"
-    arc_sine_ci_df['method'] = "ArcSine"
-    wald_lci_df['method'] = "Logit Wald"
-    score_ci_df['method'] = "Score"
-    wald_tci_df['method'] = "Wald-T"
+    wald_ci_df["method"] = "Wald"
+    arc_sine_ci_df["method"] = "ArcSine"
+    wald_lci_df["method"] = "Logit Wald"
+    score_ci_df["method"] = "Score"
+    wald_tci_df["method"] = "Wald-T"
 
     # Creating final DataFrame
-    generic_1 = wald_ci_df[['method', 'x', 'LCWx', 'UCWx', 'LABB', 'UABB', 'ZWI']]
-    generic_2 = arc_sine_ci_df[['method', 'x', 'LCAx', 'UCAx', 'LABB', 'UABB', 'ZWI']]
-    generic_4 = score_ci_df[['method', 'x', 'LCSx', 'UCSx', 'LABB', 'UABB', 'ZWI']]
-    generic_5 = wald_lci_df[['method', 'x', 'LCLTx', 'UCLTx', 'LABB', 'UABB', 'ZWI']]
-    generic_6 = wald_tci_df[['method', 'x', 'LCTWx', 'UCTWx', 'LABB', 'UABB', 'ZWI']]
+    generic_1 = wald_ci_df[["method", "x", "LCWx", "UCWx", "LABB", "UABB", "ZWI"]]
+    generic_2 = arc_sine_ci_df[["method", "x", "LCAx", "UCAx", "LABB", "UABB", "ZWI"]]
+    generic_4 = score_ci_df[["method", "x", "LCSx", "UCSx", "LABB", "UABB", "ZWI"]]
+    generic_5 = wald_lci_df[["method", "x", "LCLTx", "UCLTx", "LABB", "UABB", "ZWI"]]
+    generic_6 = wald_tci_df[["method", "x", "LCTWx", "UCTWx", "LABB", "UABB", "ZWI"]]
 
     # Renaming columns to match R output
-    generic_1.columns = ['method', 'x', 'LowerLimit', 'UpperLimit', 'LowerAbb', 'UpperAbb', 'ZWI']
-    generic_2.columns = ['method', 'x', 'LowerLimit', 'UpperLimit', 'LowerAbb', 'UpperAbb', 'ZWI']
-    generic_4.columns = ['method', 'x', 'LowerLimit', 'UpperLimit', 'LowerAbb', 'UpperAbb', 'ZWI']
-    generic_5.columns = ['method', 'x', 'LowerLimit', 'UpperLimit', 'LowerAbb', 'UpperAbb', 'ZWI']
-    generic_6.columns = ['method', 'x', 'LowerLimit', 'UpperLimit', 'LowerAbb', 'UpperAbb', 'ZWI']
+    generic_1.columns = ["method", "x", "LowerLimit", "UpperLimit", "LowerAbb", "UpperAbb", "ZWI"]
+    generic_2.columns = ["method", "x", "LowerLimit", "UpperLimit", "LowerAbb", "UpperAbb", "ZWI"]
+    generic_4.columns = ["method", "x", "LowerLimit", "UpperLimit", "LowerAbb", "UpperAbb", "ZWI"]
+    generic_5.columns = ["method", "x", "LowerLimit", "UpperLimit", "LowerAbb", "UpperAbb", "ZWI"]
+    generic_6.columns = ["method", "x", "LowerLimit", "UpperLimit", "LowerAbb", "UpperAbb", "ZWI"]
 
     # Concatenating all DataFrames
     final_df = pd.concat([generic_1, generic_2, generic_4, generic_5, generic_6], ignore_index=True)

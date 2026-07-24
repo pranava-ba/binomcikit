@@ -2,15 +2,18 @@
 
 Five methods (no Likelihood-Ratio), matching the CC coverage family.
 """
+
 import pandas as pd
 
 from ..ci import cicas, ciclt, cicsc, cictw, cicwd
 from .base_all import _beta_hp, _expl_curve, _length, _validate
 
 _CC = {
-    "Wald": (cicwd, 'LCW', 'UCW'), "ArcSine": (cicas, 'LCA', 'UCA'),
-    "Score": (cicsc, 'LCS', 'UCS'), "Wald-T": (cictw, 'LCTW', 'UCTW'),
-    "Logit-Wald": (ciclt, 'LCLT', 'UCLT'),
+    "Wald": (cicwd, "LCW", "UCW"),
+    "ArcSine": (cicas, "LCA", "UCA"),
+    "Score": (cicsc, "LCS", "UCS"),
+    "Wald-T": (cictw, "LCTW", "UCTW"),
+    "Logit-Wald": (ciclt, "LCLT", "UCLT"),
 }
 
 
@@ -64,11 +67,10 @@ def lengthcall(n, alp, c, a, b, seed=None):
     rows = []
     for name in _CC:
         row = _cc_length(name, n, alp, c, a, b, seed).iloc[0].to_dict()
-        row['method'] = name
+        row["method"] = name
         rows.append(row)
     out = pd.DataFrame(rows)
-    return out[['method', 'sumLen', 'explMean', 'explSD', 'explMax',
-                'explLL', 'explUL']]
+    return out[["method", "sumLen", "explMean", "explSD", "explMax", "explLL", "explUL"]]
 
 
 def explcall(n, alp, c, a, b, seed=None):
