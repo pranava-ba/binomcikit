@@ -3,7 +3,7 @@
 > **In one line:** the simplest confidence interval for a {term}`proportion` — the one taught in
 > most first statistics courses. It is fast and intuitive, but its {term}`coverage` is unreliable
 > for small samples, so treat it as a **teaching baseline**, not a default. For real work, prefer
-> the **Wilson** interval (documented in sub-phase 1.2).
+> the **{doc}`Wilson <wilson>`** interval.
 
 *New here?* Read {doc}`../foundations/index` first — it explains proportions, trials, and what a
 confidence interval means, with no maths. Every technical word below is a link to the

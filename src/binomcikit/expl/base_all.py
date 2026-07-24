@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import cias, ciex, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
 
 _S = 5000
 
@@ -122,6 +122,13 @@ def lengthsc(n, alp, a, b, seed=None):
     _validate(n, alp, a, b)
     df = cisc(n, alp)
     return _length(n, alp, a, b, df["LSC"], df["USC"], seed)
+
+
+def lengthblaker(n, alp, a, b, seed=None):
+    """Expected length of the Blaker interval (new; not in R ``proportion``)."""
+    _validate(n, alp, a, b)
+    df = ciblaker(n, alp)
+    return _length(n, alp, a, b, df["LBK"], df["UBK"], seed)
 
 
 def lengthas(n, alp, a, b, seed=None):

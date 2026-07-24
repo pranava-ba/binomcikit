@@ -21,6 +21,7 @@ Function names follow a strict scheme — see the {doc}`naming convention <../ge
 ../reference/binomcikit.ci.base_n_x_graph
 ../reference/binomcikit.ci.bayes_n
 ../reference/binomcikit.ci.bayes_n_x
+../reference/binomcikit.ci.blaker
 ../reference/binomcikit.ci.cc_n
 ../reference/binomcikit.ci.cc_n_graph
 ../reference/binomcikit.ci.cc_n_x
@@ -87,6 +88,14 @@ Function names follow a strict scheme — see the {doc}`naming convention <../ge
 ../reference/binomcikit.bayes.empirical
 ../reference/binomcikit.bayes.posterior
 ../reference/binomcikit.bayes.predictive
+```
+
+## Access / usability layer (`access`)
+
+```{toctree}
+:maxdepth: 1
+
+../reference/binomcikit.access
 ```
 
 ## Internal helpers

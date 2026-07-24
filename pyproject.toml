@@ -60,6 +60,10 @@ where = ["src"]
 [tool.setuptools.package-dir]
 "" = "src"
 
+# Ship the PEP 561 marker so type checkers use binomcikit's inline type hints.
+[tool.setuptools.package-data]
+binomcikit = ["py.typed"]
+
 [project.optional-dependencies]
 # Plotting is optional — the core install is numeric-only. plotnine renders the
 # current figures; plotly is the migration target (Streamlit app + PyQt embedding).

@@ -82,6 +82,8 @@ getting_started
 foundations/index
 methods/index
 method_selection
+bayesian_toolbox
+access_layer
 user_guide/index
 theory/index
 gallery

@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import cias, ciex, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
 
 
 def _validate(n, alp, phi, f):
@@ -78,6 +78,13 @@ def errsc(n, alp, phi, f):
     """Error/failure of the Score interval (R errSC)."""
     _validate(n, alp, phi, f)
     return _base("Score", n, alp, phi, f)
+
+
+def errblaker(n, alp, phi, f):
+    """Error/failure of the Blaker interval (new; not in R ``proportion``)."""
+    _validate(n, alp, phi, f)
+    df = ciblaker(n, alp)
+    return _error(n, alp, phi, f, df["LBK"], df["UBK"])
 
 
 def erras(n, alp, phi, f):

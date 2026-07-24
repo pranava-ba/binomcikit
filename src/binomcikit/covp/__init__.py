@@ -16,6 +16,7 @@ from .adj_all import (
 from .base_all import (
     covpall,
     covpas,
+    covpblaker,
     covplr,
     covplt,
     covpsc,

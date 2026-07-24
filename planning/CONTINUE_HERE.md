@@ -6,11 +6,46 @@
 
 ---
 
-## 1. Current state — updated 2026-07-23
+## 1. Current state — updated 2026-07-24
 - **Version:** 3.0.8 (pre first real PyPI release; PyPI still has an old 0.0.5).
-- **Tests:** **164 passing**; `ruff` + `black` clean; Sphinx docs build clean.
-- **Phase 1 progress:** 1.0 infrastructure **DONE** · 1.1 **Wald DONE**.
-- **➡️ NEXT: Sub-phase 1.2 — Wilson (Score).**
+- **Tests:** **209 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W` (warnings-as-errors)**.
+- **Phase 1 progress:** 1.0 infra · 1.1 Wald · 1.2 Wilson · 1.3 ArcSine · 1.4 Logit · 1.5 Wald-T · 1.6 LR · 1.7 Exact/Mid-P · 1.8 Bayesian+6xx · 1.9 **Blaker (NEW method)** · **access layer + docs finalize + typing DONE**.
+- **Access/usability layer DONE** (`src/binomcikit/access.py`, `tests/test_access.py`, `docs/access_layer.md`):
+  `from_counts`/`from_data`, `point_estimate`, `posterior`/`prior`, `coverage_curve`/`length_curve`,
+  `compare`, `recommend` (reuses the Plotly `_limits` registry). **Docs finalized**: `access_layer` +
+  `bayesian_toolbox` in the Learn nav; API reference gained `binomcikit.access` + `binomcikit.ci.blaker`;
+  full site builds clean under `-W`. **Typing:** `py.typed` (PEP 561, in package-data) + hints on the
+  public surface (`ci`, `plot_ci`, `plot_coverage`, all of `access`); internal grid functions unhinted
+  (incremental follow-up).
+- **Repo checkpoint:** 1.0 + 1.1 pushed to **`origin/main`** at **`c299b2f`**. **1.2–1.9 are complete
+  locally and awaiting the user's manual push** (see §7). 1.2 docs-only; 1.3–1.8 docs+figure+glossary+
+  oracle each; **1.9 Blaker = genuinely new code** (`src/binomcikit/ci/blaker.py` + 4 metric wrappers +
+  dispatcher + Plotly + `tests/test_blaker.py`, 15 tests). Oracles/checks: `ARCSINE_N5`/`LOGIT_N5`/
+  `WALDT_N5`/`LR_N5`/`MIDP_N5`/`BLAKER_N5` + statsmodels cross-checks + Blaker's two theorems
+  (test count 164→201). Plotly layer also gained exact/midp/bayes/jeffreys/blaker. `docs/bayesian_toolbox.md`
+  added (1.8). R→Python mapping page already complete.
+- **➡️ NEXT: user to choose** from the remaining work below (menu presented 2026-07-24).
+
+### Remaining Phase-1 work (nothing here is started)
+- **1.10 Bootstrap — ⏸️ DEFERRED to future/to-do (user decision 2026-07-24).** The Wang–Hutson smooth
+  bootstrap (RESEARCH §9.2) is under-specified in our notes (median-unbiased estimator + mean→π
+  cubic-spline inversion) **and has no oracle in this environment**, so building it correctly is risky.
+  Revisit when an R/reference oracle is available (`PropCIs`/`bootstrap`), or scope to the well-defined
+  parametric/percentile/BCa variants. Needs the `from_counts`/`from_data` access layer + a
+  median-unbiased `point_estimate` first.
+- **1.11 Frequentist p-value tests** (NEW code) — `binom_test`-style two-sided p-values per method
+  (CI–test duality; committed 2026-07-23, ROADMAP §3.5). Verifiable vs `scipy.stats.binomtest`.
+- **1.12 Sample-size / power** (NEW code) — CI-width / power planning functions (committed; ROADMAP §3.5).
+- ~~**Access / usability layer**~~ ✅ **DONE 2026-07-24** (see §1). Still open from ROADMAP §3.5 (optional):
+  `point_estimate` "mue"/"shrinkage" variants (mue needs the deferred bootstrap); aggregator extension
+  (add Blaker to `ciall`/`covpall`/… — skipped so the R-mirror set stays intact); empirical-Bayes /
+  prior-sensitivity conveniences.
+- **Cross-cutting / polish:** ~~finalize + rebuild docs~~ ✅ DONE (clean `-W` build); **type hints** —
+  public surface + `py.typed` ✅ DONE, internal grid functions still unhinted (incremental); resolve the
+  two open ROADMAP §10 decisions (plotnine→plotly retirement; numba default); deferred Phase-0 items
+  (A creds rotation, B README ArcSine `sin²(φ)` fix, C GPL-3→GPL-2 relicense).
+- **Then:** Phase 2 Streamlit app · Phase 3 PyQt `.exe` · Phase 4 paper rewrite. (Two-proportion
+  inference is a SEPARATE sequel package, not part of binomcikit.)
 - Done infra: `ci()` dispatcher, vectorized metric engines, optional numba `[fast]` accel, optional
   plotting (`plotnine`→`plotly` layer started), CI + Trusted-Publishing, docs scaffold + `under_the_hood`.
 
@@ -36,6 +71,8 @@ already sets it). Installed here: numba, plotly, kaleido, hypothesis, statsmodel
 5. `docs/methods/wald.md` — **the template every method page copies.**
 
 ## 4. How to do a method sub-phase (the recipe)
+**Easiest: invoke the `binomcikit-subphase` skill** — it runs this exact recipe (audit → docs →
+figure → verify → log → upload). The steps below are the same thing, written out as a fallback.
 Run the workflow from ROADMAP §3.2. Concretely, per method (using Wald as the worked example):
 1. **Audit R↔Py** — the port is complete, so usually just *confirm* the method's functions exist and
    match the oracles (base already tested vs `statsmodels`/paper golden). Note structural facts

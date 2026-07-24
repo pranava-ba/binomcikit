@@ -9,10 +9,36 @@ Functions return a ``plotly.graph_objects.Figure`` — display with ``fig.show()
 embed with ``st.plotly_chart(fig)``, or save with ``fig.write_html(...)``.
 """
 
+from __future__ import annotations
+
+from collections.abc import Sequence
+
 import numpy as np
 
 from ._accel import coverage_series
-from .ci import cias, cilr, cilt, cisc, citw, ciwd
+from .ci import cias, ciba, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
+
+
+def _exact(e):
+    """Adapt the exact family (which takes a list of ``e`` values) to the
+    ``fn(n, alpha)`` shape the plotting layer expects, at a fixed ``e``."""
+
+    def _f(n, alpha):
+        return ciex(n, alpha, [e])
+
+    return _f
+
+
+def _bayes(a, b):
+    """Adapt the Bayesian credible interval (which takes prior ``a``, ``b``) to
+    the ``fn(n, alpha)`` shape, at a fixed prior. Uses the equal-tailed quantile
+    limits, which are directly comparable to the frequentist intervals."""
+
+    def _f(n, alpha):
+        return ciba(n, alpha, a, b)
+
+    return _f
+
 
 # method name -> (all-x limits function, lower col, upper col, display label)
 _METHODS = {
@@ -23,6 +49,15 @@ _METHODS = {
     "logit": (cilt, "LLT", "ULT", "Logit"),
     "waldt": (citw, "LTW", "UTW", "Wald-T"),
     "lr": (cilr, "LLR", "ULR", "Likelihood-ratio"),
+    "blaker": (ciblaker, "LBK", "UBK", "Blaker"),
+    "exact": (_exact(1.0), "LEX", "UEX", "Clopper-Pearson"),
+    "cp": (_exact(1.0), "LEX", "UEX", "Clopper-Pearson"),
+    "clopper-pearson": (_exact(1.0), "LEX", "UEX", "Clopper-Pearson"),
+    "midp": (_exact(0.5), "LEX", "UEX", "Mid-P"),
+    "mid-p": (_exact(0.5), "LEX", "UEX", "Mid-P"),
+    "bayes": (_bayes(1.0, 1.0), "LBAQ", "UBAQ", "Bayesian (flat)"),
+    "bayesian": (_bayes(1.0, 1.0), "LBAQ", "UBAQ", "Bayesian (flat)"),
+    "jeffreys": (_bayes(0.5, 0.5), "LBAQ", "UBAQ", "Jeffreys"),
 }
 
 
@@ -47,7 +82,7 @@ def _limits(method, n, alpha):
     return df[lo].to_numpy(dtype=float), df[hi].to_numpy(dtype=float), label
 
 
-def plot_ci(n, alpha=0.05, method="wald"):
+def plot_ci(n: int, alpha: float = 0.05, method: str = "wald"):
     """Interval plot: the confidence interval for every ``x = 0..n``.
 
     Returns a ``plotly.graph_objects.Figure``. Each horizontal bar is the interval
@@ -88,7 +123,12 @@ def plot_ci(n, alpha=0.05, method="wald"):
     return fig
 
 
-def plot_coverage(n, alpha=0.05, methods=("wald", "wilson"), points=500):
+def plot_coverage(
+    n: int,
+    alpha: float = 0.05,
+    methods: Sequence[str] | str = ("wald", "wilson"),
+    points: int = 500,
+):
     """Coverage-probability curves vs the true proportion θ, for several methods.
 
     The dashed line is the nominal level 1 − α. A method whose curve dips below it

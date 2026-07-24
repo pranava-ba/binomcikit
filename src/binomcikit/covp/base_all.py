@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 from .._accel import coverage_series
-from ..ci import cias, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, cilr, cilt, cisc, citw, ciwd
 
 _S = 5000  # simulation runs, matching the R package
 
@@ -123,6 +123,13 @@ def covpsc(n, alp, a, b, t1, t2, seed=None):
     _validate(n, alp, a, b, t1, t2)
     df = cisc(n, alp)
     return _coverage(n, alp, a, b, t1, t2, df["LSC"], df["USC"], seed)
+
+
+def covpblaker(n, alp, a, b, t1, t2, seed=None):
+    """Coverage probability of the Blaker interval (new; not in R ``proportion``)."""
+    _validate(n, alp, a, b, t1, t2)
+    df = ciblaker(n, alp)
+    return _coverage(n, alp, a, b, t1, t2, df["LBK"], df["UBK"], seed)
 
 
 def covpas(n, alp, a, b, t1, t2, seed=None):

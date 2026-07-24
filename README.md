@@ -1,88 +1,209 @@
-# BINOMCIKIT
-[![Documentation Status](https://readthedocs.org/projects/pranava-babinomcikit-rtd/badge/?version=latest)](https://pranava-babinomcikit-rtd.readthedocs.io/en/latest/)
+<div align="center">
 
-## Introduction
-In many statistical problems, we are interested in estimating the proportion of successes in a binomial process. For example, if you flip a coin 100 times and observe 55 heads, you might want to estimate the true proportion of heads for that coin. This is known as estimating a **binomial proportion**.
+<pre>
+██████╗ ██╗███╗   ██╗ ██████╗ ███╗   ███╗ ██████╗██╗██╗  ██╗██╗████████╗
+██╔══██╗██║████╗  ██║██╔═══██╗████╗ ████║██╔════╝██║██║ ██╔╝██║╚══██╔══╝
+██████╔╝██║██╔██╗ ██║██║   ██║██╔████╔██║██║     ██║█████╔╝ ██║   ██║   
+██╔══██╗██║██║╚██╗██║██║   ██║██║╚██╔╝██║██║     ██║██╔═██╗ ██║   ██║   
+██████╔╝██║██║ ╚████║╚██████╔╝██║ ╚═╝ ██║╚██████╗██║██║  ██╗██║   ██║   
+╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝ ╚═════╝╚═╝╚═╝  ╚═╝╚═╝   ╚═╝   
+</pre>
 
-Estimating a single binomial proportion is a fundamental problem in statistics that applies to a wide range of real-world scenarios. In many fields, we encounter situations where we need to estimate the proportion of successes (or failures) in a fixed number of independent trials, with each trial having only two possible outcomes, such as success or failure, yes or no, pass or fail. This estimation problem is central to various industries, from healthcare to business to manufacturing.
+**Inference for a single binomial proportion**
 
-## Estimation Methods for Single Binomial Proportion
+<br/>
 
-There are several estimation procedures used to estimate a single binomial proportion:
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![PyPI](https://img.shields.io/badge/PyPI-binomcikit-3775A9?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/binomcikit/)
+[![Tests](https://img.shields.io/badge/tests-209%20passing-2EA043?style=flat-square)](tests/)
+[![License](https://img.shields.io/badge/License-GPL-8B949E?style=flat-square)](LICENSE.txt)
 
-1. **Wald Interval**
-2. **Wald-T Interval**
-3. **Likelihood Interval (Exact Method)**
-4. **Score Interval (Wilson Interval)**
-5. **Logit-Wald Interval**
-6. **ArcSine Interval**
+[![Docs](https://img.shields.io/badge/📖%20Documentation-readthedocs-1ABC9C?style=for-the-badge&logo=readthedocs&logoColor=white)](https://pranava-babinomcikit-rtd.readthedocs.io/en/latest/)
 
-Each of these methods has its strengths and weaknesses, depending on the sample size, the observed proportion, and the desired accuracy. The choice of method depends on the specific characteristics of the data and the goals of the analysis.
+<br/>
 
----
+*Twelve confidence-interval methods, a full evaluation suite, and a Bayesian toolbox — one engine, fully documented.*
 
-## Summary Table with Additional Notes on Aberrations and Continuity Corrections</font>
+</div>
 
-| Method             | Formula                                                   | Key Issues/Considerations                                    |
-|--------------------|-----------------------------------------------------------|--------------------------------------------------------------|
-| **Wald Interval**   | $\hat{p} \pm z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$ | Issues with $\hat{p} = 0$ or $\hat{p} = 1$; continuity correction helps in small $n$ |
-| **Wald-T Interval** | $\hat{p} \pm t_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$ | Better for small $n$; still struggles with extreme $\hat{p}$; continuity correction can help |
-| **Likelihood Interval** | Based on likelihood ratio test                              | Exact method, no issues with boundary values (0 or 1), no need for continuity correction |
-| **Score Interval**  | $\hat{p} \pm \frac{z_{\alpha/2}}{2n} \left( 1 \pm \sqrt{1 + \frac{4 \hat{p}(1-\hat{p})}{n z_{\alpha/2}^2}} \right)$ | Robust for small $n$, less affected by $\hat{p} = 0$ or $\hat{p} = 1$; no continuity correction needed |
-| **Logit-Wald**      | Logit transform followed by Wald method                     | Helps with extreme $\hat{p}$; no continuity correction required, but check for small sample sizes |
-| **ArcSine**         | $\hat{p} = \sin^2\left(\frac{\text{ArcSine}(\hat{p})}{2}\right)$ | Helps stabilize variance at extremes (0 or 1); no need for continuity correction for most cases |
+<br/>
 
 ---
 
-## Naming convention for Methods
+## What it is
 
-We use "ci" in the start of each function name to indicate that the "Confidence Interval" is being called.
+`binomcikit` estimates a **single binomial proportion** — the true success rate θ behind *x* successes
+in *n* trials (a coin's head-rate, a defect rate, a diagnostic test's sensitivity). It is a Python port
+of the peer-reviewed R package [`proportion`](https://github.com/RajeswaranV/proportion), extended with
+a new exact method (**Blaker**), a modern **access layer**, and documentation written for someone who
+has never studied probability.
 
-We then call the method used by first calling "ci", followed by the Naming Convention used.
-(ci is the prefix).
-
-### **Example Usage:**
-"cias" - Confidence Interval called using the ArcSine Method
-
-The names used to call each of the methods are listed below:
-
-| Method Name | Naming Convention Used |
-|------------|-------------------------|
-| 1. **Wald Interval** | wd |
-| 2. **Wald-T Interval** | tw |
-| 3. **Likelihood Interval (Exact Method)** | lr |
-| 4. **Score Interval (Wilson Interval)** | sc |
-| 5. **Logit-Wald Interval** | lt |
-| 6. **ArcSine Interval** | as |
-| 7. **Exact** | ex |
-| 8. **All** | all |
-
-## Naming Convention for Submethods
-
-We use the submethod name to specify what sub-type of method is being called.
-
-We then call the method used by first calling "ci{method name}", followed by the Naming Convention used.
-(ci{method name} is the prefix).
-
-### **Example Usage:**
-"ciasx" - Adjusted Score Method of Confidence Interval called using the ArcSine Method
-
-The names used to call each of the sub-methods/type of method are listed below:
-
-| Type of Method | Naming Convention Used | Where it is called | Example |
-|------------|-------------------------|--|--|
-| 1. **Base Method** | x | postfix | ciwdx |
-| 2. **Adjusted Method** | a | prefix | ciawd | 
-| 3. **Adjusted X Method** | a_x | prefix **and** postfix | ciawdx |
-| 4. **Continuity Corrected** | c | prefix | cicwd |
-| 3. **Continuity Corrected X** | c_x | prefix **and** postfix | cicwdx |
-
-## Naming convention for plots
-
-Just add "plot" prefix before ci{methodname} to print the plot
-
-### **Example Usage:** 
-"plotciwdx" - plots the Based Method of Confidence Interval called using the Wald Methos
+The novelty is not the intervals (many libraries have those) — it is the **evaluation suite** that
+*scores* an interval (coverage, expected length, p-confidence/p-bias, error) and the **Bayesian
+toolbox** (credible intervals, Bayes factors, empirical Bayes, posterior predictive), unified in one
+package.
 
 ---
-### Migrating to Plotly
+
+## Installation
+
+<details open>
+<summary><strong>🐍 From PyPI</strong></summary>
+<br/>
+
+```bash
+pip install binomcikit                 # core (numpy, scipy, pandas)
+pip install "binomcikit[plots]"        # + interactive Plotly figures
+pip install "binomcikit[fast]"         # + optional numba acceleration for large n
+```
+
+</details>
+
+<details>
+<summary><strong>🔧 From source</strong></summary>
+<br/>
+
+Requires Python 3.9+.
+
+```bash
+git clone https://github.com/pranava-ba/binomcikit.git
+cd binomcikit
+pip install -e ".[dev]"
+pytest -q
+```
+
+</details>
+
+---
+
+## Quick Start
+
+| Step | Action |
+|------|--------|
+| 1 | `import binomcikit as bk` |
+| 2 | One interval: `bk.ci(x=3, n=20)` — Wilson (Score) by default |
+| 3 | Pick a method: `bk.ci(x=3, n=20, method="blaker")` (or `wald`, `jeffreys`, `exact`, …) |
+| 4 | Compare them all for your data: `bk.compare(x=3, n=20)` |
+| 5 | Let the package choose: `bk.recommend(n=20, by="length")` |
+| 6 | Plot it: `bk.plot_coverage(n=20, methods=["wald", "wilson", "blaker"])` |
+
+```python
+import binomcikit as bk
+
+bk.ci(x=3, n=20, method="wilson")      # the recommended default
+bk.ci(n=20, method="blaker")           # exact, never wider than Clopper–Pearson
+bk.posterior(3, 20)                     # full Beta posterior summary
+bk.from_data([1, 0, 1, 1, 0])          # -> (3, 5), straight from raw 0/1 data
+```
+
+---
+
+## Coverage, visualised
+
+Every method is measured on the same engine. These are produced by `bk.plot_coverage(...)` — true
+coverage vs. the unknown proportion θ (the dashed target is the nominal 95%):
+
+<div align="center">
+
+<table>
+  <tr>
+    <td><img src="docs/_static/wald_coverage.png" width="100%" /><br/><sub><b>Wald</b> sags below nominal</sub></td>
+    <td><img src="docs/_static/wilson_coverage.png" width="100%" /><br/><sub><b>Wilson</b> hugs the target</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/_static/blaker_coverage.png" width="100%" /><br/><sub><b>Blaker</b> (new) — guaranteed, but tighter than CP</sub></td>
+    <td><img src="docs/_static/bayes_coverage.png" width="100%" /><br/><sub><b>Bayesian</b> credible intervals</sub></td>
+  </tr>
+</table>
+
+</div>
+
+---
+
+## Methods
+
+Twelve interval methods, each with a two-part documentation page (*Use it* / *Understand it*):
+
+| Method | Idea | Back-transform / note |
+|--------|------|-----------------------|
+| **Wald** | normal approximation around p̂ | teaching baseline; under-covers at small *n* |
+| **Wilson (Score)** | invert the score test | the recommended default |
+| **Agresti–Coull** | adjusted Wald ("add 2 successes, 2 failures") | simple and reliable |
+| **ArcSine** | variance-stabilising `arcsin√p̂` scale | back-transform `p = sin²(φ)` |
+| **Logit-Wald** | Wald on the log-odds scale | `expit` back-transform; exact at x = 0, n |
+| **Wald-T** | Student-*t* + Satterthwaite d.o.f. | small-sample correction (Pan 2002) |
+| **Likelihood-ratio** | invert the LR test | coverage ≈ Wilson |
+| **Clopper–Pearson** | exact, equal-tailed | guaranteed coverage ≥ 1−α |
+| **Mid-P** | exact, half the point mass in the tail | less conservative than CP |
+| **Blaker** ⭐ *new* | exact acceptability interval | ⊆ Clopper–Pearson, still guaranteed |
+| **Bayesian** | Beta posterior credible interval | quantile + HPD |
+| **Jeffreys** | Bayesian with Beta(½, ½) prior | excellent frequentist coverage |
+
+Each also has adjusted (`h=`) and continuity-corrected (`c=`) variants where applicable, plus the four
+metric families and the Bayesian toolbox.
+
+---
+
+## Features
+
+<details>
+<summary><strong>📏 Evaluation suite — score any interval</strong></summary>
+<br/>
+
+- **Coverage probability** (`covp*`) — how often the interval actually traps θ
+- **Expected length** (`length*`) — average width
+- **p-confidence / p-bias** (`pcopbi*`) — directional performance
+- **Error & long-term power** (`err*`) — plus aberration / zero-width-interval flags
+
+All share one vectorised engine (optional numba acceleration for large *n*).
+
+</details>
+
+<details>
+<summary><strong>🎲 Bayesian toolbox</strong></summary>
+<br/>
+
+- Credible intervals (quantile + HPD), posterior summaries, named priors
+- **Bayes factors** (six formulations, Jeffreys-scale interpretation)
+- **Empirical Bayes** (prior estimated from the data)
+- **Posterior probability** `P(θ < threshold)` and **posterior predictive** for future trials
+
+</details>
+
+<details>
+<summary><strong>🧰 Access layer</strong></summary>
+<br/>
+
+- `from_data` / `from_counts` — build `(x, n)` from raw 0/1 data
+- `point_estimate`, `posterior`, `prior` — estimates and posteriors
+- `coverage_curve` / `length_curve` — the numbers behind the plots
+- `compare` — every method side by side; `recommend` — the package picks for you
+
+</details>
+
+<details>
+<summary><strong>📚 Documentation</strong></summary>
+<br/>
+
+A "probability-from-zero" Foundations track, a glossary that links **every** technical term, a two-core
+page per method, a method-selection guide, and the Bayesian-toolbox tour —
+[**read the docs**](https://pranava-babinomcikit-rtd.readthedocs.io/en/latest/).
+
+</details>
+
+---
+
+## Credits
+
+`binomcikit` is a Python port of the R package **[`proportion`](https://github.com/RajeswaranV/proportion)**
+by **M. Subbiah** and **V. Rajeswaran** (Subbiah & Rajeswaran, *SoftwareX* 6, 2017); the statistical
+methods and their organisation originate there. This port adds the Blaker interval, the access layer,
+and the documentation.
+
+---
+
+<div align="center">
+
+**binomcikit** · a Python port of R `proportion` · © 2024–2026
+
+</div>

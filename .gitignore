@@ -21,7 +21,10 @@ venv/
 .env
 .idea/
 .vscode/
-.claude/
+# Ignore local Claude settings, but KEEP project skills tracked & versioned so
+# they travel with the repo and load in every session.
+.claude/*
+!.claude/skills/
 
 # OS
 .DS_Store

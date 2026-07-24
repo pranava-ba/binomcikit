@@ -28,6 +28,7 @@ from .base_n_x import (
 )
 from .bayes_n import ciba
 from .bayes_n_x import cibax
+from .blaker import ciblaker, ciblakerx
 from .cc_n import cicall, cicas, ciclt, cicsc, cictw, cicwd
 from .cc_n_x import (
     cicallx,

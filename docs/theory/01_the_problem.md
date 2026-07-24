@@ -1,6 +1,6 @@
-# Day 1 — The problem, the estimate, and why it is hard
+# The problem, the estimate, and why it is hard
 
-This is the first page of the **Methods & Mathematics** series. Everything the
+This is the opening page of the **Methods & Mathematics** series. Everything the
 package does hangs off the single problem described here, so it is worth being
 precise about it before meeting any particular method.
 
@@ -76,16 +76,16 @@ half of this package exists to **evaluate** them.
 
 The series follows the shape of the package:
 
-- **Days 2–9 — construction.** Eight ways to build an interval: normal-approximation
+- **Construction.** The many ways to build an interval: normal-approximation
   methods (Wald, Score, ArcSine, Logit, Wald-T), the likelihood-ratio method, the
   exact family, and the Bayesian credible interval.
-- **Days 10–11 — repair.** Two general fixes — the adjustment factor $h$ and the
+- **Repair.** Two general fixes — the adjustment factor $h$ and the
   continuity correction $c$ — that rescue the fragile approximate methods at the
   edges.
-- **Days 12–17 — evaluation.** How to *score* a method: coverage probability,
+- **Evaluation.** How to *score* a method: coverage probability,
   expected length, p-confidence / p-bias, error and long-term power, boundary
   aberrations, and Monte-Carlo evaluation over a Beta-distributed $\theta$.
-- **Days 18–20 — the Bayesian toolbox.** Beyond intervals: Bayes factors,
+- **The Bayesian toolbox.** Beyond intervals: Bayes factors,
   empirical Bayes, and posterior-predictive computation.
 
 ## In code
@@ -103,4 +103,4 @@ actually observed.
 
 ---
 
-*Next: Day 2 — the Wald interval, the textbook method and its failure modes.*
+*Next in the series: the Wald interval, the textbook method and its failure modes.*

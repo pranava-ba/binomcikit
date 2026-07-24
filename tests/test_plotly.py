@@ -26,3 +26,12 @@ def test_plot_coverage_builds_figure():
 def test_plot_unknown_method_errors():
     with pytest.raises(ValueError):
         bk.plot_ci(n=10, method="nope")
+
+
+@pytest.mark.parametrize("method", ["exact", "cp", "midp", "lr", "logit", "waldt"])
+def test_plot_coverage_supports_all_ported_methods(method):
+    import plotly.graph_objects as go
+
+    fig = bk.plot_coverage(n=15, alpha=0.05, methods=(method, "wilson"))
+    assert isinstance(fig, go.Figure)
+    assert len(fig.data) == 2

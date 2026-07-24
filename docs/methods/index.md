@@ -9,8 +9,16 @@ in order.
 :maxdepth: 1
 
 wald
+wilson
+arcsine
+logit
+waldt
+lr
+exact
+bayes
+blaker
 ```
 
-More methods — Wilson (Score), Agresti–Coull, ArcSine, Logit, Wald-T, Likelihood-ratio,
-Exact / Mid-P, Bayesian, and the new Blaker / Bootstrap — are added as each is built. To pick one,
-see {doc}`../method_selection`.
+More methods — Agresti–Coull and the new Bootstrap — are added as each is built. The wider
+Bayesian toolbox (Bayes factors, empirical Bayes, posterior predictive) has its own page:
+{doc}`../bayesian_toolbox`. To pick a method, see {doc}`../method_selection`.

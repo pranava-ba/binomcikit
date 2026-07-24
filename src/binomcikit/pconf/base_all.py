@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import cias, ciex, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
 
 
 def _validate(n, alp):
@@ -72,6 +72,13 @@ def pcopbisc(n, alp):
     """p-confidence and p-bias of the Score interval (R pCOpBISC)."""
     _validate(n, alp)
     return _base("Score", n, alp)
+
+
+def pcopbiblaker(n, alp):
+    """p-confidence and p-bias of the Blaker interval (new; not in R ``proportion``)."""
+    _validate(n, alp)
+    df = ciblaker(n, alp)
+    return _pconf_pbias(n, df["LBK"], df["UBK"])
 
 
 def pcopbias(n, alp):

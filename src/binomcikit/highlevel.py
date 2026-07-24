@@ -6,9 +6,16 @@ name and delegates to the underlying ``ci*`` functions in the
 available and unchanged; this is a friendlier front door.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scipy.stats import norm
 
 from . import ci as _cimod
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 # Friendly method name -> internal two-letter code used by the ci* functions.
 _CODE = {
@@ -35,12 +42,23 @@ _CODE = {
     "agresti-coull": "ac",
     "agresti coull": "ac",
     "ac": "ac",
+    "blaker": "blaker",
 }
 _NO_CC = {"lr"}  # no continuity-corrected variant
-_BASE_ONLY = {"ex", "ba", "ac"}  # no adjusted / CC variants
+_BASE_ONLY = {"ex", "ba", "ac", "blaker"}  # no adjusted / CC variants
 
 
-def ci(x=None, n=None, alpha=0.05, method="wilson", h=None, c=None, e=None, a=None, b=None):
+def ci(
+    x: int | None = None,
+    n: int | None = None,
+    alpha: float = 0.05,
+    method: str = "wilson",
+    h: float | None = None,
+    c: float | None = None,
+    e: float | None = None,
+    a: float | None = None,
+    b: float | None = None,
+) -> pd.DataFrame:
     """Confidence interval for a single binomial proportion (unified entry point).
 
     Parameters

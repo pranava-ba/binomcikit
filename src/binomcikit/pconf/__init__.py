@@ -20,6 +20,7 @@ from .adj_all import (
 from .base_all import (
     pcopbiall,
     pcopbias,
+    pcopbiblaker,
     pcopbiex,
     pcopbilr,
     pcopbilt,

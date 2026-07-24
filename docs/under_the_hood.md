@@ -9,11 +9,22 @@ and kept current as the package grows (every method sub-phase updates the releva
 binomcikit's results are checked against several *independent* sources of truth, so a bug would have
 to fool all of them at once:
 
-1. **Golden values from the source paper.** The Wald limits for `n = 5` are asserted against Table 2
-   of Subbiah & Rajeswaran (2017) — an oracle independent of *any* software
-   (`tests/test_golden_paper.py`, values in `tests/cases.py`).
+1. **Golden values from the source paper / closed form.** The Wald limits for `n = 5` are asserted
+   against Table 2 of Subbiah & Rajeswaran (2017) — an oracle independent of *any* software. The
+   **ArcSine** (`ARCSINE_N5`), **Logit-Wald** (`LOGIT_N5`), **Wald-T** (`WALDT_N5`) and
+   **Likelihood-ratio** (`LR_N5`) limits for
+   `n = 5` get the same treatment: no third-party library implements these methods, so these frozen
+   constants from the published closed forms are their independent oracle, with companion tests
+   pinning the structural quirk each method is known for — arcsine's boundary collapse, logit's exact
+   one-sided substitution at x = 0, n, Wald-T's *t*-widening + no-ZWI boundary modification, and the
+   LR interval bracketing the MLE (its numerical limits also cross-checked against an independent
+   `brentq` root-find). (`tests/test_golden_paper.py`, values in `tests/cases.py`.)
 2. **Cross-check vs `statsmodels`.** Wald, Wilson (Score) and Clopper–Pearson match
-   `statsmodels.stats.proportion.proportion_confint` to **1e-9** (`tests/test_ci.py`).
+   `statsmodels.stats.proportion.proportion_confint` to **1e-9** (`tests/test_ci.py`); the exact
+   family at `e = 1` reproduces `method="beta"` exactly; the Bayesian quantile interval with a Jeffreys
+   prior (`a = b = 0.5`) reproduces `method="jeffreys"` exactly; and companion tests confirm Mid-P
+   (`e = 0.5`) is never wider than Clopper–Pearson and that the Bayesian HPD carries 1 − α posterior
+   mass while staying no wider than the quantile interval (`tests/test_golden_paper.py`).
 3. **Completeness vs the R package.** Every one of the R `proportion` package's **305** exported
    functions must exist in binomcikit — checked against the vendored R NAMESPACE
    (`tests/test_completeness.py`, list in `tests/r_exports.txt`).
@@ -28,6 +39,12 @@ Linux / macOS / Windows.
 
 *As each method sub-phase lands, its rare-method + metric outputs get golden fixtures generated from
 R, extending oracle #1/#3.*
+
+**New methods verified by their defining theorems.** Blaker's interval (§ new in binomcikit, not in R
+`proportion`) has no bundled reference implementation, so it is checked against the two properties that
+*define* its value — it is **nested inside Clopper–Pearson** (never wider) and its **coverage is
+≥ 1 − α** on a fine θ grid — plus an acceptance-boundary identity and frozen `BLAKER_N5` limits
+(`tests/test_blaker.py`). Passing both theorems is stronger evidence than matching another program.
 
 ## Performance — vectorized numpy, optional numba
 

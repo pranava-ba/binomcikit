@@ -21,6 +21,17 @@ importable via ``import binomcikit.ci``. Third-party names used internally
 
 from . import bayes, covp, err, expl, pconf
 from . import ci as _ci_pkg  # kept private so the name ``ci`` is the dispatcher
+from .access import (  # noqa: E402  usability layer (data input, estimates, curves, compare)
+    compare,
+    coverage_curve,
+    from_counts,
+    from_data,
+    length_curve,
+    point_estimate,
+    posterior,
+    prior,
+    recommend,
+)
 from .bayes import *  # noqa: F401,F403
 from .ci import *  # noqa: F401,F403  (respects each subpackage __all__)
 from .covp import *  # noqa: F401,F403
@@ -32,11 +43,24 @@ from .plotly_viz import plot_ci, plot_coverage  # noqa: E402  interactive plotly
 
 __version__ = "3.0.8"
 
+_ACCESS = [
+    "from_counts",
+    "from_data",
+    "point_estimate",
+    "posterior",
+    "prior",
+    "coverage_curve",
+    "length_curve",
+    "compare",
+    "recommend",
+]
+
 __all__ = sorted(
     {
         "ci",
         "plot_ci",
         "plot_coverage",
+        *_ACCESS,
         *_ci_pkg.__all__,
         *covp.__all__,
         *expl.__all__,
