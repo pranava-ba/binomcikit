@@ -1,7 +1,7 @@
 # Methods & Mathematics
 
 A ground-up explanation of the statistics behind `binomcikit`. Where the
-{doc}`user guide <../user_guide/index>` tells you *which* method to reach for, this
+{doc}`user guide <../evaluating_intervals>` tells you *which* method to reach for, this
 series explains *why each method is built the way it is* — the formula, the idea
 behind it, and the way it succeeds or fails.
 

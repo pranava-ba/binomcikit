@@ -1,6 +1,6 @@
-# Which interval should I use?
+# Choosing a method
 
-A living guide, filled in as each method is documented. The short answer for most real work:
+*Which of the twelve intervals should I use?* The short answer for most real work:
 **use Wilson (Score)**; reach for the others for specific reasons.
 
 | method | use it when | avoid it when | call |
@@ -17,11 +17,20 @@ A living guide, filled in as each method is documented. The short answer for mos
 | **Mid-P** (exact) | you want most of the exact guarantee with less width | you need the hard ≥-nominal guarantee (Mid-P can dip slightly below) | `bk.ci(n=…, method="midp")` |
 | **Bayesian / Jeffreys** | you want a probability statement about θ; excellent coverage (Jeffreys); or the wider Bayesian toolbox | you need a purely frequentist guarantee and won't state a prior | `bk.ci(n=…, method="jeffreys")` |
 
-*(Rows for Blaker and Bootstrap are added as those sub-phases complete.)*
+*(A Bootstrap row is added when that method lands.)*
 
-## Decide empirically for **your** case
-You don't have to take a rule of thumb on faith. For your specific *n* and {term}`alpha`, compute
-the {term}`coverage` and {term}`expected length` of several methods and compare them directly —
-that is exactly what the `covp*` and `length*` function families are for (see
-{doc}`user_guide/index`). Choosing a method by *measuring* it on your own problem is the whole
-point of this package.
+## Let the package choose
+You don't have to take a rule of thumb on faith. Two access-layer helpers turn this guide into code:
+
+```python
+import binomcikit as bk
+
+bk.compare(x=3, n=20)            # every method's interval for your data, narrowest first
+bk.recommend(n=20, by="length") # rank methods by measuring them on the metric engine
+```
+
+`recommend` measures each method's true {term}`coverage` and {term}`expected length` over the whole
+range of θ and ranks them — narrowest **among adequately-covering** methods, closest to nominal, or
+highest guaranteed coverage. Choosing a method by *measuring* it on your own problem is the whole point
+of this package; the underlying `covp*` / `length*` families are described in
+{doc}`evaluating_intervals`.

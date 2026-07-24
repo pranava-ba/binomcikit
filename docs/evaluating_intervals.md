@@ -86,4 +86,4 @@ for name, covp, length in [
 ```
 
 Every criterion also has plotting functions (`plotcovp*`, `plotexpl*`,
-`plotpcopbi*`, `ploterr*`) — see the {doc}`gallery <../gallery>`.
+`plotpcopbi*`, `ploterr*`) — see the {doc}`gallery <gallery>`.

@@ -69,7 +69,7 @@ count.
 - **With a {term}`continuity correction`:** `bk.ci(n=20, method="logit", c=0.5)` widens the interval
   slightly to respect the discreteness of the counts.
 - **Compare its {term}`coverage` against other methods:** feed the limits to the `covp*` family
-  (see {doc}`../user_guide/index`), or read the figure below.
+  (see {doc}`../evaluating_intervals`), or read the figure below.
 - **Plot it (interactive, Plotly):** `bk.plot_ci(n=20, method="logit")` draws the interval for every
   `x`; `bk.plot_coverage(n=20, methods=["logit", "wilson"])` overlays coverage curves. Plotting needs
   `pip install binomcikit[plots]`.

@@ -84,5 +84,5 @@ The **evaluation families** reuse the same method codes with a different prefix:
 (p-confidence & p-bias), `err*` (error & failure), and the Bayesian tools live in
 `binomcikit.bayes`.
 
-See the {doc}`user guide <user_guide/index>` for what these mean and when to use
+See the {doc}`user guide <evaluating_intervals>` for what these mean and when to use
 each, or the {doc}`API reference <api/index>` for every function.

@@ -70,7 +70,7 @@ from the best fit.
   variant — `bk.ci(n=20, method="lr", c=0.5)` raises an error. (This is a structural fact of the
   method, mirrored from the R package.)
 - **Compare its {term}`coverage` against other methods:** feed the limits to the `covp*` family
-  (see {doc}`../user_guide/index`), or read the figure below.
+  (see {doc}`../evaluating_intervals`), or read the figure below.
 - **Plot it (interactive, Plotly):** `bk.plot_ci(n=20, method="lr")` draws the interval for every
   `x`; `bk.plot_coverage(n=20, methods=["lr", "wilson"])` overlays coverage curves. Plotting needs
   `pip install binomcikit[plots]`.

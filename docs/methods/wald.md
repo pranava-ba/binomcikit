@@ -64,7 +64,7 @@ Rajeswaran 2017):
   `bk.ci(n=20, method="agresti-coull")`.
 - **With a {term}`continuity correction`:** `bk.ci(n=20, method="wald", c=0.5)`.
 - **Compare its {term}`coverage` against other methods:** feed the limits to the `covp*` family
-  (see {doc}`../user_guide/index`).
+  (see {doc}`../evaluating_intervals`).
 - **Plot it (interactive, Plotly):** `bk.plot_ci(n=20, method="wald")` draws the interval for every
   `x`; `bk.plot_coverage(n=20, methods=["wald", "wilson"])` overlays coverage curves. Plotting needs
   `pip install binomcikit[plots]`.

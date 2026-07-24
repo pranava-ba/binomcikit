@@ -74,7 +74,7 @@ At **every** row Mid-P sits inside Clopper–Pearson — that is the meaning of 
 - **Sweep the tail knob:** `bk.ciex(20, 0.05, [1.0, 0.5, 0.0])` returns three stacked blocks (CP,
   Mid-P, and the fully "exclusive" tail) in one DataFrame, tagged by the `e` column.
 - **Compare its {term}`coverage`:** feed the limits to the `covp*` family (see
-  {doc}`../user_guide/index`), or read the figure below.
+  {doc}`../evaluating_intervals`), or read the figure below.
 - **Plot it (interactive, Plotly):** `bk.plot_ci(n=20, method="exact")` (or `"midp"`) draws the
   interval for every `x`; `bk.plot_coverage(n=20, methods=["exact", "midp", "wilson"])` overlays
   coverage curves. Plotting needs `pip install binomcikit[plots]`.

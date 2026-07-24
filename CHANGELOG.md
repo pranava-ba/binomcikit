@@ -4,6 +4,17 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
 ## [Unreleased] — Phase 1 (in progress)
+### Changed
+- **Documentation overhaul.** Switched the docs theme to **Furo** — a collapsible left-sidebar nav
+  (hamburger on mobile) with a deliberately minimal top bar, replacing pydata-sphinx-theme's crowded
+  top navbar. Reorganized the site into five clear groups (*Start here · Guides · Methods · The maths ·
+  Reference*), consolidated redundant pages (merged the three "which method" / Bayesian / intro
+  surfaces, removed the `user_guide/` folder), rebuilt the landing page as a six-card hub, and added an
+  "at a glance" method cheat-sheet table. Fixed a homepage layout bug (a raw `<div align="center">`
+  followed by a blank line broke the article nesting) by emitting the banner via `{raw} html`. Pinned
+  the docs toolchain (`sphinx<10`, `sphinx-design<1`, `furo`) so builds stay reproducible. Full site
+  builds clean under `-W`.
+
 ### Added
 - **PEP 561 typing** — a `py.typed` marker (shipped via package-data) plus inline type hints on the
   public surface: the `ci()` dispatcher, `plot_ci` / `plot_coverage`, and the whole `access` layer, so

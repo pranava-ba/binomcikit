@@ -69,7 +69,7 @@ Wald-T interval is always a little **wider**, which is the whole point.
 - **With a {term}`continuity correction`:** `bk.ci(n=20, method="waldt", c=0.5)` widens the interval
   further to respect the discreteness of the counts.
 - **Compare its {term}`coverage` against other methods:** feed the limits to the `covp*` family
-  (see {doc}`../user_guide/index`), or read the figure below.
+  (see {doc}`../evaluating_intervals`), or read the figure below.
 - **Plot it (interactive, Plotly):** `bk.plot_ci(n=20, method="waldt")` draws the interval for every
   `x`; `bk.plot_coverage(n=20, methods=["wald", "waldt"])` overlays coverage curves. Plotting needs
   `pip install binomcikit[plots]`.

@@ -69,7 +69,7 @@ and `[1, 1]`, Wilson still reports a sensible range. That is the single clearest
 - **With a {term}`continuity correction`:** `bk.ci(n=20, method="wilson", c=0.5)` widens the interval
   slightly to respect the discreteness of the counts.
 - **Compare its {term}`coverage` against other methods:** feed the limits to the `covp*` family
-  (see {doc}`../user_guide/index`), or just eyeball the figure below.
+  (see {doc}`../evaluating_intervals`), or just eyeball the figure below.
 - **Plot it (interactive, Plotly):** `bk.plot_ci(n=20, method="wilson")` draws the interval for every
   `x`; `bk.plot_coverage(n=20, methods=["wald", "wilson"])` overlays coverage curves. Plotting needs
   `pip install binomcikit[plots]`.
