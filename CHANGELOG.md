@@ -5,6 +5,35 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 
 ## [Unreleased] — Phase 1 (in progress)
 ### Changed
+- **Executable documentation (MyST-NB).** Worked examples in the docs now run at build time against the
+  installed package (```{code-cell}``` blocks), so the tables and numbers shown are generated from the
+  real `binomcikit` and cannot drift from the code (a broken example fails the build). Set up the theme
+  fixes alongside: removed the "edit this page" / "view source" links, and made the five sidebar section
+  headers collapsible (`docs/_static/custom.{css,js}`). RTD now installs the package so it can execute.
+- **Docs content depth — a "probability from zero" Foundations series and a growing theory track.**
+  Rebuilt `foundations/` from one thin page into a five-page beginner course (proportion & p̂ → the
+  binomial pmf → sampling variability → what a confidence interval *really* means → coverage), each an
+  *executed* page ending in a "Check yourself" quiz, with a repeated-sampling caterpillar simulation and
+  a from-scratch exact-coverage computation. Extended the **"Methods & Mathematics"** theory track: after
+  the normal-approximation page, added fully worked, executed pages on **test inversion** — deriving the
+  Wilson (score) and likelihood-ratio intervals as *the values a hypothesis test does not reject*, showing
+  numerically that both beat Wald and share the χ²₁ cutoff — and on **exact methods & discreteness** —
+  why binomial coverage is a jagged step function, Clopper–Pearson vs Mid-P vs Blaker, with Blaker's
+  acceptability function γ(x,θ) reproduced from scratch and shown to nest inside (dominate) Clopper–Pearson —
+  and on **variance-stabilising / transformed intervals** — the delta method as the engine (deriving that
+  arcsin√p is *the* stabiliser), arcsine's constant-width interval and its zero-width collapse at the
+  boundary, and the logit/expit interval that stays inside (0,1) — and on **the Bayesian view** — Beta–Binomial
+  conjugacy, the standard priors, credible-vs-confidence intervals, and the convergence result that the
+  Jeffreys credible interval matches Wilson's *frequentist* coverage — and closes with a **coverage-theory**
+  capstone: mean vs minimum coverage (why the mean lies), the slow non-convergence of worst-case coverage
+  (Brown–Cai–DasGupta), one-sided vs two-sided miss rates, and the adjustment (h) and continuity (c) repairs.
+  The **"Methods & Mathematics" theory track is now a complete seven-chapter series**, so every method page's
+  "deeper maths" link resolves. Also deepened Foundations into a five-page "probability from zero" beginner
+  series, and added a **Tutorials & cookbook** section — worked, executable scenarios (A/B test, quality
+  control via posterior probability, the zero-events rule of three, and choosing a method with
+  `compare`/`recommend`) plus a copy-paste recipe cookbook. New colourblind-safe teaching figures and four
+  new glossary terms (`hypothesis test`, `discreteness`, `conjugate prior`, `sampling variability`). Full
+  site still builds clean under `-W`.
 - **Documentation overhaul.** Switched the docs theme to **Furo** — a collapsible left-sidebar nav
   (hamburger on mobile) with a deliberately minimal top bar, replacing pydata-sphinx-theme's crowded
   top navbar. Reorganized the site into five clear groups (*Start here · Guides · Methods · The maths ·

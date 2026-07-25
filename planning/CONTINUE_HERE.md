@@ -24,7 +24,35 @@
   `WALDT_N5`/`LR_N5`/`MIDP_N5`/`BLAKER_N5` + statsmodels cross-checks + Blaker's two theorems
   (test count 164→201). Plotly layer also gained exact/midp/bayes/jeffreys/blaker. `docs/bayesian_toolbox.md`
   added (1.8). R→Python mapping page already complete.
-- **➡️ NEXT: user to choose** from the remaining work below (menu presented 2026-07-24).
+- **➡️ ACTIVE GOAL (set 2026-07-25): the docs content-depth initiative** — the docs *structure* is
+  settled (Furo theme, five collapsible sidebar groups; edit-button removed), but the *content* is thin
+  in specific places (the `theory/` "Methods & Mathematics" track is one page; `foundations/` is thin;
+  no tutorials/cookbook/FAQ; the unusual metrics get a paragraph each). **READ `planning/DOCS_CHECKLIST.md`
+  FIRST** — the detailed actionable checklist (local preview via sphinx-autobuild, the `-W` build gate,
+  per-page done-definition, the MyST-NB executable-page front matter, a page-by-page status table, and
+  the granular T1–T5 backlog); higher-level rationale in `planning/DOCS_CONTENT_PLAN.md`. **Infra DONE:**
+  Furo + collapsible sidebar + edit-button removed + **executable MyST-NB docs**.
+  **Content progress (2026-07-25 docs rebuild):** **T2 Foundations series DONE** — `foundations/index`
+  rewritten as a landing hub over five new *executable* beginner pages (`01_proportion`, `02_binomial`,
+  `03_sampling_variability`, `04_confidence_interval`, `05_coverage`), each ending in a "Check yourself"
+  quiz. **T1 theory** grew by `theory/03_test_inversion.md` (Wilson score + LR as test inversion),
+  `theory/04_exact_and_discreteness.md` (CP/Mid-P/Blaker, discreteness, acceptability γ(x,θ)),
+  `theory/05_transformed_intervals.md` (delta method; arcsine's constant variance + ZWI boundary collapse;
+  logit/expit), `theory/06_bayesian_view.md` (Beta conjugacy, priors, credible vs confidence, Jeffreys'
+  frequentist coverage) and `theory/07_coverage_theory.md` (mean vs min coverage, oscillation persistence,
+  one-/two-sided, h & c repairs — the capstone). Glossary +`hypothesis test`, +`discreteness`,
+  +`conjugate prior`. Nine matplotlib figures (dataviz palette). **Full `-W` build confirmed clean.**
+  Docs-only changes awaiting the user's manual push (§7). **✅ T1 THEORY TRACK COMPLETE (7/7 pages)** —
+  every method page's "Deeper maths → theory" now resolves.
+- **✅ T3 TUTORIALS/COOKBOOK COMPLETE (2026-07-25):** new `docs/tutorials/` group — `index` hub +
+  `ab_test`, `quality_control`, `zero_events`, `choosing_a_method`, `cookbook` (all executable) + a
+  `:caption: Tutorials` toctree group and homepage card. Three new figures (`tutorial_{ab,qc,zero}.png`);
+  glossary +`sampling variability`. **Full `-W` build confirmed clean.** **So far this initiative: T1
+  theory (7pp) + T2 foundations (5pp) + T3 tutorials (6pp) all DONE.** **Next: T4** — depth on existing
+  pages (per-method executed worked derivations + pitfalls boxes; explain p-confidence/p-bias/error in
+  `evaluating_intervals` from scratch) — and **T5** (FAQ, binomcikit-vs-statsmodels/scipy/R comparison).
+  The remaining Phase-1 code work (1.11 freq-tests, 1.12 sample-size, deferred bootstrap, Phase-0
+  relicense) is paused behind this goal.
 
 ### Remaining Phase-1 work (nothing here is started)
 - **1.10 Bootstrap — ⏸️ DEFERRED to future/to-do (user decision 2026-07-24).** The Wang–Hutson smooth

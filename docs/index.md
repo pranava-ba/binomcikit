@@ -55,6 +55,12 @@ Which of the twelve intervals to use, and why.
 One page per interval — *Use it* and *Understand it*.
 :::
 
+:::{grid-item-card} {octicon}`checklist` Tutorials
+:link: tutorials/index
+:link-type: doc
+Worked scenarios: A/B tests, quality control, zero events, choosing a method.
+:::
+
 :::{grid-item-card} {octicon}`sync` The Bayesian toolbox
 :link: bayesian_toolbox
 :link-type: doc
@@ -93,6 +99,13 @@ evaluating_intervals
 bayesian_toolbox
 access_layer
 gallery
+```
+
+```{toctree}
+:hidden:
+:caption: Tutorials
+
+tutorials/index
 ```
 
 ```{toctree}

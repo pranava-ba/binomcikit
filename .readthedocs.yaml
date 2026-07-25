@@ -13,8 +13,11 @@ sphinx:
 python:
   install:
     - requirements: docs/requirements.txt
+    # Install binomcikit itself (brings numpy/scipy/pandas) so MyST-NB can execute
+    # the worked examples against the real package and autodoc imports the real code.
+    - method: pip
+      path: .
 
 # HTML only. A PDF build of the large R->Python mapping table reliably fails in
 # LaTeX and would mark the whole build "failed", so it is intentionally omitted.
-# (autodoc imports the package with its heavy deps mocked -- see conf.py.)
 formats: []

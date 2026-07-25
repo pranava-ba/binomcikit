@@ -86,6 +86,12 @@ Beta distribution
   natural {term}`prior` for a {term}`proportion` because the {term}`posterior` is
   again a Beta — which keeps the maths clean.
 
+conjugate prior
+  A {term}`prior` chosen so the {term}`posterior` stays in the same family, turning Bayes' rule into
+  simple arithmetic. For the {term}`binomial` the {term}`Beta distribution` is conjugate: a Beta(a, b)
+  prior with x successes in n trials gives a Beta(a + x, b + n − x) posterior — just add the successes
+  to a and the failures to b.
+
 credible interval
   The {term}`Bayesian` counterpart of a {term}`confidence interval`: a range that holds a stated
   share (say 95%) of the {term}`posterior` probability for {term}`theta`. You read it directly —
@@ -126,9 +132,31 @@ continuity correction
   A small ± adjustment applied when approximating discrete {term}`binomial` counts by
   a smooth (normal) curve, to improve accuracy for small *n*.
 
+normal distribution
+  The symmetric "bell curve", the most common shape for random variation. Many methods approximate
+  the wobble of a {term}`proportion` with a normal curve; the approximation is good in the middle and
+  poor near 0 and 1.
+
+central limit theorem
+  (CLT) The reason the normal curve appears everywhere: the average (or sum) of many small independent
+  pieces is approximately {term}`normal distribution`-shaped, whatever the pieces look like. A
+  {term}`proportion` is an average of 0/1 {term}`Bernoulli trial`s, so for large *n* it is roughly
+  normal — the basis of the Wald interval.
+
+delta method
+  A rule for the {term}`standard error` of a *transformed* {term}`estimate`: if you apply a smooth
+  function g, then Var(g(p̂)) ≈ g′(θ)²·Var(p̂). It explains why moving to the {term}`log-odds` or arcsine
+  scale changes (and can stabilise) the wobble.
+
 standard error
   How much an {term}`estimate` typically wobbles from sample to sample. For a
   {term}`proportion` p̂ from *n* trials it is √(p̂(1−p̂)/n) — smaller for larger *n*.
+
+sampling variability
+  The fact that a statistic like p̂ changes from one sample to the next purely by chance, even though
+  the true {term}`theta` is fixed. Its typical size is the {term}`standard error`, which shrinks like
+  1/√n — quadruple the data to halve the wobble. It is the reason a single {term}`estimate` needs a
+  {term}`confidence interval` around it.
 
 variance-stabilising transformation
   A change of scale chosen so an {term}`estimate`'s wobble ({term}`standard error`) is
@@ -204,6 +232,12 @@ critical value
   The {term}`quantile` of a reference curve (usually the normal) that sets how many
   {term}`standard error`s wide an interval reaches. For 95% it is ≈ 1.96.
 
+hypothesis test
+  A yes/no procedure that asks whether the data look surprising under a {term}`null hypothesis`
+  value of {term}`theta`. If they are surprising enough (past a {term}`critical value`) the value is
+  *rejected*; otherwise it is *kept*. A test has a fixed *size* {term}`alpha` — its chance of
+  wrongly rejecting a true value — and that size is what a {term}`test inversion` turns into coverage.
+
 null hypothesis
   A specific value we provisionally assume for {term}`theta` — say θ = 0.3 — so we can
   ask whether the observed data look surprising *if that value were true*. Written H₀.
@@ -218,6 +252,12 @@ test inversion
   Building a {term}`confidence interval` as the set of all {term}`null hypothesis`
   values a test would *not* reject at level {term}`alpha`. Inverting the {term}`score
   test` gives the Wilson interval; inverting the exact binomial test gives Clopper–Pearson.
+
+discreteness
+  The fact that a {term}`binomial` count $x$ can only take the whole-number values 0, 1, …, n.
+  Because the interval jumps only at those finitely many counts, {term}`coverage` as a function of
+  {term}`theta` is a jagged step function rather than a flat line — no method can hold *exactly*
+  95% at every θ. It is the root reason coverage oscillates.
 
 likelihood
   How probable the observed data are, read as a function of the unknown {term}`theta`. For x

@@ -1,0 +1,38 @@
+/* Collapsible sidebar section headers (the five Furo captions).
+   Paired with custom.js, which toggles the `.collapsed` / `.caption-hidden`
+   classes and remembers the state per section in localStorage. */
+
+.sidebar-tree p.caption.caption-collapsible {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-tree p.caption.caption-collapsible:hover {
+  color: var(--color-sidebar-link-text--top-level, var(--color-brand-primary));
+}
+
+.sidebar-tree p.caption.caption-collapsible .caption-text {
+  flex: 1 1 auto;
+}
+
+/* Disclosure triangle before the caption text. */
+.sidebar-tree p.caption.caption-collapsible::before {
+  content: "\25BE"; /* ▾ */
+  display: inline-block;
+  margin-right: 0.45em;
+  font-size: 0.7em;
+  line-height: 1;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+
+.sidebar-tree p.caption.caption-collapsible.collapsed::before {
+  transform: rotate(-90deg);
+}
+
+/* The list a collapsed caption hides. */
+.sidebar-tree ul.caption-hidden {
+  display: none;
+}

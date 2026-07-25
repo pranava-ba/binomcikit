@@ -11,7 +11,7 @@ release = "3.0.8"
 version = "3.0.8"
 
 extensions = [
-    "myst_parser",
+    "myst_nb",                  # MyST markdown + executable {code-cell} blocks (includes myst_parser)
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "numpydoc",                 # NumPy-style docstrings (scientific standard)
@@ -22,15 +22,26 @@ extensions = [
     "sphinx_design",            # cards / grids on the landing page
 ]
 
+# --- MyST-NB (executable docs) ----------------------------------------------
+# Code written in ```{code-cell} blocks runs at build time, so the outputs shown
+# in the docs are generated from the real package and can never drift from it.
+# Plain ```python blocks are left as static snippets. Requires binomcikit to be
+# importable in the build env (installed editable locally; `pip install .` on RTD).
+nb_execution_mode = "auto"          # run pages that have code cells and no stored output
+nb_execution_timeout = 120
+nb_execution_raise_on_error = True  # a broken example fails the build (catches drift)
+nb_merge_streams = True
+
 # --- autodoc / autosummary / numpydoc ---------------------------------------
 autosummary_generate = True
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
-# Heavy runtime deps are mocked so the docs build quickly without the full
-# scientific stack; signatures/docstrings still come from the real source.
-autodoc_mock_imports = ["numpy", "pandas", "scipy", "plotnine", "statsmodels"]
+# binomcikit itself is installed in the build env (so MyST-NB can execute real
+# code), which brings numpy / scipy / pandas. Only the *optional* plotting and
+# test-only stacks are mocked for autodoc of the plot modules.
+autodoc_mock_imports = ["plotnine", "plotly", "statsmodels", "numba"]
 
 # --- MyST -------------------------------------------------------------------
 myst_enable_extensions = ["colon_fence", "deflist", "dollarmath"]
@@ -44,7 +55,11 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
 }
 
-source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "myst-nb",      # MyST-NB parses plain MyST markdown *and* executable pages
+    ".ipynb": "myst-nb",
+}
 master_doc = "index"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
@@ -54,10 +69,11 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_title = "binomcikit"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_js_files = ["custom.js"]
+# No "Edit this page" / "View source" links in the article header.
+html_show_sourcelink = False
 html_theme_options = {
-    "source_repository": "https://github.com/pranava-ba/binomcikit",
-    "source_branch": "main",
-    "source_directory": "docs/",
     "navigation_with_keys": True,
     "light_css_variables": {
         "color-brand-primary": "#1f6feb",

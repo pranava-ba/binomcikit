@@ -1,71 +1,49 @@
-# Foundations — start here (no maths required)
+# Foundations — probability from zero
 
-**What you'll learn:** enough to follow every other page in these docs — what a
-proportion is, what a confidence interval really means, and why there are so many
-methods. **What you need to know first:** nothing. If a word looks technical, it is a
-link — click it to jump to the {doc}`../glossary`.
+**What this is:** a short, self-contained course in the handful of ideas the rest of the docs stand on —
+what a proportion is, how a sample wobbles around the truth, what a confidence interval *really* claims,
+and the one number (coverage) that tells you whether a method keeps its promise. **What you need first:**
+nothing but arithmetic. Every technical word is a link to the {doc}`../glossary`; every example is small
+enough to check by hand or is run for you when these pages are built.
 
 :::{note}
-New to statistics? Read this page top to bottom, then go to the Wald method page, and
-follow the guided path from there.
+Read the five pages below in order — each one builds on the last. By the end you can open any
+{doc}`method page <../methods/index>` and follow both halves of it. When you want the *why* behind the
+formulas, the {doc}`../theory/index` track takes each idea further.
 :::
 
-## 1. What are we even measuring?
+## The journey
 
-Suppose you flip a coin 10 times and see 6 heads. The **{term}`proportion`** of heads
-is 6/10 = 0.6. But you don't really care about *this* handful of flips — you care about
-the coin's *true* tendency to land heads, a number we call **{term}`theta`** (theta).
-We can never see θ directly; we can only *estimate* it from data.
+1. **{doc}`A proportion, and its estimate <01_proportion>`** — the quantity we are after ($\theta$) and
+   the number we actually see ($\hat p$), and why they are not the same thing.
+2. **{doc}`Trials and the binomial <02_binomial>`** — where the count comes from: independent yes/no
+   trials, and the distribution that governs how many succeed.
+3. **{doc}`Sampling variability <03_sampling_variability>`** — run the same experiment twice and get two
+   answers. How much do samples wobble, and how fast does the wobble shrink with more data?
+4. **{doc}`What a confidence interval really means <04_confidence_interval>`** — the most misunderstood
+   idea in statistics, shown by simulation rather than asserted.
+5. **{doc}`Coverage — the promise kept or broken <05_coverage>`** — how we *score* a method, and why
+   this package is built around measuring it.
 
-Each flip is a **{term}`trial`** with two outcomes, a **{term}`Bernoulli trial`**.
-Counting the **{term}`success`es** across *n* trials gives a **{term}`binomial`** count.
+## Why there are so many methods
 
-## 2. Why a single number isn't enough
+By the last page you will see the tension the whole library exists to manage. Every interval method
+trades off two things:
 
-The observed proportion p̂ = x/n is an **{term}`estimate`**, but it is almost never
-*exactly* θ. With only 10 flips, 6 heads is very compatible with a fair coin (θ = 0.5)
-*and* with a biased one (θ = 0.65). So instead of one number we report a **range** of
-plausible values: a **{term}`confidence interval`**.
+- **{term}`coverage`** — does it trap the true rate as often as it advertises?
+- **{term}`expected length`** — how narrow, and therefore how useful, is it?
 
-## 3. What "95% confidence" actually means
+No single method wins on both for every $n$ and every $\theta$, especially with small samples or when the
+rate sits near 0 or 1. `binomcikit` lets you *measure* that trade-off for your own situation instead of
+taking a method on faith — which is exactly what these foundations prepare you to do.
 
-A 95% confidence interval is not "θ is 95% likely to be in here." It is a *recipe*: if
-you repeated the whole experiment many times and built an interval each time, about 95%
-of those intervals would contain the true θ. That 95% is the **{term}`confidence level`**
-(= 1 − **{term}`alpha`**). How often a recipe *actually* hits that target is its
-**{term}`coverage`** — and, surprisingly, many popular recipes miss it.
+```{toctree}
+:hidden:
+:maxdepth: 1
 
-## 4. Why there are so many methods
-
-Different recipes trade off two things:
-- **{term}`coverage`** — does it trap θ as often as advertised?
-- **{term}`expected length`** — how wide (and therefore how useful) is it?
-
-No single method wins on both for every *n* and θ, especially for small samples or when
-θ is near 0 or 1. That tension is the whole subject — and this package lets you *measure*
-it, not just take a method on faith.
-
-## 5. Two ways of thinking (frequentist vs Bayesian)
-
-Most methods here treat θ as a fixed unknown and ask "what values are compatible with my
-data?" The **{term}`Bayesian`** methods instead start from a **{term}`prior`** belief and
-update it with data into a **{term}`posterior`**. Both are supported; both are explained.
-
----
-
-## How these docs are organised
-
-Every method and every metric has **two pages**, so you can pick the depth you need:
-
-- **Use it** — how to call the function: the signature, each argument in plain and formal
-  terms, what comes back, and copy-pasteable examples.
-- **Understand it** — the idea first (a coin-flip story), then the formula with *every
-  symbol defined*, where it comes from, when it works, and when it fails.
-
-Supporting these:
-- the {doc}`../glossary` defines **every** technical word and is linked everywhere;
-- collapsible "for the curious" boxes hold the heavier maths, so beginners can skip them
-  and experts can expand them;
-- worked examples use numbers small enough to check by hand.
-
-*Prerequisites: none. Everything builds from this page.*
+01_proportion
+02_binomial
+03_sampling_variability
+04_confidence_interval
+05_coverage
+```
