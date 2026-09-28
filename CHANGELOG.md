@@ -36,6 +36,12 @@ what to build next, not because they're a code change.
   cheap given what's already built, and it may change what Phase 2 should even be (e.g. a
   benchmark-sizing calculator could matter more to this audience than a general Streamlit GUI). Decide
   Streamlit-vs-alternative after seeing whether the tutorial resonates, not before.
+- **TODO, not yet done: the paper-finder/scraper (`paper-explorer/`, a separate gitignored tool, not
+  part of this package) needs its search topics expanded to match this angle.** Its OpenAlex pull
+  (`scripts/build_corpus.py` / `explorer/openalex.py`) currently targets binomial-CI-method topics only;
+  it should also pull "safe anytime-valid inference" / betting confidence sequences and LLM-evaluation-
+  statistics literature, so the corpus/novelty analysis reflects this positioning angle too, not just
+  the original method-comparison scope. Not actioned this session — noted for later.
 
 ### Added
 - **Sample-size / power planning — sub-phase 1.12, NEW code beyond R `proportion`**
