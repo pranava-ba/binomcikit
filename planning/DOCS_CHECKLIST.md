@@ -43,11 +43,19 @@ Re-run the build command after each edit. `_build/` is git-ignored — none of t
 
 ## 1. The build gate (must pass before calling any page done)
 ```bash
-cd docs && python -m sphinx -b html -W --keep-going . _build/html
+cd docs && PYTHONPATH=../src python -m sphinx -b html -W --keep-going . _build/html
 ```
 `-W` turns warnings into errors — it catches **undefined `{term}` links, broken `{doc}`/`{ref}`
 cross-references, orphan pages, and failed `{code-cell}` executions**. A clean `-W` build is the
 definition of "the docs are not broken". Also run a spot check in the browser (§0) for layout.
+
+> **`PYTHONPATH=../src` is required locally** whenever an executable page must re-run. `conf.py`'s
+> `sys.path.insert` only reaches the *Sphinx* process, **not** the MyST-NB Jupyter kernel subprocess —
+> the kernel inherits the parent env, so without `PYTHONPATH` it fails with `ModuleNotFoundError: No
+> module named 'binomcikit'` on any freshly-edited executable page (unchanged pages pass only because
+> their outputs are cached). On Read the Docs this is a non-issue — `.readthedocs.yaml` does
+> `pip install .`, so the kernel imports the installed package. A cold build re-executes every page
+> (~2 min); an incremental build only re-runs what changed.
 
 ---
 
@@ -126,8 +134,10 @@ kernelspec:
 | `foundations/05_coverage.md` | ~140 | ✅ **done** (executable) | T2 — coverage as the central idea (exact binomial sum + figure) |
 | `method_selection.md` | 36 | 🟡 ok | short by design; keep the table current |
 | `methods/index.md` | 40 | ✅ cheat-sheet | keep table current |
-| `methods/*.md` (9) | 142–165 | ✅ solid | **T4** — add a numeric worked derivation + pitfalls box each |
-| `evaluating_intervals.md` | 89 | 🟡 ok | **T4** — explain p-confidence/p-bias/error from scratch + a sim |
+| `methods/*.md` (9) | ~190 | ✅ **T4 done** (executable) | each gained a *Worked example — n=5, x=3* cell (reproduces the shipped limits from scipy) + an *Interpretation & pitfalls* box; pages are now executable |
+| `evaluating_intervals.md` | ~230 | ✅ **T4 done** (executable) | rewritten: coverage MC sim, and p-confidence/p-bias/error derived from scratch (reproduce `pcopbi*`/`err*` from scipy) + trade-off figure + quiz |
+| `comparison.md` | ~110 | ✅ **T5 done** (executable) | binomcikit vs scipy/statsmodels/R — matching-numbers proof (scipy live, statsmodels static) + when-to-use matrix |
+| `faq.md` | ~150 | ✅ **T5 done** (executable) | troubleshooting Q&A: `[0,0]`/ZWI/LABB, coverage vs confidence, freq vs Bayes, RNG reproducibility |
 | `bayesian_toolbox.md` | 103 | ✅ solid | optional worked Bayes-factor / predictive examples |
 | `access_layer.md` | 100 | ✅ solid | make snippets executable cells |
 | `gallery.md` | 80 | 🟡 ok | ensure Plotly figures render; add coverage-plot gallery |
@@ -193,20 +203,29 @@ Each page: intuition → maths → an *executed* n = 5 worked example → figure
 - [x] "Choose a method for *your* data" using `compare` / `recommend` (three `by` strategies), executable.
 - [x] Cookbook page (7 recipes) + `tutorials/index` hub + `:caption: Tutorials` toctree group + homepage card.
 
-### T4 — Depth on existing pages
-- [ ] Per method: an *executed* numeric derivation (n = 5, x = 3, every step) + an
-      "Interpretation & pitfalls" admonition + annotated references with DOIs.
-- [ ] `evaluating_intervals`: explain p-confidence, p-bias, error/long-term power from scratch with a
-      runnable simulation; add a side-by-side coverage-plot gallery.
+### T4 — Depth on existing pages  🟢 mostly done 2026-09-01
+- [x] Per method (all 9): an *executed* numeric derivation (n = 5, x = 3, every step) + an
+      "Interpretation & pitfalls" admonition. Each worked cell reproduces the shipped limits from
+      `scipy`/`numpy` (closed forms for Wald/Wilson/ArcSine/Logit; Satterthwaite ν for Wald-T; a
+      `brentq` root-find for LR and Blaker's γ; Beta quantiles for Exact/Bayes) and confirms against
+      `bk.ci`. Pages are now executable (jupytext front matter added). *(Annotated refs with DOIs still
+      open — the `planning/RESEARCH.md §11` pointers remain the source of truth for now.)*
+- [x] `evaluating_intervals`: rewritten — a Monte-Carlo coverage sim (Wald 0.877 vs Wilson 0.956 at
+      θ=0.1), and p-confidence/p-bias/error derived from first principles and reproduced from `scipy`
+      (matching `pcopbiwd`/`errwd` exactly) + the two-panel `evaluating_tradeoff.png` + a quiz.
 - [ ] Short **concept explainers** (deeper than glossary): coverage vs confidence level, discreteness,
-      boundary behaviour, continuity correction, the h-adjustment.
+      boundary behaviour, continuity correction, the h-adjustment. *(Largely covered by the `theory/`
+      track now; a dedicated concepts hub is still optional.)*
 
-### T5 — Infra / quality
+### T5 — Infra / quality  🟢 mostly done 2026-09-01
 - [x] Executable docs (MyST-NB) wired up; edit-button removed; sidebar collapsible.
-- [ ] FAQ / troubleshooting page ("why is my interval [0,0]?", "what is ZWI?", "vs statsmodels/scipy?",
-      "frequentist vs Bayesian?").
-- [ ] `binomcikit` vs `statsmodels` / `scipy` / R comparison + when-to-use matrix.
-- [ ] Consider the `dataviz` skill to standardise figure styling.
+- [x] FAQ / troubleshooting page — `docs/faq.md` ("why is my interval [0,0]?", "what is ZWI?",
+      "vs statsmodels/scipy?", "frequentist vs Bayesian?", RNG reproducibility). In the Guides nav +
+      homepage card.
+- [x] `binomcikit` vs `statsmodels` / `scipy` / R comparison + when-to-use matrix — `docs/comparison.md`
+      (proves matching numbers for Wald/Wilson/CP/Jeffreys). In the Guides nav + homepage card.
+- [ ] Consider the `dataviz` skill to standardise figure styling. *(new `evaluating_tradeoff.png` uses a
+      colourblind-safe Okabe–Ito palette by hand; a full pass is still optional.)*
 
 ---
 

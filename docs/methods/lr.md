@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Likelihood-ratio interval
 
 > **In one line:** instead of approximating, this interval keeps every {term}`theta` that the data do
@@ -136,6 +146,45 @@ line, tracking Wilson (green) almost step for step and clearly beating Wald (blu
 - **Score / {doc}`Wilson <wilson>`** — another test-inversion interval; LR inverts the likelihood-ratio
   test, Wilson inverts the score test. They usually agree closely.
 - **Exact LR** (Somerville & Brown 2013) — a coverage-guaranteeing refinement, not yet in binomcikit.
+
+### Worked example — n = 5, x = 3
+
+There is no closed form — the limits are the two θ where the fit has worsened by exactly the cutoff.
+Build the {term}`likelihood-ratio statistic` and find those crossings numerically. With p̂ = 3/5 = 0.6:
+
+```{code-cell} python
+import binomcikit as bk, numpy as np, scipy.stats as st
+from scipy.optimize import brentq
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n
+z = st.norm.ppf(1 - alpha / 2)
+
+loglik = lambda t: x * np.log(t) + (n - x) * np.log(1 - t)   # log-likelihood
+stat   = lambda t: 2 * (loglik(phat) - loglik(t))            # LR statistic, 0 at p-hat
+cutoff = z**2                                                # chi-square_1 cutoff = 3.84
+
+lo = brentq(lambda t: stat(t) - cutoff, 1e-9, phat)          # crossing below p-hat
+hi = brentq(lambda t: stat(t) - cutoff, phat, 1 - 1e-9)      # crossing above p-hat
+
+print(f"cutoff z^2 = {cutoff:.4f};  stat(p-hat) = {stat(phat):.1f}")
+print(f"limits (where stat == cutoff): [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="lr")                                 # LLRx / ULRx match
+```
+
+The statistic is 0 at p̂ = 0.6 and rises on both sides; the interval is exactly the stretch of θ where
+it stays under 3.84. Note the two crossings are **not** equidistant from p̂ — LR follows the
+likelihood's own asymmetric shape.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- **No {term}`continuity correction`.** LR inverts a test statistic rather than shifting a standardised
+  quantity, so `c=` is not defined — `bk.ci(..., method="lr", c=0.5)` raises. This is structural.
+- Limits are found by a small root-find, so LR is marginally slower than the algebraic methods at very
+  large `n` — invisible in normal use.
+- Coverage is excellent (on par with {doc}`Wilson <wilson>`) and the interval always brackets p̂; it is
+  a strong, under-used default. See {doc}`../theory/03_test_inversion`.
+:::
 
 ### References
 The interval inverts the likelihood-ratio test (Wilks' theorem applied to the binomial); the exact

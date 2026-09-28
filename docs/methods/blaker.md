@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Blaker's exact interval
 
 :::{admonition} New in binomcikit
@@ -144,6 +154,51 @@ like Clopper–Pearson (blue) — but hugs closer to it, the visible sign of its
 (green) oscillates around nominal, dipping below. Reproduce with
 `bk.plot_coverage(n=20, methods=["exact", "blaker", "wilson"])`.
 ```
+
+### Worked example — n = 5, x = 3
+
+Reproduce the {term}`acceptability function` γ(x, θ) from its definition, then find the two θ where
+γ = α by searching **inward from the Clopper–Pearson bounds** (a safe bracket, since Blaker ⊆ CP):
+
+```{code-cell} python
+import binomcikit as bk, numpy as np
+from scipy.stats import binom, beta
+from scipy.optimize import brentq
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n
+
+def g(k, theta):                                   # smaller of the two tails at count k
+    return min(binom.cdf(k, n, theta), binom.sf(k - 1, n, theta))
+
+def gamma(theta):                                  # P(g(X, theta) <= g(x, theta))
+    gx = g(x, theta)
+    ks = np.arange(n + 1)
+    return sum(binom.pmf(k, n, theta) for k in ks if g(int(k), theta) <= gx + 1e-12)
+
+cp_lo = beta.ppf(alpha / 2, x, n - x + 1)          # Clopper-Pearson bracket
+cp_hi = beta.ppf(1 - alpha / 2, x + 1, n - x)
+lo = brentq(lambda t: gamma(t) - alpha, cp_lo, phat)
+hi = brentq(lambda t: gamma(t) - alpha, phat, cp_hi)
+
+print(f"Clopper-Pearson bracket: [{cp_lo:.4f}, {cp_hi:.4f}]")
+print(f"Blaker (gamma == alpha) : [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="blaker")                   # LBKx / UBKx match
+```
+
+Blaker's `[0.189, 0.924]` sits strictly inside Clopper–Pearson's `[0.147, 0.947]` — the **nesting
+theorem** in action, and the reason to prefer it when you need an exact guarantee.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- γ(·, θ) is **not smooth**: it jumps as the set of counted outcomes changes with θ, and is not
+  perfectly unimodal (Klaschka 2010 "unimodalises" it for edge cases). The reported interval is the
+  connected acceptance region containing p̂.
+- Correctness is **not** verified against another program — it is checked against Blaker's two defining
+  theorems (nesting inside CP, coverage ≥ 1 − α) across a θ grid in the test suite.
+- Exact ⇒ conservative relative to {doc}`Wilson <wilson>`. Choose Blaker when you specifically want the
+  guarantee; it dominates {doc}`Clopper–Pearson <exact>` on width. See {doc}`../theory/04_exact_and_discreteness`.
+:::
 
 ### References
 Blaker, H. (2000), "Confidence curves and improved exact confidence intervals for discrete

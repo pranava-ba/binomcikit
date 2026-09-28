@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # ArcSine (variance-stabilising) interval
 
 > **In one line:** a confidence interval for a {term}`proportion` built on a stretched scale where the
@@ -147,6 +157,41 @@ interior — clearly beating Wald (blue) — but **dives** as θ approaches 0 or
   from 0 and n before transforming, which stops the boundary collapse. This is the usual repair.
 - **Just use {doc}`Wilson <wilson>`** — for a general default it is simpler to reason about and has
   no boundary blind spot.
+
+### Worked example — n = 5, x = 3
+
+Three steps: transform, lay down a symmetric band whose half-width does **not** depend on θ, then bend
+the ends back with sin². With p̂ = 3/5 = 0.6:
+
+```{code-cell} python
+import binomcikit as bk, numpy as np, scipy.stats as st
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n
+z = st.norm.ppf(1 - alpha / 2)
+
+phi  = np.arcsin(np.sqrt(phat))          # transform to the stabilised scale
+band = z / (2 * np.sqrt(n))              # constant half-width — no theta in it
+lo, hi = np.sin(phi - band)**2, np.sin(phi + band)**2
+
+print(f"phi = arcsin(sqrt(p-hat)) = {phi:.4f},  half-width = {band:.4f}")
+print(f"limits (sin^2 of the band ends): [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="arcsine")        # LASx / UASx match
+```
+
+The interior behaves well here. The danger only shows at the edges — the next box, and the `x = 0` row
+in the table above, are the whole reason arcsine is not a default.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- Use $\sin^2$ of the **whole** angle, never $\sin^2(\varphi/2)$ — a common transcription error that
+  silently gives the wrong interval.
+- **Boundary collapse:** at `x = 0` (φ = 0) the band `[−h, +h]` folds through sin², mapping both ends to
+  the same positive number — a {term}`zero-width interval` that *excludes the observed 0*. The
+  `h`-adjusted form (or {doc}`Wilson <wilson>`) is the fix.
+- Trustworthy for θ roughly in 0.2–0.8; coverage plunges as θ approaches 0 or 1
+  ({doc}`../theory/05_transformed_intervals`).
+:::
 
 ### References
 The variance-stabilising lineage is Bartlett (1936) [4], Anscombe (1948) [3] and Freeman & Tukey (1950)

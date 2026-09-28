@@ -8,6 +8,16 @@
 > coding contract live in [ROADMAP.md](ROADMAP.md).
 > References are numbered `[n]` (§11). Verified via web scan 2026-07; the betting paper [31]
 > and Wang–Hutson [25] were read from source.
+>
+> **Update 2026-09-20:** two claims below were re-checked against packages this scan didn't
+> tabulate (R `binom`, `PropCIs`, `DescTools`, `Hmisc`, `BayesFactor`) and corrected — see
+> `NOVELTY_AND_COMPARISON.md` for the full re-verified table and sourcing. In short: Blaker
+> (§3.1, §9.1) is **not** absent outside `proportion` — `PropCIs::blakerci` and
+> `DescTools::BinomCI(method="blaker")` both ship it (it's new to *Python*, not new absolutely);
+> and betting/confidence-sequence CIs (§7–8) would **not** make binomcikit "first in Python" —
+> the original authors already ship `confseq` on PyPI. The paper-scoping novelty claim (§5) still
+> holds, on narrower grounds: no package bundles this *combination* of methods + evaluation layer
+> + Bayesian toolbox in one tool.
 
 ## Contents
 1. The problem & the core idea · 2. Research gaps · 3. Competitive landscape · 4. How

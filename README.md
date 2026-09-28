@@ -15,14 +15,15 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![PyPI](https://img.shields.io/badge/PyPI-binomcikit-3775A9?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/binomcikit/)
-[![Tests](https://img.shields.io/badge/tests-209%20passing-2EA043?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/tests-234%20passing-2EA043?style=flat-square)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-65%25%20branch-DBAB0A?style=flat-square)](docs/under_the_hood.md)
 [![License](https://img.shields.io/badge/License-GPL-8B949E?style=flat-square)](LICENSE.txt)
 
 [![Docs](https://img.shields.io/badge/📖%20Documentation-readthedocs-1ABC9C?style=for-the-badge&logo=readthedocs&logoColor=white)](https://pranava-babinomcikit-rtd.readthedocs.io/en/latest/)
 
 <br/>
 
-*Twelve confidence-interval methods, a full evaluation suite, and a Bayesian toolbox — one engine, fully documented.*
+*Thirteen confidence-interval methods, a full evaluation suite, and a Bayesian toolbox — one engine, fully documented.*
 
 </div>
 
@@ -122,7 +123,7 @@ coverage vs. the unknown proportion θ (the dashed target is the nominal 95%):
 
 ## Methods
 
-Twelve interval methods, each with a two-part documentation page (*Use it* / *Understand it*):
+Thirteen interval methods, each with a two-part documentation page (*Use it* / *Understand it*):
 
 | Method | Idea | Back-transform / note |
 |--------|------|-----------------------|
@@ -138,6 +139,7 @@ Twelve interval methods, each with a two-part documentation page (*Use it* / *Un
 | **Blaker** ⭐ *new* | exact acceptability interval | ⊆ Clopper–Pearson, still guaranteed |
 | **Bayesian** | Beta posterior credible interval | quantile + HPD |
 | **Jeffreys** | Bayesian with Beta(½, ½) prior | excellent frequentist coverage |
+| **Bootstrap (smooth)** ⭐ *new* | Wang–Hutson smooth-quantile resampling | fixes the naive bootstrap's collapse at x = 0, n |
 
 Each also has adjusted (`h=`) and continuity-corrected (`c=`) variants where applicable, plus the four
 metric families and the Bayesian toolbox.
@@ -175,9 +177,11 @@ All share one vectorised engine (optional numba acceleration for large *n*).
 <br/>
 
 - `from_data` / `from_counts` — build `(x, n)` from raw 0/1 data
-- `point_estimate`, `posterior`, `prior` — estimates and posteriors
+- `point_estimate` (incl. `"mue"`, median-unbiased), `posterior`, `prior` — estimates and posteriors
 - `coverage_curve` / `length_curve` — the numbers behind the plots
 - `compare` — every method side by side; `recommend` — the package picks for you
+- `pvalue` / `reject` — a two-sided hypothesis test, dual to any method's own CI ⭐ *new*
+- `sample_size` / `power` — plan a study: trials needed for a target CI width, or power to detect an effect ⭐ *new*
 
 </details>
 

@@ -4,6 +4,84 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
 ## [Unreleased] — Phase 1 (in progress)
+### Added
+- **Sample-size / power planning — sub-phase 1.12, NEW code beyond R `proportion`**
+  (`binomcikit.sample_size`/`power`, access layer). Sample-size determination is a *pre-data* design
+  question outside the ported paper's estimation scope; the paper cites a dedicated R package
+  (`binomSamSize`) rather than duplicating it. binomcikit adds both: `sample_size(width, alpha, p0,
+  method)` finds the **exact smallest n** whose `(1-alpha)` CI is no wider than `width` (binary search,
+  evaluated at the single `x` nearest `p0*n` via each method's own `x`-variant dispatcher — deliberately
+  *not* the whole-table `_limits` call every other candidate design would reach for, since that would
+  make the search cost `O(n_max)` instead of `O(log n_max)` for root-finding methods); `power(n, theta0,
+  p_true, alpha, method)` is the exact (not simulated) CI-test-duality companion to 1.11's
+  `pvalue`/`reject`. **Verification:** `sample_size(..., method="wald")` matches
+  `statsmodels.stats.proportion.samplesize_confint_proportion` exactly across every tested case — a
+  genuine independent oracle; every other method is checked against its own defining minimality property
+  directly (`width(n) <= target`, `width(n-1) > target`). `power` is cross-checked against an independent
+  brute-force sum built from `reject()` (matches to floating-point precision). New
+  `docs/access_layer.md` section, 3 glossary terms, 25 tests (`tests/test_sample_size_power.py`).
+  **Both exclude the bootstrap family**, same rationale as `pvalue`/`reject`.
+  - **Known issue discovered incidentally, not yet fixed:** stress-testing `sample_size`'s search up to
+    `n_max=100,000` surfaced a real, pre-existing bug in `cilrx`/`cilr` (the Likelihood-Ratio interval,
+    unrelated to this sub-phase) — its root-find snaps to essentially `[0, 1]` somewhere between
+    `n=25,800` (correct) and `n=26,000` (broken), a sharp cliff rather than gradual drift. Worked around
+    in this sub-phase's own tests (capped `n_max`, documented inline); needs its own investigation. See
+    `docs/under_the_hood.md` and `planning/CONTINUE_HERE.md` "Known issues".
+- **Frequentist p-value tests — sub-phase 1.11, NEW code beyond R `proportion`**
+  (`binomcikit.pvalue`/`reject`, access layer). The 2017 paper treats CIs and tests as interchangeable
+  by CI-test duality and explicitly omits separate test functions; binomcikit adds them anyway, defined
+  **directly from each method's own CI** (the smallest α at which θ₀ falls outside the `(1-α)` interval)
+  — so `pvalue`/`reject` work for **any** registered method (Wald through Blaker), not just ones with a
+  closed-form test formula, and are guaranteed by construction to agree with `bk.ci`. **Verification:**
+  not checked against `scipy.stats.binomtest`'s default two-sided p-value — that uses a different
+  ("minlike") convention that genuinely disagrees with the equal-tailed construction used here (locked
+  in by a test asserting binomcikit's Clopper-Pearson p-value is exactly 2× scipy's at a case where they
+  diverge). Instead verified against: (1) the standard closed-form equal-tailed formula
+  `2*min(P(X<=x), P(X>=x))` for `method="exact"` (an independent, textbook formula); (2) the one-sided
+  tail probabilities matching `scipy.stats.binomtest(alternative="less"/"greater")` exactly (the
+  convention every implementation agrees on); (3) the CI-duality property itself, checked directly
+  across 10 methods. Also **documents and tests a genuine, expected divergence**: Wald's p-value differs
+  from Wilson's/Clopper-Pearson's by ~2-3 orders of magnitude for the same `(x, n, theta0)`, because
+  Wald's variance is estimated at p̂ rather than θ₀ — exactly the "duality is only approximate for some
+  methods" gap ROADMAP.md names as the reason to add these functions at all. New `docs/access_layer.md`
+  section + 2 glossary terms (`CI-test duality`; `p-value`/`null hypothesis` already existed). 30 new
+  tests (`tests/test_pvalue.py`). **Performance note:** each call re-evaluates the method's whole CI
+  table via bisection on α — near-instant for closed-form methods, noticeably slower (documented in the
+  `pvalue` docstring) for methods that root-find per row internally (Clopper-Pearson/Mid-P, LR, Blaker).
+- **Bootstrap confidence intervals — sub-phase 1.10, a NEW method beyond R `proportion`**
+  (`binomcikit.ci.bootstrap`, `ciboot`/`cibootx`, `method="boot"`). Three variants behind one `kind`
+  parameter: `"percentile"`/`"bca"` — the ordinary nonparametric bootstrap, a thin wrapper around
+  `scipy.stats.bootstrap` (oracle-verified: matches scipy's own output exactly, same seed in → same
+  limits out) — and `"smooth"` (default) — Wang & Hutson's (2013) smooth-quantile bootstrap [25],
+  implemented directly from the paper's primary text (Section 2, verified via
+  [PMC4789773](https://pmc.ncbi.nlm.nih.gov/articles/PMC4789773/), not a secondary summary), including
+  its median-unbiased estimator (Eq. 8, checked against the paper's own closed-form boundary formulas
+  as an exact identity) and its fixed cubic B-spline (Eq. 7, knots/coefficients transcribed exactly).
+  **No third-party oracle exists for `kind="smooth"`** — this is flagged explicitly in
+  `docs/methods/bootstrap.md` and `docs/under_the_hood.md`, and verified instead by (1) the MUE
+  boundary identity, (2) rough agreement with the oracle-verified percentile/BCa away from the
+  boundary, and (3) the specific property it exists for: a **non-degenerate interval at x = 0 / x = n**,
+  exactly where the ordinary bootstrap (verified to) collapse to zero width. Wired into the full metric
+  suite (`covpboot`, `lengthboot`, `pcopbiboot`, `errboot`), the `ci()` dispatcher, and the Plotly
+  layer (`"boot"`, `"boot-percentile"`, `"boot-bca"`); deliberately **excluded** from
+  `compare()`/`recommend()`'s default method list (stochastic + much slower than every closed-form
+  method — pass `methods=[..., "boot"]` explicitly). Also added `point_estimate(x, n, "mue")`, the
+  median-unbiased estimator, to the access layer. New `docs/methods/bootstrap.md` (two-core page,
+  worked example reproducing the boundary contrast) and `bootstrap_coverage.png` (percentile vs.
+  smooth vs. Wilson — the smooth variant tracks Wilson; percentile plunges to ~0.85 coverage near
+  θ ≈ 0.1/0.9). Seven new glossary terms (`bootstrap`, `resampling`, `percentile interval`, `BCa`,
+  `median-unbiased estimator`, `smooth quantile function`, `B-spline`). 25 new tests
+  (`tests/test_bootstrap.py`): the MUE identity, scipy-oracle equality for percentile/BCa, the
+  boundary-collapse property, cross-agreement away from the boundary, dispatch, and metric-suite
+  inheritance.
+- **Coverage measurement in CI.** Added a dedicated `coverage` GitHub Actions job (`pytest-cov`,
+  branch coverage, Python 3.12/Ubuntu) that uploads the XML report as a build artifact and fails
+  the build below 60%. Baseline measured 2026-09-28: **64.8% branch coverage** (4,171 statements,
+  1,464 branches); the legacy plotnine `*_graph.py` modules (4–8% covered, slated for retirement)
+  are the main drag — the numeric core is meaningfully higher. `pytest-cov` moved from `[dev]`-only
+  into the `[test]` extra; `[tool.coverage.run]`/`[tool.coverage.report]` added to `pyproject.toml`.
+  README gained a coverage badge; documented in `docs/under_the_hood.md` ("Coverage").
+
 ### Changed
 - **Executable documentation (MyST-NB).** Worked examples in the docs now run at build time against the
   installed package (```{code-cell}``` blocks), so the tables and numbers shown are generated from the

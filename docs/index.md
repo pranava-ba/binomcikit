@@ -46,7 +46,7 @@ Probability from zero — proportions, trials, and coverage, with no maths.
 :::{grid-item-card} {octicon}`list-unordered` Choosing a method
 :link: method_selection
 :link-type: doc
-Which of the twelve intervals to use, and why.
+Which of the thirteen intervals to use, and why.
 :::
 
 :::{grid-item-card} {octicon}`beaker` Methods
@@ -67,6 +67,18 @@ Worked scenarios: A/B tests, quality control, zero events, choosing a method.
 Credible intervals, Bayes factors, empirical Bayes, prediction.
 :::
 
+:::{grid-item-card} {octicon}`git-compare` binomcikit vs the rest
+:link: comparison
+:link-type: doc
+How it compares to scipy, statsmodels and R — same numbers, plus an evaluation layer.
+:::
+
+:::{grid-item-card} {octicon}`question` FAQ & troubleshooting
+:link: faq
+:link-type: doc
+Why is my interval `[0, 0]`? What does ZWI mean? Answers to the common snags.
+:::
+
 :::{grid-item-card} {octicon}`code` API reference
 :link: api/index
 :link-type: doc
@@ -77,7 +89,7 @@ Every public function, with parameters and returns.
 
 ## Why binomcikit?
 
-- **Comprehensive** — twelve interval methods with base, adjusted, continuity-corrected, exact and Bayesian variants.
+- **Comprehensive** — thirteen interval methods with base, adjusted, continuity-corrected, exact and Bayesian variants.
 - **Evaluation built in** — not just "compute an interval" but "how well does it cover, how wide is it, where does it fail?"
 - **Validated** — checked against `statsmodels` where an independent reference exists, plus golden-value and property tests; the new Blaker interval is verified against its defining theorems.
 - **Modern & familiar** — pandas `DataFrame` outputs, interactive Plotly figures, and a `from_data` / `compare` / `recommend` access layer the R original lacks.
@@ -98,6 +110,8 @@ method_selection
 evaluating_intervals
 bayesian_toolbox
 access_layer
+comparison
+faq
 gallery
 ```
 

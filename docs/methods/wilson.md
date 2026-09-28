@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Wilson (Score) interval
 
 > **In one line:** the recommended default confidence interval for a {term}`proportion`. It keeps its
@@ -142,6 +152,40 @@ the boundaries. Reproduce with `bk.plot_coverage(n=20, methods=["wald", "wilson"
   explain, almost as good. *(Its own page in a later sub-phase.)*
 - **Continuity-corrected Wilson** (`c=0.5`) — nudges the limits outward so coverage stays at or above
   nominal, at the cost of slightly wider intervals.
+
+### Worked example — n = 5, x = 3
+
+The formula has three moving parts — the shrink factor, the nudged centre, and the half-width. Here they
+are, with p̂ = 3/5 = 0.6:
+
+```{code-cell} python
+import binomcikit as bk, numpy as np, scipy.stats as st
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n
+z = st.norm.ppf(1 - alpha / 2)
+
+factor = n / (n + z**2)                              # shrink toward 1/2
+centre = phat + z**2 / (2 * n)                       # nudged centre
+half   = z * np.sqrt(phat * (1 - phat) / n + z**2 / (4 * n**2))
+lo, hi = factor * (centre - half), factor * (centre + half)
+
+print(f"shrunken centre = {factor * centre:.4f}   (not p-hat = {phat})")
+print(f"limits          : [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="wilson")                     # LSCx / USCx match
+```
+
+Notice the midpoint of `[0.2307, 0.8824]` is ≈ 0.557, pulled *below* p̂ = 0.6 toward ½ — the asymmetry
+that fixes Wald's coverage. Both limits sit comfortably inside `[0, 1]` with no clamping.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- The interval is **deliberately not symmetric** about p̂. If you need a p̂-centred interval, that is
+  {term}`Agresti–Coull` or Wald, not Wilson.
+- Coverage can still spike slightly *above* nominal in narrow bands; for a hard ≥-nominal floor use
+  `c=0.5` or an exact method ({doc}`exact`, {doc}`blaker`).
+- The shrunken centre `(x + z²/2)/(n + z²)` is not the point estimate p̂ — don't report it as one.
+:::
 
 ### References
 Wilson (1927) [1] introduced the score interval; its status as a recommended default is argued in

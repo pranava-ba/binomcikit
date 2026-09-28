@@ -17,6 +17,7 @@ from .base_all import (
     covpall,
     covpas,
     covpblaker,
+    covpboot,
     covplr,
     covplt,
     covpsc,

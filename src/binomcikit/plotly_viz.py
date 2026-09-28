@@ -16,7 +16,7 @@ from collections.abc import Sequence
 import numpy as np
 
 from ._accel import coverage_series
-from .ci import cias, ciba, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
+from .ci import cias, ciba, ciblaker, ciboot, ciex, cilr, cilt, cisc, citw, ciwd
 
 
 def _exact(e):
@@ -40,6 +40,18 @@ def _bayes(a, b):
     return _f
 
 
+def _boot(kind):
+    """Adapt the bootstrap family (which takes ``B``/``seed``/``kind``) to the
+    ``fn(n, alpha)`` shape, at a fixed kind and a fixed seed (reproducible
+    figures) and a moderate ``B`` (figures redraw the whole x-table, so keep
+    it fast rather than using ``ciboot``'s own higher default)."""
+
+    def _f(n, alpha):
+        return ciboot(n, alpha, B=1000, seed=0, kind=kind)
+
+    return _f
+
+
 # method name -> (all-x limits function, lower col, upper col, display label)
 _METHODS = {
     "wald": (ciwd, "LWD", "UWD", "Wald"),
@@ -50,6 +62,10 @@ _METHODS = {
     "waldt": (citw, "LTW", "UTW", "Wald-T"),
     "lr": (cilr, "LLR", "ULR", "Likelihood-ratio"),
     "blaker": (ciblaker, "LBK", "UBK", "Blaker"),
+    "boot": (_boot("smooth"), "LBOOT", "UBOOT", "Bootstrap (smooth)"),
+    "bootstrap": (_boot("smooth"), "LBOOT", "UBOOT", "Bootstrap (smooth)"),
+    "boot-percentile": (_boot("percentile"), "LBOOT", "UBOOT", "Bootstrap (percentile)"),
+    "boot-bca": (_boot("bca"), "LBOOT", "UBOOT", "Bootstrap (BCa)"),
     "exact": (_exact(1.0), "LEX", "UEX", "Clopper-Pearson"),
     "cp": (_exact(1.0), "LEX", "UEX", "Clopper-Pearson"),
     "clopper-pearson": (_exact(1.0), "LEX", "UEX", "Clopper-Pearson"),

@@ -35,6 +35,10 @@ reference/
 # The copyrighted SoftwareX 2017 source paper (previous-work/) + any generated
 # paper.pdf — never commit (copyright + size).
 *.pdf
+# Lit-review tooling and prior-work notes — side tooling, not part of the package;
+# keep them off the main repo entirely (large corpus files, not for pip install).
+previous-work/
+paper-explorer/
 
 # Never commit secrets
 *recovery*codes*.txt

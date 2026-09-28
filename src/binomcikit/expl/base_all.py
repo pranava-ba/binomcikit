@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import cias, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, ciboot, ciex, cilr, cilt, cisc, citw, ciwd
 
 _S = 5000
 
@@ -129,6 +129,13 @@ def lengthblaker(n, alp, a, b, seed=None):
     _validate(n, alp, a, b)
     df = ciblaker(n, alp)
     return _length(n, alp, a, b, df["LBK"], df["UBK"], seed)
+
+
+def lengthboot(n, alp, a, b, seed=None, B=2000, kind="smooth"):
+    """Expected length of the bootstrap interval (new; not in R ``proportion``)."""
+    _validate(n, alp, a, b)
+    df = ciboot(n, alp, B=B, seed=seed, kind=kind)
+    return _length(n, alp, a, b, df["LBOOT"], df["UBOOT"], seed)
 
 
 def lengthas(n, alp, a, b, seed=None):

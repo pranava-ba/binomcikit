@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Bayesian credible interval
 
 > **In one line:** a different *kind* of interval. Instead of a frequentist guarantee, it reports where
@@ -128,6 +138,41 @@ a Bayesian construction that also satisfies the frequentist. Reproduce with
 `bk.plot_coverage(n=20, methods=["jeffreys", "bayes", "wilson"])`.
 ```
 
+### Worked example — n = 5, x = 3
+
+With a flat Beta(1, 1) {term}`prior`, {term}`conjugate prior` updating makes the {term}`posterior` a
+Beta again — no integration. Read the interval straight off its {term}`quantile`s. With x = 3, n = 5:
+
+```{code-cell} python
+import binomcikit as bk
+from scipy.stats import beta
+
+x, n, alpha = 3, 5, 0.05
+a, b = 1, 1                                       # uniform prior
+a_post, b_post = x + a, n - x + b                 # Beta(4, 3)
+
+mean = a_post / (a_post + b_post)                 # posterior mean (x+a)/(n+a+b)
+lo, hi = beta.ppf(alpha / 2, a_post, b_post), beta.ppf(1 - alpha / 2, a_post, b_post)
+
+print(f"posterior = Beta({a_post}, {b_post}),  mean = {mean:.4f}")
+print(f"equal-tailed credible interval: [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="bayes")                   # pomean, LBAQ/UBAQ (quantile) + LBAH/UBAH (HPD)
+```
+
+The posterior mean is 0.571, pulled *below* p̂ = 0.6 by the prior's mass near ½. The equal-tailed
+interval matches `LBAQ`/`UBAQ`; the shorter `LBAH`/`UBAH` is the {term}`highest posterior density
+interval`, found numerically.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- This is a **credibility** statement about θ *given the prior* — not a frequentist
+  {term}`confidence interval`. Say which one you're reporting, and **state the prior**.
+- The prior bites hardest when data are scarce; at small `n` the choice of `a, b` visibly moves the
+  interval, at large `n` it washes out.
+- With the **Jeffreys** prior (`method="jeffreys"`, a = b = 0.5) the frequentist coverage is excellent —
+  it doubles as one of the best-behaved intervals here. See {doc}`../theory/06_bayesian_view`.
+:::
+
 ### References
 The Bayesian credible interval for a proportion and the Jeffreys prior's strong frequentist behaviour
 are discussed in Brown, Cai & DasGupta (2001) [16]. The full Bayesian feature set — Bayes factors,
@@ -141,6 +186,7 @@ Rajeswaran 2017 [36]); see {doc}`../bayesian_toolbox`. Deeper maths: {doc}`../th
 {term}`proportion` · {term}`theta` · {term}`trial` · {term}`Bernoulli trial` · {term}`success` ·
 {term}`estimate` · {term}`confidence interval` · {term}`coverage` · {term}`alpha` · {term}`quantile` ·
 {term}`likelihood` · {term}`prior` · {term}`posterior` · {term}`Bayesian` · {term}`Beta distribution` ·
-{term}`credible interval` · {term}`posterior mean` · {term}`highest posterior density interval` ·
+{term}`conjugate prior` · {term}`credible interval` · {term}`posterior mean` ·
+{term}`highest posterior density interval` ·
 {term}`Bayes factor` · {term}`empirical Bayes` · {term}`posterior predictive`
 :::

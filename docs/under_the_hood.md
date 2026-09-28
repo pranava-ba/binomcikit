@@ -34,7 +34,7 @@ to fool all of them at once:
 
 **The accelerator can't change answers.** The optional numba fast-path is asserted **identical to
 the numpy path to 1e-9** (`tests/test_accel.py`), so results never depend on whether `[fast]` is
-installed. The full suite (**164 tests**) runs on every push across Python 3.9–3.13 on
+installed. The full suite (**234 tests**) runs on every push across Python 3.9–3.13 on
 Linux / macOS / Windows.
 
 *As each method sub-phase lands, its rare-method + metric outputs get golden fixtures generated from
@@ -45,6 +45,69 @@ R, extending oracle #1/#3.*
 *define* its value — it is **nested inside Clopper–Pearson** (never wider) and its **coverage is
 ≥ 1 − α** on a fine θ grid — plus an acceptance-boundary identity and frozen `BLAKER_N5` limits
 (`tests/test_blaker.py`). Passing both theorems is stronger evidence than matching another program.
+
+**Bootstrap — two verification strategies for two different risk levels.** `ciboot`'s
+`kind="percentile"`/`"bca"` are thin wrappers around `scipy.stats.bootstrap`, so they are checked to
+match scipy's own output **exactly, same seed in → same limits out** — scipy's own testing becomes the
+oracle. `kind="smooth"` (Wang & Hutson 2013 [25]) is genuinely new code with **no third-party oracle**:
+it is checked instead against (1) the paper's own closed-form boundary formulas for the
+median-unbiased estimator, confirmed as an exact algebraic identity (not a fit); (2) rough agreement
+with the oracle-verified percentile/BCa bootstrap away from `x = 0, n`; and (3) the specific property
+the method exists for — a **non-degenerate interval exactly where the naive bootstrap collapses**
+(`tests/test_bootstrap.py`). This is weaker evidence than golden-value or two-theorem verification, and
+is flagged as such in `docs/methods/bootstrap.md` — the honest position is "good-faith verified," not
+"gold-standard verified," for this one method.
+
+**p-value tests — verified against the right oracle, not the obvious one.** `pvalue`/`reject` are
+defined by CI-test duality (θ₀ rejected at level α iff it falls outside the method's `(1-α)` CI), so the
+"obvious" oracle would be `scipy.stats.binomtest`. It is the wrong one: scipy's default two-sided
+p-value uses a different ("minlike", smallest-probability) convention that genuinely disagrees with the
+equal-tailed construction dual to binomcikit's own CIs — `tests/test_pvalue.py` locks in a case where
+binomcikit's Clopper-Pearson p-value is exactly **2×** scipy's, on purpose. Verified instead against:
+(1) the standard closed-form equal-tailed p-value formula for `method="exact"` (an independent, textbook
+formula, not scipy); (2) the one-sided tail probabilities, which *do* match
+`scipy.stats.binomtest(alternative="less"/"greater")` exactly (the one convention everyone agrees on);
+and (3) the CI-duality property itself, checked directly against `bk.ci` across ten methods — the
+strongest of the three, since it is literally the property that defines correctness here. Also locks in
+a real, expected divergence: Wald's p-value differs from Wilson's/Clopper-Pearson's by 2-3 orders of
+magnitude for the same `(x, n, theta0)`, because Wald's variance is estimated at p̂ rather than θ₀ — see
+`docs/access_layer.md`.
+
+**Sample-size / power — an independent oracle for Wald, the defining property for everything else.**
+`sample_size(..., method="wald")` matches `statsmodels.stats.proportion.samplesize_confint_proportion`
+**exactly** (both round to the same integer n across every tested width/p0) — a genuine, independent,
+well-known closed-form oracle. For every other method, `sample_size` is checked against its own defining
+property directly: the returned n's CI width is `<= width`, and `n - 1`'s is not — the smallest n that
+actually satisfies the target, not an approximation. `power` is checked against an independent brute-
+force construction built from `reject()` (already-verified, sub-phase 1.11) summed by hand over every
+`x` — two independently-written paths to the same number, matching to floating-point precision.
+
+**Known issue, discovered incidentally (not yet fixed): `cilrx`/`cilr` (the Likelihood-Ratio interval)
+breaks at large n.** Stress-testing `sample_size`'s search up to `n_max = 100_000` surfaced a real,
+pre-existing numerical bug unrelated to sample-size/power themselves: LR's root-find snaps to
+essentially `[0, 1]` somewhere between `n = 25,800` (correct: width ≈ 0.0122, centered at 0.5) and
+`n = 26,000` (broken: `L ≈ 6e-6, U ≈ 0.999996`) — a sharp cliff, not a gradual drift, suggesting a fixed
+bracket or grid resolution hit rather than a slow precision loss. Every other method was checked well
+past this range with no issue. `sample_size`/`power`'s own tests avoid the affected region (documented
+inline in `tests/test_sample_size_power.py`) rather than silently working around it — this needs its own
+investigation and fix in a future sub-phase; see `planning/CONTINUE_HERE.md` "Known issues".
+
+## Coverage — measured, not just counted
+
+Passing tests answers "does the suite pass"; it says nothing about how much of the source the suite
+actually exercises. As of **2026-09-28**, `pytest --cov=binomcikit` (branch coverage) reports:
+
+| | |
+|---|---|
+| **Total** | **64.8%** branch coverage (4,171 statements, 1,464 branches) |
+| Best covered | `_accel.py`, `__init__.py` — 100%; most `ci`/`covp`/`err`/`expl`/`pconf` numeric modules sit 65–95% |
+| Worst covered | the **legacy plotnine** `*_graph.py` modules (`adj_n_graph.py`, `base_n_graph.py`, `cc_n_graph.py`, `base_n_x_graph.py`) at **4–8%** — they render static figures that aren't asserted, and are slated for retirement once the Plotly migration (§ Plotting, below) finishes. They're the single biggest drag on the total; the numeric core is meaningfully higher than the headline number suggests. **Not excluded from the report** on purpose — the number stays honest rather than flattered.
+
+The `coverage` CI job (`.github/workflows/ci.yml`) runs this on every push (Python 3.12, Ubuntu),
+uploads the XML report as a build artifact, and **fails the build below 60%** — a regression floor
+set under the current baseline, not a target to hit. Raise the floor as real coverage grows; never
+lower it just to turn a red build green. Config lives in `pyproject.toml`'s `[tool.coverage.*]`
+tables (`source = ["binomcikit"]`, `branch = true`).
 
 ## Performance — vectorized numpy, optional numba
 
@@ -106,6 +169,7 @@ Every push runs, via GitHub Actions:
 - **lint** — `ruff` + `black`;
 - **`import-core`** — proves the package imports with **no** plotting stack (the optional-plotting guarantee);
 - **`test-fast`** — installs `[fast]` and runs the suite against the numba path;
+- **`coverage`** — runs the suite under `pytest-cov`, uploads the XML report, and fails below 60% branch coverage (see Coverage, above);
 - **release** — publishes to PyPI on a GitHub Release via **Trusted Publishing (OIDC)**, no stored tokens.
 
 ---

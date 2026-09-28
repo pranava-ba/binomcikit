@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Wald interval
 
 > **In one line:** the simplest confidence interval for a {term}`proportion` — the one taught in
@@ -124,6 +134,38 @@ Reproduce with `bk.plot_coverage(n=20, methods=["wald", "wilson", "arcsine"])`.
   Call it with `method="agresti-coull"`. *(Details on its own page in a later sub-phase.)*
 - **{term}`continuity correction`** — widen the interval slightly to account for the fact that the
   binomial counts are discrete but the normal curve is smooth. Call it with `c=...`.
+
+### Worked example — n = 5, x = 3
+
+Watch the formula turn into the numbers the package ships. With p̂ = 3/5 = 0.6 and z ≈ 1.96:
+
+```{code-cell} python
+import binomcikit as bk, numpy as np, scipy.stats as st
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n                                   # 0.6
+z = st.norm.ppf(1 - alpha / 2)                 # 1.9600
+se = np.sqrt(phat * (1 - phat) / n)            # standard error at p-hat
+lo, hi = phat - z * se, phat + z * se
+
+print(f"p-hat = {phat},  SE = {se:.4f},  z = {z:.4f}")
+print(f"raw     : [{lo:.4f}, {hi:.4f}]")
+print(f"clamped : [{max(0, lo):.4f}, {min(1, hi):.4f}]")
+bk.ci(x=x, n=n, method="wald")                 # LWDx / UWDx match the clamped result
+```
+
+The upper limit came out above 1 and was clamped — an `UABB` **{term}`aberration`**, and a first sign
+that the normal approximation is out of its depth here.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- The interval is **symmetric** about p̂, so at small `n` a limit routinely lands outside `[0, 1]` and
+  gets clamped (as the upper limit did here). Clamping hides how badly the raw formula overshot.
+- At `x = 0` or `x = n` the {term}`standard error` is exactly 0, collapsing the interval to a
+  {term}`zero-width interval` — the boundary trap. Reach for {doc}`Wilson <wilson>` or an exact method.
+- Because the SE is evaluated at p̂ (not at the tested θ), true {term}`coverage` sags below the nominal
+  level — see {doc}`../evaluating_intervals` and {doc}`../theory/02_normal_approximation`.
+:::
 
 ### References
 Wald is the textbook normal-approximation interval; its shortcomings and the recommended

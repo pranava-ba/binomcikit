@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Exact interval (Clopper–Pearson & Mid-P)
 
 > **In one line:** the only interval here that makes a **guarantee** — by counting exact binomial
@@ -147,6 +157,39 @@ pulls down toward nominal, and Wilson (green) oscillates around it. Reproduce wi
   formula is undefined) — so the exact limits appear there too.
 - **Blaker's exact interval** (a later sub-phase) is a different exact construction that is never wider
   than Clopper–Pearson while keeping the guarantee.
+
+### Worked example — n = 5, x = 3
+
+For Clopper–Pearson (`e = 1`) the tail equations have a closed **Beta-quantile** solution — no
+root-finding needed. With x = 3, n = 5:
+
+```{code-cell} python
+import binomcikit as bk
+from scipy.stats import beta
+
+x, n, alpha = 3, 5, 0.05
+lo = beta.ppf(alpha / 2, x, n - x + 1)          # solves P(X >= x | theta) = alpha/2
+hi = beta.ppf(1 - alpha / 2, x + 1, n - x)      # solves P(X <= x | theta) = alpha/2
+
+print(f"Clopper-Pearson: [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="exact")                 # LEXx / UEXx match (this is statsmodels' method='beta')
+```
+
+```{code-cell} python
+bk.ci(x=x, n=n, method="midp")                  # Mid-P (e=0.5): strictly inside the CP interval
+```
+
+Mid-P's `[0.182, 0.926]` sits **inside** Clopper–Pearson's `[0.147, 0.947]` — it counts only half the
+observed point's mass, trading the hard guarantee for a narrower interval.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- Clopper–Pearson **over-covers on purpose**: guaranteeing coverage ≥ 1 − α at *every* θ forces it
+  strictly above nominal for most θ (the price of the guarantee) — see {doc}`../theory/04_exact_and_discreteness`.
+- **Base-only:** no `h` or `c` variant (passing them raises). The `e` knob is the tuning parameter.
+- `e` is a plain number for `bk.ci(..., e=1.0)` but a **list** for the flat `ciex(n, alpha, [1.0])`.
+  Prefer {doc}`Blaker <blaker>` when you want the guarantee without the full CP width.
+:::
 
 ### References
 The exact interval is due to Clopper & Pearson (1934) [2]; the Mid-P correction traces to Lancaster

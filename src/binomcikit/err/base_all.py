@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ..ci import cias, ciblaker, ciex, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, ciboot, ciex, cilr, cilt, cisc, citw, ciwd
 
 
 def _validate(n, alp, phi, f):
@@ -85,6 +85,13 @@ def errblaker(n, alp, phi, f):
     _validate(n, alp, phi, f)
     df = ciblaker(n, alp)
     return _error(n, alp, phi, f, df["LBK"], df["UBK"])
+
+
+def errboot(n, alp, phi, f, seed=None, B=2000, kind="smooth"):
+    """Error/failure of the bootstrap interval (new; not in R ``proportion``)."""
+    _validate(n, alp, phi, f)
+    df = ciboot(n, alp, B=B, seed=seed, kind=kind)
+    return _error(n, alp, phi, f, df["LBOOT"], df["UBOOT"])
 
 
 def erras(n, alp, phi, f):

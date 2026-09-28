@@ -75,7 +75,7 @@ plots = ["plotnine>=0.10", "plotly>=5.0"]
 # >>> MAINTENANCE: bump the "3.14" upper bound when numba ships support for the next
 # >>> Python release (check https://numba.readthedocs.io release notes first). <<<
 fast = ["numba>=0.59; python_version < '3.14'"]
-test = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10"]
+test = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10", "pytest-cov"]
 dev = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10", "numba>=0.59", "pytest-cov", "ruff", "black", "build", "twine"]
 
 [tool.pytest.ini_options]
@@ -104,3 +104,18 @@ ignore = ["F403", "F405"]   # star-imports are intentional in some __init__ file
 line-length = 100
 target-version = ["py39"]
 extend-exclude = "reference|previous-work|planning"
+
+[tool.coverage.run]
+source = ["binomcikit"]
+branch = true
+
+[tool.coverage.report]
+precision = 1
+skip_covered = false
+# Legacy plotnine plot*/plot*_graph modules are being retired (ROADMAP §10) and are
+# deliberately untested (figure output isn't asserted) — they drag the total down hard.
+# Not omitted from the report: the number should stay honest, not flattered.
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+]

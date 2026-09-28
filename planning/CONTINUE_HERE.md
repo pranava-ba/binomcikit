@@ -6,10 +6,62 @@
 
 ---
 
-## 1. Current state — updated 2026-07-24
+## 1. Current state — updated 2026-09-28
 - **Version:** 3.0.8 (pre first real PyPI release; PyPI still has an old 0.0.5).
-- **Tests:** **209 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W` (warnings-as-errors)**.
-- **Phase 1 progress:** 1.0 infra · 1.1 Wald · 1.2 Wilson · 1.3 ArcSine · 1.4 Logit · 1.5 Wald-T · 1.6 LR · 1.7 Exact/Mid-P · 1.8 Bayesian+6xx · 1.9 **Blaker (NEW method)** · **access layer + docs finalize + typing DONE**.
+- **Tests:** **289 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W`** (run it with
+  `PYTHONPATH=../src` locally — see the T4/T5 build note below and `DOCS_CHECKLIST.md §1`).
+- **Editable install was stale, now fixed (2026-09-28):** `pip show binomcikit` pointed at
+  `Desktop/Projects/binomcikit` (no `archived/`) — a path that no longer exists, left over from before
+  the repo moved under `archived/`. This silently broke the MyST-NB docs build's kernel subprocess
+  (`ModuleNotFoundError: binomcikit`, even with `PYTHONPATH` set, since the kernel reads the installed
+  package metadata, not the ambient env var). Fixed via `pip install -e ".[test]"` from this repo root.
+  If a fresh clone/session hits the same docs-build error, re-run that.
+- **Coverage gap closed (2026-09-28):** new `coverage` CI job (`pytest-cov`, branch coverage) —
+  baseline **64.8%**, CI floor set at 60% (regression gate, not a target). `pytest-cov` now in the
+  `[test]` extra; config in `pyproject.toml`'s `[tool.coverage.*]`; documented in
+  `docs/under_the_hood.md` ("Coverage"); README got a coverage badge. Worst-covered modules are the
+  legacy plotnine `*_graph.py` files (4–8%, slated for retirement — see §8 plotting decision).
+- **`previous-work/` and `paper-explorer/` are now gitignored (2026-09-28)** — side tooling (lit-review
+  corpus, prior-work notes), not part of the installable package. The 8 previously-tracked
+  `previous-work/*.md` files were untracked (`git rm --cached`; still on disk, just not in the repo
+  going forward).
+- **Phase 1 progress:** 1.0 infra · 1.1 Wald · 1.2 Wilson · 1.3 ArcSine · 1.4 Logit · 1.5 Wald-T · 1.6 LR · 1.7 Exact/Mid-P · 1.8 Bayesian+6xx · 1.9 Blaker (NEW method) · 1.10 Bootstrap (NEW method) · 1.11 Frequentist p-value tests · **1.12 Sample-size/power DONE — all of Phase 1's committed method/feature work is now done**. Remaining Phase-1 items are cross-cutting polish only (see below).
+- **Known issues (found 2026-09-28, not yet fixed):** `cilrx`/`cilr` (Likelihood-Ratio interval) breaks
+  at large n — its root-find snaps to ~`[0, 1]` somewhere between `n=25,800` (correct) and `n=26,000`
+  (broken), a sharp cliff. Found incidentally while stress-testing `sample_size`'s search; every other
+  method was checked well past that range with no issue. Needs its own investigation (a bracket or grid
+  resolution hit, given the abruptness) — not attempted in this session, out of scope for 1.12. Details:
+  `docs/under_the_hood.md` "Sample-size / power".
+- **1.12 sample-size/power (2026-09-28):** `sample_size`/`power` in `src/binomcikit/access.py` — exact
+  smallest-n search (via each method's single-`x` dispatcher, not the whole-table `_limits`, to keep the
+  search `O(log n_max)` not `O(n_max)`) and exact (not simulated) CI-duality power, reusing 1.11's
+  `reject()` construction for cross-verification. `sample_size(method="wald")` matches
+  `statsmodels.samplesize_confint_proportion` exactly; other methods checked against their own
+  minimality property. `docs/access_layer.md` section, 3 glossary terms, 25 tests
+  (`tests/test_sample_size_power.py`). Excludes bootstrap, same as `pvalue`/`reject`.
+- **1.11 p-value tests (2026-09-28):** `pvalue`/`reject` in `src/binomcikit/access.py` — CI-test
+  duality (θ₀ rejected at level α iff outside the method's `(1-α)` CI; bisection on α), works for any
+  registered method except the bootstrap family (raises a clear error there). **Not verified against
+  `scipy.stats.binomtest`** — its default two-sided p-value uses a different ("minlike") convention that
+  genuinely disagrees with the equal-tailed construction here; verified instead against the closed-form
+  equal-tailed formula for `"exact"`, scipy's one-sided tails, and the CI-duality property directly
+  across methods. New `docs/access_layer.md` section (incl. a documented Wald-vs-everyone-else
+  divergence — expected, not a bug), 1 new glossary term, 30 tests (`tests/test_pvalue.py`).
+  **Perf note:** kept the bisection budget to 16 iterations on purpose — root-finding methods
+  (exact/LR/Blaker) re-run their whole CI table per iteration, so this alone added ~45s to the suite;
+  see the `pvalue` docstring's Notes section before raising it.
+- **1.10 Bootstrap (2026-09-28):** `src/binomcikit/ci/bootstrap.py` (`ciboot`/`cibootx`,
+  `method="boot"`) — three variants via `kind`: `"percentile"`/`"bca"` (thin wrapper around
+  `scipy.stats.bootstrap`, oracle-verified exactly) and `"smooth"` (default; Wang & Hutson 2013 [25],
+  implemented from the paper's primary text — no third-party oracle, verified instead by the MUE
+  boundary identity + rough cross-agreement with percentile/BCa + the boundary non-degeneracy property
+  the method exists for). 4 metric wrappers (`covpboot`/`lengthboot`/`pcopbiboot`/`errboot`), dispatcher
+  + Plotly wiring, `point_estimate(..., "mue")`, `docs/methods/bootstrap.md`, 7 glossary terms, 25 tests
+  (`tests/test_bootstrap.py`). **Deferral note from 2026-07-24 is superseded** — this was previously
+  deferred for lacking an oracle; the user explicitly decided to proceed on 2026-09-28, accepting that
+  risk for `kind="smooth"` specifically (not for `"percentile"`/`"bca"`, which are fully oracle-verified).
+  Full details/rationale: this session's chat, and the "Coverage" section additions in
+  `docs/under_the_hood.md`.
 - **Access/usability layer DONE** (`src/binomcikit/access.py`, `tests/test_access.py`, `docs/access_layer.md`):
   `from_counts`/`from_data`, `point_estimate`, `posterior`/`prior`, `coverage_curve`/`length_curve`,
   `compare`, `recommend` (reuses the Plotly `_limits` registry). **Docs finalized**: `access_layer` +
@@ -47,27 +99,47 @@
 - **✅ T3 TUTORIALS/COOKBOOK COMPLETE (2026-07-25):** new `docs/tutorials/` group — `index` hub +
   `ab_test`, `quality_control`, `zero_events`, `choosing_a_method`, `cookbook` (all executable) + a
   `:caption: Tutorials` toctree group and homepage card. Three new figures (`tutorial_{ab,qc,zero}.png`);
-  glossary +`sampling variability`. **Full `-W` build confirmed clean.** **So far this initiative: T1
-  theory (7pp) + T2 foundations (5pp) + T3 tutorials (6pp) all DONE.** **Next: T4** — depth on existing
-  pages (per-method executed worked derivations + pitfalls boxes; explain p-confidence/p-bias/error in
-  `evaluating_intervals` from scratch) — and **T5** (FAQ, binomcikit-vs-statsmodels/scipy/R comparison).
-  The remaining Phase-1 code work (1.11 freq-tests, 1.12 sample-size, deferred bootstrap, Phase-0
-  relicense) is paused behind this goal.
+  glossary +`sampling variability`. **Full `-W` build confirmed clean.**
+- **✅ T4 + T5 DONE (2026-09-01) — docs content-depth initiative essentially complete.**
+  - **T4 method pages (all 9):** each `docs/methods/*.md` gained a *Worked example — n = 5, x = 3*
+    executable cell that reproduces the shipped limits from `scipy`/`numpy` (closed forms for
+    Wald/Wilson/ArcSine/Logit; Satterthwaite ν for Wald-T; `brentq` root-finds for LR and Blaker's
+    acceptability γ; Beta quantiles for Exact/Bayes) and confirms against `bk.ci`, plus an
+    *Interpretation & pitfalls* admonition. Pages are now executable (jupytext front matter added).
+  - **T4 `evaluating_intervals.md`:** fully rewritten & executable — a Monte-Carlo coverage sim
+    (Wald 0.877 vs Wilson 0.956 at θ=0.1), and p-confidence/p-bias/error derived from first principles
+    and reproduced from `scipy` (match `pcopbiwd`/`errwd` exactly) + new `evaluating_tradeoff.png`
+    (2-panel coverage vs length, Okabe–Ito palette) + a quiz.
+  - **T5:** new `docs/faq.md` (troubleshooting Q&A) and `docs/comparison.md` (binomcikit vs
+    scipy/statsmodels/R, proving matching numbers for Wald/Wilson/CP/Jeffreys + a when-to-use matrix).
+    Both wired into the Guides toctree + homepage cards. Glossary +`p-value`.
+  - **Build note (important):** locally the `-W` build must run with **`PYTHONPATH=../src`** so the
+    MyST-NB kernel can import binomcikit (conf.py's `sys.path` only reaches the Sphinx process, not the
+    kernel subprocess); RTD is unaffected (`pip install .`). See `DOCS_CHECKLIST.md §1`.
+  - **Still open (optional):** T4 concept-explainer hub (largely covered by `theory/`); annotated refs
+    with DOIs; a `dataviz` styling pass. These are polish, not blockers.
+  - **Docs-only; awaiting the user's manual push (§7).**
+- **➡️ NEXT: nothing committed remains in Phase 1's method/feature list.** What's left is
+  cross-cutting polish (below) + Phase-0 relicense, or fixing the newly-found `cilrx` large-n bug (see
+  §1 "Known issues"). Check in with the user before picking one — they asked for bootstrap/p-value-tests/
+  sample-size "one by one" and to stop after that list, not to keep going into unscoped polish work.
 
-### Remaining Phase-1 work (nothing here is started)
-- **1.10 Bootstrap — ⏸️ DEFERRED to future/to-do (user decision 2026-07-24).** The Wang–Hutson smooth
-  bootstrap (RESEARCH §9.2) is under-specified in our notes (median-unbiased estimator + mean→π
-  cubic-spline inversion) **and has no oracle in this environment**, so building it correctly is risky.
-  Revisit when an R/reference oracle is available (`PropCIs`/`bootstrap`), or scope to the well-defined
-  parametric/percentile/BCa variants. Needs the `from_counts`/`from_data` access layer + a
-  median-unbiased `point_estimate` first.
-- **1.11 Frequentist p-value tests** (NEW code) — `binom_test`-style two-sided p-values per method
-  (CI–test duality; committed 2026-07-23, ROADMAP §3.5). Verifiable vs `scipy.stats.binomtest`.
-- **1.12 Sample-size / power** (NEW code) — CI-width / power planning functions (committed; ROADMAP §3.5).
-- ~~**Access / usability layer**~~ ✅ **DONE 2026-07-24** (see §1). Still open from ROADMAP §3.5 (optional):
-  `point_estimate` "mue"/"shrinkage" variants (mue needs the deferred bootstrap); aggregator extension
-  (add Blaker to `ciall`/`covpall`/… — skipped so the R-mirror set stays intact); empirical-Bayes /
-  prior-sensitivity conveniences.
+### Remaining Phase-1 work
+- ~~**1.10 Bootstrap**~~ ✅ **DONE 2026-09-28** (see §1 above) — previously deferred 2026-07-24 for
+  lacking an oracle; the user explicitly accepted that risk for `kind="smooth"` and asked for it
+  cross-checked as rigorously as possible instead of skipped. `kind="percentile"`/`"bca"` are fully
+  oracle-verified (scipy).
+- ~~**1.11 Frequentist p-value tests**~~ ✅ **DONE 2026-09-28** (see §1 above) — **correction to this
+  doc's own prior plan:** ROADMAP §3.5 called `scipy.stats.binomtest` "the oracle", but its default
+  two-sided p-value uses a different convention (minlike) than the equal-tailed CI-duality construction
+  this doc's own rationale calls for (§3.5's "θ₀ rejected exactly when outside the interval"). Verified
+  against the correct closed-form + one-sided-tail + duality-property checks instead — see §1.
+- ~~**1.12 Sample-size / power**~~ ✅ **DONE 2026-09-28** (see §1 above) — also surfaced the `cilrx`
+  large-n bug noted above, purely incidentally (stress-testing the search range).
+- ~~**Access / usability layer**~~ ✅ **DONE 2026-07-24** (see §1). `point_estimate` gained the `"mue"`
+  variant with 1.10 (see §1). Still open from ROADMAP §3.5 (optional): `point_estimate` "shrinkage"
+  variant; aggregator extension (add Blaker/Bootstrap to `ciall`/`covpall`/… — skipped so the R-mirror
+  set stays intact); empirical-Bayes / prior-sensitivity conveniences.
 - **Cross-cutting / polish:** ~~finalize + rebuild docs~~ ✅ DONE (clean `-W` build); **type hints** —
   public surface + `py.typed` ✅ DONE, internal grid functions still unhinted (incremental); resolve the
   two open ROADMAP §10 decisions (plotnine→plotly retirement; numba default); deferred Phase-0 items
@@ -80,7 +152,9 @@
 ## 2. Sanity-check the repo (run these first in a new session)
 From the repo root (`…/binomcikit`):
 ```bash
-python -m pytest -q                 # expect: 164 passed (grows as methods add tests)
+python -m pytest -q                 # expect: 289 passed (grows as methods add tests; ~2 min — the
+                                     # pvalue/sample_size/power tests exercise root-finding methods
+                                     # (exact/LR/Blaker) repeatedly by design; see their docstrings)
 python -m ruff check src tests      # expect: All checks passed!
 python -m black --check src tests   # expect: no changes
 python -c "import sys;sys.path.insert(0,'src');import binomcikit as b;print(b.__version__, len(b.__all__))"
@@ -128,10 +202,12 @@ For method `<m>` (e.g. wilson):
   `docs/method_selection.md`.
 - **Confirm the docs build is clean** (no undefined `{term}`, no broken links).
 
-## 6. Order of remaining sub-phases
+## 6. Order of sub-phases — ALL DONE
 1.2 Wilson → 1.3 ArcSine → 1.4 Logit → 1.5 Wald-T → 1.6 LR (no CC) → 1.7 Exact/Mid-P →
-1.8 Bayesian (+6xx toolbox) → 1.9 **Blaker (new)** → 1.10 **Bootstrap (new)** → 1.11 tests →
-1.12 sample-size. (1.9/1.10 build new code; RESEARCH §9 has the constructions.)
+1.8 Bayesian (+6xx toolbox) → 1.9 **Blaker (new)** ✅ → 1.10 **Bootstrap (new)** ✅ → 1.11 **p-value
+tests** ✅ → 1.12 **sample-size/power** ✅. (1.9/1.10/1.11/1.12 built new code beyond the R port;
+RESEARCH §9 has the Blaker/Bootstrap constructions.) Every committed Phase-1 method/feature is done as
+of 2026-09-28 — what's left is cross-cutting polish (§1) and the `cilrx` bug fix (§1 "Known issues").
 
 ## 7. When a sub-phase is done — upload to GitHub (the USER runs this)
 The assistant cannot push (credential manager). Copy-paste, then push:

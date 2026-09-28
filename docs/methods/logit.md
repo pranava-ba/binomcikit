@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Logit-Wald interval
 
 > **In one line:** a confidence interval for a {term}`proportion` built on the **log-odds** scale
@@ -142,6 +152,43 @@ whole range — including the boundaries, where Wald (blue) plunges — but sits
   transform; they are cousins of logit (packaged in R's `binom`, not in the source `proportion`).
 - **{term}`Clopper–Pearson`** — the exact interval logit borrows at the boundary; documented on its own
   page in a later sub-phase.
+
+### Worked example — n = 5, x = 3
+
+Move to the log-odds ruler, build an ordinary Wald interval there, then squash both ends back with
+expit. With p̂ = 3/5 = 0.6:
+
+```{code-cell} python
+import binomcikit as bk, numpy as np, scipy.stats as st
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n
+z = st.norm.ppf(1 - alpha / 2)
+
+logodds = np.log(phat / (1 - phat))              # 0.405
+se_l    = 1 / np.sqrt(n * phat * (1 - phat))     # SE on the logit scale
+lo_l, hi_l = logodds - z * se_l, logodds + z * se_l
+expit = lambda u: 1 / (1 + np.exp(-u))
+lo, hi = expit(lo_l), expit(hi_l)
+
+print(f"log-odds = {logodds:.4f},  SE(logit) = {se_l:.4f}")
+print(f"on the logit scale: [{lo_l:.4f}, {hi_l:.4f}]")
+print(f"back on 0-1 (expit): [{lo:.4f}, {hi:.4f}]")
+bk.ci(x=x, n=n, method="logit")                  # LLTx / ULTx match
+```
+
+Because expit always lands in (0, 1), the interval physically **cannot** leave the valid range or
+collapse — which is exactly why there is never a `ZWI`, even at x = 0 or x = n.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- **Undefined at the boundary:** at `x = 0` or `x = n`, `log(p̂/(1−p̂))` is ±∞. binomcikit silently
+  substitutes the exact one-sided {term}`Clopper–Pearson` limit there — so those rows are exact, not
+  approximate. Don't hand-code the raw formula for those counts.
+- Logit runs **mildly conservative** (coverage a touch above nominal), so its intervals are slightly
+  wider than {doc}`Wilson <wilson>`'s. Safe, not tightest.
+- Natural choice when you're already modelling on the log-odds scale (logistic regression).
+:::
 
 ### References
 The logit interval is the Wald method applied on the log-odds scale; transformations of this kind are

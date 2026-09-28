@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 from .._accel import coverage_series
-from ..ci import cias, ciblaker, cilr, cilt, cisc, citw, ciwd
+from ..ci import cias, ciblaker, ciboot, cilr, cilt, cisc, citw, ciwd
 
 _S = 5000  # simulation runs, matching the R package
 
@@ -130,6 +130,13 @@ def covpblaker(n, alp, a, b, t1, t2, seed=None):
     _validate(n, alp, a, b, t1, t2)
     df = ciblaker(n, alp)
     return _coverage(n, alp, a, b, t1, t2, df["LBK"], df["UBK"], seed)
+
+
+def covpboot(n, alp, a, b, t1, t2, seed=None, B=2000, kind="smooth"):
+    """Coverage probability of the bootstrap interval (new; not in R ``proportion``)."""
+    _validate(n, alp, a, b, t1, t2)
+    df = ciboot(n, alp, B=B, seed=seed, kind=kind)
+    return _coverage(n, alp, a, b, t1, t2, df["LBOOT"], df["UBOOT"], seed)
 
 
 def covpas(n, alp, a, b, t1, t2, seed=None):

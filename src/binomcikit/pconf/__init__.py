@@ -21,6 +21,7 @@ from .base_all import (
     pcopbiall,
     pcopbias,
     pcopbiblaker,
+    pcopbiboot,
     pcopbiex,
     pcopbilr,
     pcopbilt,

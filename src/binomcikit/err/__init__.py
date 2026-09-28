@@ -21,6 +21,7 @@ from .base_all import (
     errall,
     erras,
     errblaker,
+    errboot,
     errex,
     errlr,
     errlt,

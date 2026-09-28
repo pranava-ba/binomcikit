@@ -29,8 +29,12 @@ from .access import (  # noqa: E402  usability layer (data input, estimates, cur
     length_curve,
     point_estimate,
     posterior,
+    power,
     prior,
+    pvalue,
     recommend,
+    reject,
+    sample_size,
 )
 from .bayes import *  # noqa: F401,F403
 from .ci import *  # noqa: F401,F403  (respects each subpackage __all__)
@@ -53,6 +57,10 @@ _ACCESS = [
     "length_curve",
     "compare",
     "recommend",
+    "pvalue",
+    "reject",
+    "sample_size",
+    "power",
 ]
 
 __all__ = sorted(

@@ -242,6 +242,14 @@ null hypothesis
   A specific value we provisionally assume for {term}`theta` — say θ = 0.3 — so we can
   ask whether the observed data look surprising *if that value were true*. Written H₀.
 
+p-value
+  The probability, *if the {term}`null hypothesis` were true*, of seeing data at least as extreme as
+  what you observed. A small p-value means the data are surprising under H₀. It is the mirror image of a
+  {term}`confidence interval`: a two-sided test rejects θ₀ at level {term}`alpha` exactly when θ₀ falls
+  outside the 1 − α interval. Example: for x = 3 in n = 20, testing θ₀ = 0.1 gives
+  `scipy.stats.binomtest(3, 20, 0.1).pvalue ≈ 0.44` — not surprising, and indeed 0.1 sits inside the
+  interval.
+
 score test
   A hypothesis test for a {term}`null hypothesis` value of {term}`theta` that measures
   the {term}`standard error` *at the value being tested* (under H₀), not at the observed
@@ -290,6 +298,65 @@ zero-width interval
 aberration
   A confidence limit that behaves badly — e.g. running past a sensible boundary, or moving in the
   wrong direction. binomcikit reports these as the LABB / UABB flags.
+
+bootstrap
+  A way to build a {term}`confidence interval` by *simulating* many alternative datasets from the
+  one you observed, instead of using a formula. Compute the statistic (here, the proportion) on
+  each simulated dataset, then read the interval off the spread of results.
+
+resampling
+  Drawing a new, same-size dataset from an existing one (with replacement, in the ordinary
+  bootstrap) to see how much a statistic would vary if you had collected the data again.
+
+percentile interval
+  The simplest {term}`bootstrap` {term}`confidence interval`: run B {term}`resampling` replicates,
+  sort the resulting statistic values, and take the α/2 and 1 − α/2 {term}`quantile`s of that
+  sorted list as the interval's ends.
+
+BCa
+  Bias-Corrected and accelerated — a refinement of the {term}`percentile interval` that adjusts for
+  skew and bias in the bootstrap distribution before reading off the endpoints. Usually more
+  accurate than the plain percentile method, but undefined when every resample is identical (e.g.
+  x = 0 or x = n), since it divides by a measure of spread that is zero there.
+
+median-unbiased estimator
+  (MUE) A point estimate of {term}`theta` chosen so that θ is equally likely to be observed above
+  or below the true value — unlike the {term}`maximum likelihood estimate` p̂ = x/n, it is never
+  exactly 0 or 1, which matters for methods (like the smooth {term}`bootstrap`) that divide by or
+  transform the estimate.
+
+smooth quantile function
+  A continuous stand-in for a discrete dataset's {term}`quantile` function, used so that
+  {term}`resampling` produces a smooth spread of values instead of only the handful of values
+  (k/n) the raw 0/1 data can take. The device Wang & Hutson (2013) use to fix the ordinary
+  bootstrap's worst failure mode near θ ≈ 0, 1.
+
+B-spline
+  A curve built by smoothly stitching together short polynomial pieces ("basis splines") at a set
+  of join points called knots. binomcikit uses one fixed cubic B-spline — its shape is entirely
+  determined by numbers printed in a paper, not fit to any data at runtime — to convert a simulated
+  {term}`bootstrap` mean back into a proportion.
+
+CI-test duality
+  The fact that a two-sided level-α {term}`hypothesis test` and a (1 − α) {term}`confidence interval`
+  say the same thing: a value θ₀ is rejected by the test exactly when it falls outside the interval.
+  binomcikit's `pvalue`/`reject` are defined directly from this — the smallest α at which θ₀ falls
+  outside a method's own CI — so they work for any method, not just ones with a separate test formula.
+
+sample size
+  How many {term}`trial`s a study needs, decided *before* collecting data — usually by picking the
+  smallest n whose {term}`confidence interval` is no wider than some target, planning around a
+  guessed {term}`proportion`.
+
+statistical power
+  The probability a study correctly detects a real effect — rejects a false {term}`null hypothesis`
+  — if run with a given sample size. Higher power needs more {term}`trial`s, or a bigger true
+  difference from the value being tested.
+
+effect size
+  How far the *true* proportion actually is from the value a {term}`hypothesis test` is checking
+  against (θ₀). A bigger effect size is easier to detect — it takes fewer {term}`trial`s to reach
+  good {term}`statistical power`.
 :::
 
 ---

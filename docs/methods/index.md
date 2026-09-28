@@ -20,6 +20,7 @@ see {doc}`../method_selection`.
 | {doc}`Blaker <blaker>` ⭐ | `"blaker"` | exact | **new** — the guarantee of CP, but never wider |
 | {doc}`Bayesian <bayes>` | `"bayes"` | Bayesian | Beta-posterior credible interval (quantile + HPD) |
 | {doc}`Jeffreys <bayes>` | `"jeffreys"` | Bayesian | Bayesian with the Beta(½, ½) prior; excellent coverage |
+| {doc}`Bootstrap <bootstrap>` ⭐ | `"boot"` | simulation | **new** — smooth resampling; fixes the naive bootstrap's collapse at x = 0, n |
 
 Agresti–Coull is available as `method="agresti-coull"` (adjusted Wald). The wider Bayesian toolbox
 (Bayes factors, empirical Bayes, posterior predictive) has its own page: {doc}`../bayesian_toolbox`.
@@ -37,4 +38,5 @@ lr
 exact
 bayes
 blaker
+bootstrap
 ```

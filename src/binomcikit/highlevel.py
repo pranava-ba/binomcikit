@@ -43,9 +43,11 @@ _CODE = {
     "agresti coull": "ac",
     "ac": "ac",
     "blaker": "blaker",
+    "boot": "boot",
+    "bootstrap": "boot",
 }
 _NO_CC = {"lr"}  # no continuity-corrected variant
-_BASE_ONLY = {"ex", "ba", "ac", "blaker"}  # no adjusted / CC variants
+_BASE_ONLY = {"ex", "ba", "ac", "blaker", "boot"}  # no adjusted / CC variants
 
 
 def ci(
@@ -58,6 +60,9 @@ def ci(
     e: float | None = None,
     a: float | None = None,
     b: float | None = None,
+    B: int = 2000,
+    seed: int | None = None,
+    kind: str = "smooth",
 ) -> pd.DataFrame:
     """Confidence interval for a single binomial proportion (unified entry point).
 
@@ -73,7 +78,7 @@ def ci(
     method : str, default ``"wilson"``
         One of ``wald``, ``wilson``/``score``, ``arcsine``, ``logit``,
         ``waldt``, ``lr``, ``exact``/``cp``, ``midp``, ``bayes``/``jeffreys``,
-        ``agresti-coull``.
+        ``agresti-coull``, ``boot``/``bootstrap``.
     h : float, optional
         Adjustment factor (pseudo-count); selects the *adjusted* variant.
     c : float, optional
@@ -84,6 +89,9 @@ def ci(
     a, b : float, optional
         Beta prior parameters for the Bayesian method (default ``1, 1``;
         ``jeffreys`` uses ``0.5, 0.5``).
+    B, seed, kind : optional
+        Used only by ``method="boot"``: resample count, RNG seed, and
+        ``"smooth"``/``"percentile"``/``"bca"`` — see :func:`binomcikit.ci.ciboot`.
 
     Returns
     -------
@@ -126,6 +134,11 @@ def ci(
         if x is not None:
             return _cimod.cibax(x, n, alpha, aa, bb)
         return _cimod.ciba(n, alpha, aa, bb)
+
+    if code == "boot":
+        if x is not None:
+            return _cimod.cibootx(x, n, alpha, B=B, seed=seed, kind=kind)
+        return _cimod.ciboot(n, alpha, B=B, seed=seed, kind=kind)
 
     prefix = "cia" if h is not None else ("cic" if c is not None else "ci")
     suffix = "x" if x is not None else ""

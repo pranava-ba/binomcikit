@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  name: python3
+---
+
 # Wald-T interval
 
 > **In one line:** the **Wald** interval with one honest fix — since the standard error is only
@@ -141,6 +151,44 @@ boundaries it climbs toward 1.0, the signature of its conservatism. Reproduce wi
 - **{term}`Agresti–Coull`** shares the same boundary trick — the $(x+2)/(n+4)$ nudge — but keeps the
   normal `z` instead of a *t* value.
 - Plain **{doc}`Wald <wald>`** is the `ν → ∞` limit of this method.
+
+### Worked example — n = 5, x = 3
+
+The only change from Wald is the multiplier: derive the {term}`Satterthwaite approximation`
+{term}`degrees of freedom` ν, then use $t_{\nu}$ instead of `z`. With p̂ = 3/5 = 0.6:
+
+```{code-cell} python
+import binomcikit as bk, numpy as np, scipy.stats as st
+
+x, n, alpha = 3, 5, 0.05
+phat = x / n
+
+V = phat * (1 - phat) / n                                    # the variance estimate
+varV = ((phat * (1 - phat) / n**3)                           # Pan's estimate of Var(V)
+        + (phat + (6*n - 7) * phat**2 + 4*(n-1)*(n-3) * phat**3
+           - 2*(n-1)*(2*n-3) * phat**4) / n**5
+        - 2*(phat + (2*n - 3) * phat**2 - 2*(n-1) * phat**3) / n**4)
+dof = 2 * V**2 / varV                                        # Satterthwaite dof
+t = st.t.ppf(1 - alpha / 2, df=dof)
+lo, hi = phat - t * np.sqrt(V), phat + t * np.sqrt(V)
+
+print(f"dof = {dof:.3f},  t = {t:.4f}  (vs z = {st.norm.ppf(1 - alpha/2):.4f})")
+print(f"limits: [{lo:.4f}, {min(1, hi):.4f}]")
+bk.ci(x=x, n=n, method="waldt")                              # LTWx / UTWx match
+```
+
+The `t` multiplier (≈ 2.07) is larger than Wald's `z` (≈ 1.96), so the interval is a little **wider** —
+that extra width is the whole small-sample fix.
+
+:::{admonition} Interpretation & pitfalls
+:class: warning
+- As `n → ∞` the {term}`degrees of freedom` grow and `t → z`, so Wald-T is just Wald with a
+  small-sample correction — no benefit at large `n`.
+- Its failure is the **opposite** of Wald's: near θ = 0 or 1 it turns *strongly* conservative
+  (over-covers, needlessly wide).
+- The limits are still symmetric about the centre, so a lower limit can go below 0 and be clamped
+  (`LABB`); at x = 0/n it recentres on {term}`Agresti–Coull`'s $(x+2)/(n+4)$ to avoid collapse.
+:::
 
 ### References
 Wald-T is the Satterthwaite/*t*-approximation of the variance estimator, due to Pan (2002) [18]; the

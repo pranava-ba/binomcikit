@@ -16,8 +16,8 @@
 | **Clopper–Pearson** (exact) | you must **guarantee** coverage ≥ 1 − α (regulated / safety-critical) | you care about width (Blaker dominates it — same guarantee, narrower) | `bk.ci(n=…, method="exact")` |
 | **Mid-P** (exact) | you want most of the exact guarantee with less width | you need the hard ≥-nominal guarantee (Mid-P can dip slightly below) | `bk.ci(n=…, method="midp")` |
 | **Bayesian / Jeffreys** | you want a probability statement about θ; excellent coverage (Jeffreys); or the wider Bayesian toolbox | you need a purely frequentist guarantee and won't state a prior | `bk.ci(n=…, method="jeffreys")` |
-
-*(A Bootstrap row is added when that method lands.)*
+| **Bootstrap (smooth)** (*new*) | you want a simulation-based interval that still behaves near x = 0, n | you want the fastest / closed-form option, or third-party-oracle-verified results | `bk.ci(n=…, method="boot")` |
+| **Bootstrap (percentile / BCa)** | you specifically want the textbook nonparametric bootstrap | x is near 0 or n (collapses to zero width) | `bk.ciboot(n, alpha, kind="percentile")` |
 
 ## Let the package choose
 You don't have to take a rule of thumb on faith. Two access-layer helpers turn this guide into code:

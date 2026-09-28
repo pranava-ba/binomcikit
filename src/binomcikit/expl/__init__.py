@@ -22,6 +22,7 @@ from .base_all import (
     lengthall,
     lengthas,
     lengthblaker,
+    lengthboot,
     lengthex,
     lengthlr,
     lengthlt,
