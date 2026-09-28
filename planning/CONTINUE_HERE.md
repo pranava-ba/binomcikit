@@ -8,7 +8,7 @@
 
 ## 1. Current state — updated 2026-09-28
 - **Version:** 3.0.8 (pre first real PyPI release; PyPI still has an old 0.0.5).
-- **Tests:** **289 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W`** (run it with
+- **Tests:** **302 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W`** (run it with
   `PYTHONPATH=../src` locally — see the T4/T5 build note below and `DOCS_CHECKLIST.md §1`).
 - **Editable install was stale, now fixed (2026-09-28):** `pip show binomcikit` pointed at
   `Desktop/Projects/binomcikit` (no `archived/`) — a path that no longer exists, left over from before
@@ -26,12 +26,21 @@
   `previous-work/*.md` files were untracked (`git rm --cached`; still on disk, just not in the repo
   going forward).
 - **Phase 1 progress:** 1.0 infra · 1.1 Wald · 1.2 Wilson · 1.3 ArcSine · 1.4 Logit · 1.5 Wald-T · 1.6 LR · 1.7 Exact/Mid-P · 1.8 Bayesian+6xx · 1.9 Blaker (NEW method) · 1.10 Bootstrap (NEW method) · 1.11 Frequentist p-value tests · **1.12 Sample-size/power DONE — all of Phase 1's committed method/feature work is now done**. Remaining Phase-1 items are cross-cutting polish only (see below).
-- **Known issues (found 2026-09-28, not yet fixed):** `cilrx`/`cilr` (Likelihood-Ratio interval) breaks
-  at large n — its root-find snaps to ~`[0, 1]` somewhere between `n=25,800` (correct) and `n=26,000`
-  (broken), a sharp cliff. Found incidentally while stress-testing `sample_size`'s search; every other
-  method was checked well past that range with no issue. Needs its own investigation (a bracket or grid
-  resolution hit, given the abruptness) — not attempted in this session, out of scope for 1.12. Details:
-  `docs/under_the_hood.md` "Sample-size / power".
+- **Bug found AND fixed (2026-09-28):** `cilrx`/`cilr` (Likelihood-Ratio interval) broke at large n —
+  root-find snapped to ~`[0, 1]` somewhere between `n=25,800` (correct) and `n=26,000` (broken). Found
+  incidentally while stress-testing `sample_size`'s search, then root-caused (MLE step minimized the raw
+  likelihood, which underflows to 0.0 for large n; the numerical optimizer converged to an arbitrary
+  wrong point) and fixed (closed-form MLE + `brentq`, not `minimize_scalar`) the same session — see
+  **### Fixed** in `CHANGELOG.md` and `docs/under_the_hood.md` "Sample-size / power" for the full
+  writeup. A systematic audit of every `scipy.optimize` call in the package (prompted by this bug) found
+  the identical pattern in `cialr` (`adj_n.py`) — also fixed — and confirmed 3 other candidates
+  (`cialrx`, `_hpd.py`'s HPD search, the exact/Mid-P family's `root_scalar`/bisect calls) were **not**
+  affected, verified empirically up to n=1,000,000 each, not just assumed safe.
+- **Known issue, found during that same audit, NOT fixed (low severity):** `ciblaker`/`ciblakerx` raise
+  `ValueError` instead of returning a result for `alpha` above roughly `1 - 1e-10` — a confidence level
+  with no practical meaning; nothing in the package ever requests it, and `pvalue`/`reject`/
+  `sample_size`/`power` already guard against it defensively. Left open — different root cause from the
+  LR bug, low impact, not investigated further this session. Details: `docs/under_the_hood.md`.
 - **1.12 sample-size/power (2026-09-28):** `sample_size`/`power` in `src/binomcikit/access.py` — exact
   smallest-n search (via each method's single-`x` dispatcher, not the whole-table `_limits`, to keep the
   search `O(log n_max)` not `O(n_max)`) and exact (not simulated) CI-duality power, reusing 1.11's
@@ -119,10 +128,11 @@
   - **Still open (optional):** T4 concept-explainer hub (largely covered by `theory/`); annotated refs
     with DOIs; a `dataviz` styling pass. These are polish, not blockers.
   - **Docs-only; awaiting the user's manual push (§7).**
-- **➡️ NEXT: nothing committed remains in Phase 1's method/feature list.** What's left is
-  cross-cutting polish (below) + Phase-0 relicense, or fixing the newly-found `cilrx` large-n bug (see
-  §1 "Known issues"). Check in with the user before picking one — they asked for bootstrap/p-value-tests/
-  sample-size "one by one" and to stop after that list, not to keep going into unscoped polish work.
+- **➡️ NEXT: nothing committed remains in Phase 1's method/feature list, and the `cilrx`/`cialr` bug is
+  now fixed too (§1 "Known issues" — one low-severity Blaker edge case remains open).** What's left is
+  cross-cutting polish (below) + Phase-0 relicense. Check in with the user before picking one — they
+  asked for bootstrap/p-value-tests/sample-size "one by one" and to stop after that list; the LR bug fix
+  and audit were a separate, explicit follow-up request, not an invitation to keep going unprompted.
 
 ### Remaining Phase-1 work
 - ~~**1.10 Bootstrap**~~ ✅ **DONE 2026-09-28** (see §1 above) — previously deferred 2026-07-24 for
@@ -152,7 +162,7 @@
 ## 2. Sanity-check the repo (run these first in a new session)
 From the repo root (`…/binomcikit`):
 ```bash
-python -m pytest -q                 # expect: 289 passed (grows as methods add tests; ~2 min — the
+python -m pytest -q                 # expect: 302 passed (grows as methods add tests; ~5 min — the
                                      # pvalue/sample_size/power tests exercise root-finding methods
                                      # (exact/LR/Blaker) repeatedly by design; see their docstrings)
 python -m ruff check src tests      # expect: All checks passed!
@@ -162,7 +172,12 @@ python -c "import sys;sys.path.insert(0,'src');import binomcikit as b;print(b.__
 Docs build check (optional): `cd docs && python -m sphinx -b html . _build/x -q && cd .. && rm -rf docs/_build/x`
 **Environment:** Windows; PowerShell + Bash tools. For direct imports use `PYTHONPATH=src` (pytest
 already sets it). Installed here: numba, plotly, kaleido, hypothesis, statsmodels, sphinx.
-**Git push is blocked for the assistant** (Git Credential Manager) — the **user pushes manually** (§7).
+**Git push: no longer assumed blocked (corrected 2026-09-28).** Earlier sessions assumed Git Credential
+Manager blocks the assistant from pushing and always handed the user a manual upload block (§7). That
+assumption was never actually re-tested until 2026-09-28, when the user explicitly asked the assistant
+to push directly — `git push origin main` worked with no credential prompt or error. Default to pushing
+directly when the user asks for it; §7's manual block is still there as a fallback if push ever does
+fail in a given environment.
 
 ## 3. Read these for context (in order)
 1. **this file**
@@ -207,10 +222,13 @@ For method `<m>` (e.g. wilson):
 1.8 Bayesian (+6xx toolbox) → 1.9 **Blaker (new)** ✅ → 1.10 **Bootstrap (new)** ✅ → 1.11 **p-value
 tests** ✅ → 1.12 **sample-size/power** ✅. (1.9/1.10/1.11/1.12 built new code beyond the R port;
 RESEARCH §9 has the Blaker/Bootstrap constructions.) Every committed Phase-1 method/feature is done as
-of 2026-09-28 — what's left is cross-cutting polish (§1) and the `cilrx` bug fix (§1 "Known issues").
+of 2026-09-28, and the `cilrx`/`cialr` large-n bug found along the way is fixed too — what's left is
+cross-cutting polish (§1) and the low-severity Blaker extreme-alpha edge case (§1 "Known issues").
 
-## 7. When a sub-phase is done — upload to GitHub (the USER runs this)
-The assistant cannot push (credential manager). Copy-paste, then push:
+## 7. When a sub-phase is done — commit + push
+Per §2's correction, the assistant can push directly when asked — no longer assumed blocked. Default
+flow (commit only when the user asks; push only when the user asks, per this repo's normal git-safety
+rules, same as any other repo):
 ```bash
 git status                 # sanity: the copyrighted PDF must NOT appear (it's gitignored)
 git add -A

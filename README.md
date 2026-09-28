@@ -15,7 +15,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![PyPI](https://img.shields.io/badge/PyPI-binomcikit-3775A9?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/binomcikit/)
-[![Tests](https://img.shields.io/badge/tests-234%20passing-2EA043?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/tests-302%20passing-2EA043?style=flat-square)](tests/)
 [![Coverage](https://img.shields.io/badge/coverage-65%25%20branch-DBAB0A?style=flat-square)](docs/under_the_hood.md)
 [![License](https://img.shields.io/badge/License-GPL-8B949E?style=flat-square)](LICENSE.txt)
 

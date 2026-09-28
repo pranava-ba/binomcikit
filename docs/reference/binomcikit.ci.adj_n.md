@@ -237,7 +237,10 @@ for the endpoints.
 **What the Python code does** — Adjusted LR interval.
 
 **R → Py changes** — Naming lowercased; pandas `DataFrame`; numerical solve via
-SciPy. Numerically identical.
+SciPy. Numerically identical. **Fix (2026-09-28):** the MLE step used to
+minimize the raw likelihood, which underflowed at large `n` and could silently
+corrupt the whole interval — the same bug as unadjusted `cilr`; see its entry
+above and `docs/under_the_hood.md` "Sample-size / power".
 
 {doc}`← Back to the R → Python mapping table </r_to_python_mapping>`
 

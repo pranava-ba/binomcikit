@@ -266,7 +266,8 @@ def cilr(n, alp):
     Keeps the values of :math:`p` not rejected by the likelihood-ratio test,
     i.e. where twice the drop in log-likelihood from the maximum stays below the
     :math:`\chi^2_1` critical value. There is no closed form; the two endpoints
-    are found numerically with :func:`scipy.optimize.minimize_scalar`.
+    are found numerically with :func:`scipy.optimize.brentq` on the log-likelihood
+    (the MLE itself has the closed form ``x / n``).
 
     Parameters
     ----------
@@ -309,33 +310,33 @@ def cilr(n, alp):
     # Precompute critical value
     cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
 
-    # Likelihood functions
-    def likelhd(p, i):
-        return stats.binom.pmf(x[i], n, p)
-
+    # Likelihood function
     def loglik(p, i):
         return stats.binom.logpmf(x[i], n, p)
 
+    _eps = 1e-12
     for i in range(k):
-        # Minimize using likelihood function (MLE)
-        mle_res = optimize.minimize_scalar(
-            lambda p: -likelhd(p, i), bounds=(0, 1), method="bounded"
-        )
-        mle_i = mle_res.x
+        # MLE of a binomial proportion has a closed form, x[i]/n -- no need to
+        # numerically optimize for it. (This used to be found by minimizing
+        # the RAW likelihood stats.binom.pmf, which underflows to exactly 0.0
+        # for large n away from the mode; minimize_scalar could then converge
+        # to a wrong "MLE", silently corrupting the whole interval. See
+        # docs/under_the_hood.md.)
+        mle_i = x[i] / n
 
-        # Compute the cutoff for optimization
+        # Compute the cutoff
         cutoff = loglik(mle_i, i) - (cv**2 / 2)
 
-        # Objective function for LLR and ULR
-        def loglik_optim(p):
-            return np.abs(cutoff - loglik(p, i))
+        def signed(p, i=i, cutoff=cutoff):
+            return loglik(p, i) - cutoff
 
-        # Minimize to find LLR and ULR
-        LLR_res = optimize.minimize_scalar(loglik_optim, bounds=(0, mle_i), method="bounded")
-        LLR[i] = LLR_res.x
-
-        ULR_res = optimize.minimize_scalar(loglik_optim, bounds=(mle_i, 1), method="bounded")
-        ULR[i] = ULR_res.x
+        # loglik(p) - cutoff is positive at mle_i and strictly decreasing away
+        # from it in each direction (down to -inf at p=0/1), so it has
+        # exactly one root on each side -- brentq root-finding on this signed
+        # function is both correct and far more numerically robust than
+        # minimizing abs(cutoff - loglik(p)).
+        LLR[i] = 0.0 if x[i] == 0 else optimize.brentq(signed, _eps, mle_i)
+        ULR[i] = 1.0 if x[i] == n else optimize.brentq(signed, mle_i, 1 - _eps)
 
         # Set flags based on conditions
         LABB[i] = "YES" if LLR[i] < 0 else "NO"

@@ -34,7 +34,7 @@ to fool all of them at once:
 
 **The accelerator can't change answers.** The optional numba fast-path is asserted **identical to
 the numpy path to 1e-9** (`tests/test_accel.py`), so results never depend on whether `[fast]` is
-installed. The full suite (**234 tests**) runs on every push across Python 3.9–3.13 on
+installed. The full suite (**302 tests**) runs on every push across Python 3.9–3.13 on
 Linux / macOS / Windows.
 
 *As each method sub-phase lands, its rare-method + metric outputs get golden fixtures generated from
@@ -82,15 +82,36 @@ actually satisfies the target, not an approximation. `power` is checked against 
 force construction built from `reject()` (already-verified, sub-phase 1.11) summed by hand over every
 `x` — two independently-written paths to the same number, matching to floating-point precision.
 
-**Known issue, discovered incidentally (not yet fixed): `cilrx`/`cilr` (the Likelihood-Ratio interval)
-breaks at large n.** Stress-testing `sample_size`'s search up to `n_max = 100_000` surfaced a real,
-pre-existing numerical bug unrelated to sample-size/power themselves: LR's root-find snaps to
-essentially `[0, 1]` somewhere between `n = 25,800` (correct: width ≈ 0.0122, centered at 0.5) and
-`n = 26,000` (broken: `L ≈ 6e-6, U ≈ 0.999996`) — a sharp cliff, not a gradual drift, suggesting a fixed
-bracket or grid resolution hit rather than a slow precision loss. Every other method was checked well
-past this range with no issue. `sample_size`/`power`'s own tests avoid the affected region (documented
-inline in `tests/test_sample_size_power.py`) rather than silently working around it — this needs its own
-investigation and fix in a future sub-phase; see `planning/CONTINUE_HERE.md` "Known issues".
+**Bug found and fixed: the Likelihood-Ratio interval broke at large n (root-caused, not just patched).**
+Stress-testing `sample_size`'s search up to `n_max = 100_000` surfaced a real, pre-existing numerical
+bug: `cilrx`'s root-find snapped to essentially `[0, 1]` somewhere between `n = 25,800` (correct:
+width ≈ 0.0122, centered at 0.5) and `n = 26,000` (broken: `L ≈ 6e-6, U ≈ 0.999996`) — a sharp cliff,
+not a gradual drift. Root cause, confirmed by isolating each step: the code found the MLE by numerically
+*minimizing the raw likelihood* `scipy.stats.binom.pmf`, which **underflows to exactly `0.0`** for large
+`n` away from the true value — `scipy.optimize.minimize_scalar` then had nothing but a flat zero to
+search, and could converge anywhere in it (observed converging to `p ≈ 1.0` for a true value of `0.5`),
+corrupting everything computed from that wrong "MLE". A systematic audit (every `scipy.optimize` call in
+the package) found the identical pattern in one more place — `cialr` (`adj_n.py`, the *adjusted* LR) —
+and confirmed its single-`x` sibling `cialrx` (`adj_n_x.py`) was *not* affected, because it already used
+the log-likelihood for this step. **Fix, both places:** the MLE of a binomial proportion has a closed
+form (`x / n`, or `(x+h) / (n+2h)` adjusted) — no optimization needed at all — and the two endpoints are
+now found by `scipy.optimize.brentq` on the signed log-likelihood-minus-cutoff function, which cannot
+be fooled by underflow the way minimizing an absolute difference can. Verified correct up to `n = 1,000,000`
+(previously crashed at `n = 26,000`), and is now also faster (~2 ms per call regardless of `n`, vs. the
+old approach's unreliable convergence). New regression tests in `tests/test_golden_paper.py`
+(`test_lr_correct_at_large_n`, `test_cialr_correct_at_moderately_large_n`, and siblings) lock this in at
+the scale where it broke; the pre-existing `n=5` golden-value tests still pass unchanged.
+
+**Known issue, found during the audit above, not yet fixed (much lower severity): Blaker's root-find can
+crash at alpha extremely close to 1.** `ciblaker`/`ciblakerx` raise `ValueError: f(a) and f(b) must have
+different signs` for `alpha` roughly above `1 - 1e-10` (verified: fails at `1 - 1e-10`, works at
+`1 - 1e-9`) — an essentially meaningless confidence level in practice (a "~0%-confidence interval"), so
+no code in this package ever requests `alpha` that close to 1; `binomcikit.access._rejects` (used by
+`pvalue`/`reject`/`sample_size`/`power`) already guards against it defensively (catches the exception and
+treats it as "rejected"), and none of those functions' own internal searches go anywhere near this
+boundary. A direct call to `ciblaker(n, alpha)` with an adversarially extreme `alpha` would still hit it.
+Not investigated further this session — low practical impact, and Blaker's own root-finding is a
+different code path from the LR bug above (not the same root cause).
 
 ## Coverage — measured, not just counted
 

@@ -24,8 +24,10 @@ encodes the full recipe: audit → functions → two-core docs → figure → ve
 - **Quality:** `ruff` + `black` clean; tests = oracle (`statsmodels`) + golden (paper/R) + Hypothesis
   property + completeness. Run `/code-review` per sub-phase; `security-review` before public release.
 - **Figures / dashboards:** consider the `dataviz` skill for quality.
-- **Git:** the assistant cannot push (Git Credential Manager) — give the user the upload block; never
-  commit `previous-work/*.pdf` (copyright; gitignored).
+- **Git:** the assistant CAN push (confirmed 2026-09-28 — an earlier "blocked by Git Credential
+  Manager" assumption was stale/untested); commit and push when the user asks, same rules as any repo
+  (never commit without being asked; confirm before push unless already told to). Never commit
+  `previous-work/*.pdf` (copyright; gitignored).
 
 ## The science & the record
 `planning/RESEARCH.md` — per-method math + origin papers + refs (§6), competitive/novelty analysis,

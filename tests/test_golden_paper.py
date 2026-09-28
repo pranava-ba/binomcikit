@@ -93,6 +93,39 @@ def test_lr_brackets_the_mle():
         assert df.LLR[x] < x / N < df.ULR[x]
 
 
+@pytest.mark.parametrize("n,x", [(26000, 13000), (50000, 25000), (100000, 50000)])
+def test_lr_correct_at_large_n(n, x):
+    # Regression test: cilrx used to find the MLE by numerically minimizing the
+    # RAW (non-log) likelihood, which underflows to exactly 0.0 for large n away
+    # from the mode -- minimize_scalar could then converge to a wrong "MLE" (was
+    # observed snapping to ~1.0 for x/n=0.5 at n=26000), corrupting the whole
+    # interval (was returning ~[0, 1] instead of a tight interval around 0.5).
+    # Fixed by using the closed-form MLE (x/n) and a proper brentq root-find.
+    row = b.ci(x=x, n=n, method="lr")
+    phat = x / n
+    assert row["LLRx"].iloc[0] == pytest.approx(phat, abs=0.01)
+    assert row["ULRx"].iloc[0] == pytest.approx(phat, abs=0.01)
+    width = row["ULRx"].iloc[0] - row["LLRx"].iloc[0]
+    assert width < 0.02  # a 95% CI at n>=26000 around p=0.5 should be a few % wide, not ~1.0
+
+
+def test_lr_full_table_matches_single_x():
+    # cilr() (base_n.py, all-x) had the identical flawed MLE pattern in its own
+    # per-x loop as cilrx() (base_n_x.py, single-x) -- fixed identically. n kept
+    # modest here (the full table is an O(n) Python loop, expensive at the
+    # n~26,000 scale where the original bug actually triggered; that scale is
+    # already covered, via the much cheaper single-x path, by
+    # test_lr_correct_at_large_n above): this just confirms the two code paths
+    # agree with each other after the fix.
+    n = 2000
+    df = b.cilr(n, ALPHA)
+    for x in [0, 1, n // 2, n - 1, n]:
+        row_x = b.cilrx(x, n, ALPHA)
+        row_all = df[df["x"] == x].iloc[0]
+        assert row_all["LLR"] == pytest.approx(row_x["LLRx"].iloc[0], abs=1e-9)
+        assert row_all["ULR"] == pytest.approx(row_x["ULRx"].iloc[0], abs=1e-9)
+
+
 @pytest.mark.skipif(_sm_ci is None, reason="statsmodels not installed")
 @pytest.mark.parametrize("n", [5, 13, 30])
 def test_exact_cp_matches_statsmodels(n):
@@ -131,6 +164,66 @@ def test_bayes_jeffreys_matches_statsmodels(n):
         lo, hi = _sm_ci(x, n, alpha=ALPHA, method="jeffreys")
         assert df.LBAQ[x] == pytest.approx(lo, abs=1e-9)
         assert df.UBAQ[x] == pytest.approx(hi, abs=1e-9)
+
+
+def test_lr_dispatch_supports_adjusted():
+    # Not previously tested anywhere -- cialr/cialrx had zero test coverage
+    # before the large-n bug fix below surfaced them.
+    assert b.ci(n=10, method="lr", h=2).equals(b.cialr(10, ALPHA, 2))
+    assert b.ci(x=3, n=10, method="lr", h=2).equals(b.cialrx(3, 10, ALPHA, 2))
+
+
+@pytest.mark.parametrize("h", [0, 1, 3])
+def test_cialr_brackets_the_adjusted_mle(h):
+    n = 20
+    df = b.cialr(n, ALPHA, h)
+    n1 = n + 2 * h
+    for x in range(n + 1):
+        y1 = x + h
+        if 0 < y1 < n1:
+            assert df.LALR[x] < y1 / n1 < df.UALR[x]
+
+
+@pytest.mark.parametrize("n,h", [(20, 2), (50, 1)])
+def test_cialr_matches_cialrx(n, h):
+    # cialr's root is now found via brentq; cialrx's (unaffected by the bug
+    # below, left as-is) via minimize_scalar -- two different numerical
+    # methods agree closely but not to full float precision, same as the
+    # documented ~4e-6 brentq-vs-minimize_scalar gap noted for unadjusted LR
+    # in cases.py.
+    df = b.cialr(n, ALPHA, h)
+    for x in [0, 1, n // 3, n // 2, n - 1, n]:
+        row = b.cialrx(x, n, ALPHA, h)
+        assert df.LALR[x] == pytest.approx(row.LALRx.iloc[0], abs=1e-4)
+        assert df.UALR[x] == pytest.approx(row.UALRx.iloc[0], abs=1e-4)
+
+
+@pytest.mark.parametrize("n,x,h", [(26000, 13000, 1), (50000, 25000, 2)])
+def test_cialrx_correct_at_large_n(n, x, h):
+    # cialrx (adj_n_x.py, single-x) already used the log-likelihood for its
+    # MLE step and was confirmed unaffected by the cialr bug below (checked
+    # directly, not just inferred) -- this just locks that in. Via the fast
+    # single-x path, not the O(n) full table.
+    row = b.cialrx(x, n, ALPHA, h)
+    phat = (x + h) / (n + 2 * h)
+    assert row.LALRx.iloc[0] == pytest.approx(phat, abs=0.01)
+    assert row.UALRx.iloc[0] == pytest.approx(phat, abs=0.01)
+
+
+def test_cialr_correct_at_moderately_large_n():
+    # Regression test: adj_n.py's cialr (all-x adjusted LR) had the identical
+    # flawed pattern as the unadjusted cilr -- minimizing the RAW likelihood
+    # to find the MLE, which underflows to 0.0 for large n away from the
+    # mode (confirmed broken at n=26000; that full table costs ~2 minutes
+    # even fixed -- an O(n) Python loop -- so this checks the same code path
+    # at a still-meaningful but affordable n=3000, ~5s).
+    n, h = 3000, 1
+    df = b.cialr(n, ALPHA, h)
+    x = n // 2
+    phat = (x + h) / (n + 2 * h)
+    row = df[df["x"] == x].iloc[0]
+    assert row.LALR == pytest.approx(phat, abs=0.02)
+    assert row.UALR == pytest.approx(phat, abs=0.02)
 
 
 def test_bayes_hpd_has_correct_mass_and_is_shortest():

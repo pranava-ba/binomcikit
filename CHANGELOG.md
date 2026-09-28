@@ -21,12 +21,9 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
   brute-force sum built from `reject()` (matches to floating-point precision). New
   `docs/access_layer.md` section, 3 glossary terms, 25 tests (`tests/test_sample_size_power.py`).
   **Both exclude the bootstrap family**, same rationale as `pvalue`/`reject`.
-  - **Known issue discovered incidentally, not yet fixed:** stress-testing `sample_size`'s search up to
-    `n_max=100,000` surfaced a real, pre-existing bug in `cilrx`/`cilr` (the Likelihood-Ratio interval,
-    unrelated to this sub-phase) — its root-find snaps to essentially `[0, 1]` somewhere between
-    `n=25,800` (correct) and `n=26,000` (broken), a sharp cliff rather than gradual drift. Worked around
-    in this sub-phase's own tests (capped `n_max`, documented inline); needs its own investigation. See
-    `docs/under_the_hood.md` and `planning/CONTINUE_HERE.md` "Known issues".
+  - Incidentally surfaced (via stress-testing `sample_size`'s search to `n_max=100,000`) a real,
+    pre-existing bug in `cilrx`/`cilr` — root-caused and fixed in the same session; see **### Fixed**
+    below.
 - **Frequentist p-value tests — sub-phase 1.11, NEW code beyond R `proportion`**
   (`binomcikit.pvalue`/`reject`, access layer). The 2017 paper treats CIs and tests as interchangeable
   by CI-test duality and explicitly omits separate test functions; binomcikit adds them anyway, defined
@@ -81,6 +78,28 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
   are the main drag — the numeric core is meaningfully higher. `pytest-cov` moved from `[dev]`-only
   into the `[test]` extra; `[tool.coverage.run]`/`[tool.coverage.report]` added to `pyproject.toml`.
   README gained a coverage badge; documented in `docs/under_the_hood.md` ("Coverage").
+
+### Fixed
+- **The Likelihood-Ratio interval (`cilrx`/`cilr`) silently returned an almost-`[0, 1]` interval for
+  large `n`** (confirmed broken between `n=25,800` and `n=26,000`; every documented/tested case before
+  this was `n <= 30`). Root cause: the MLE step minimized the *raw* likelihood
+  (`scipy.stats.binom.pmf`), which underflows to exactly `0.0` for large `n` away from the true value —
+  `scipy.optimize.minimize_scalar` then converged to an arbitrary point in that flat zero region
+  (observed: `p≈1.0` for a true value of `0.5`), corrupting the whole interval. Found incidentally while
+  stress-testing sub-phase 1.12's `sample_size` search up to `n_max=100,000`; a systematic audit of every
+  `scipy.optimize` call in the package then found the identical pattern in `cialr` (`adj_n.py`, the
+  *adjusted* LR) and confirmed its single-`x` sibling `cialrx` (`adj_n_x.py`) was **not** affected (it
+  already used the log-likelihood for this step). **Fix, both places:** the binomial MLE has a closed
+  form (`x/n`, or `(x+h)/(n+2h)` adjusted) — no optimization needed — and the two endpoints are now found
+  via `scipy.optimize.brentq` on the signed log-likelihood, which underflow cannot fool the way
+  minimizing an absolute difference can. Verified correct to `n=1,000,000`; also faster (~2ms/call
+  regardless of `n`). New regression tests in `tests/test_golden_paper.py`; the `n=5` golden-value tests
+  are unaffected. `cialr`/`cialrx` also gained their first test coverage in this fix (previously zero).
+  Full writeup: `docs/under_the_hood.md` "Sample-size / power".
+- **Known issue, found during the audit above, not fixed (low severity):** `ciblaker`/`ciblakerx` raise
+  instead of returning a result for `alpha` roughly above `1 - 1e-10` — an essentially meaningless
+  confidence level nothing in this package ever requests; `pvalue`/`reject`/`sample_size`/`power` already
+  guard against it defensively. See `docs/under_the_hood.md`.
 
 ### Changed
 - **Executable documentation (MyST-NB).** Worked examples in the docs now run at build time against the

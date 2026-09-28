@@ -43,12 +43,7 @@ def test_sample_size_wald_matches_statsmodels_oracle(width, p0):
 )
 def test_sample_size_is_the_minimal_n(method):
     width, p0, alpha = 0.25, 0.5, 0.05
-    # n_max kept well under ~26000: a pre-existing numerical bug in cilrx (the
-    # LR method, unrelated to sample_size/power) makes its interval snap to
-    # ~[0, 1] there -- discovered via this test, not yet fixed; see
-    # planning/CONTINUE_HERE.md "Known issues". Every OTHER method reaches
-    # width=0.25 at n well under 100, so this cap doesn't weaken their check.
-    n = b.sample_size(width, alpha=alpha, p0=p0, method=method, n_max=5000)
+    n = b.sample_size(width, alpha=alpha, p0=p0, method=method)
     assert _width_at(method, n, alpha, p0) <= width
     assert _width_at(method, n - 1, alpha, p0) > width
 

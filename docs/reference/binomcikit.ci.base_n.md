@@ -368,22 +368,29 @@ log-likelihood drops by the χ² cutoff.
 ```python
 def cilr(n, alp):
     for i in range(k):
-        # profile the binomial log-likelihood around the MLE
-        LLR_res = optimize.minimize_scalar(loglik_optim,
-                                           bounds=(0, mle_i), method='bounded')
-        ULR_res = optimize.minimize_scalar(loglik_optim,
-                                           bounds=(mle_i, 1), method='bounded')
+        # MLE has a closed form; the two endpoints are a proper brentq
+        # root-find on the signed log-likelihood-minus-cutoff function
+        mle_i = x[i] / n
+        LLR[i] = 0.0 if x[i] == 0 else optimize.brentq(signed, _eps, mle_i)
+        ULR[i] = 1.0 if x[i] == n else optimize.brentq(signed, mle_i, 1 - _eps)
         ...
     return pd.DataFrame({'x': x, 'LLR': LLR, 'ULR': ULR, ...})
 ```
 
-**What the Python code does** — Uses `scipy.optimize.minimize_scalar` to locate
-each endpoint. **Returns `x` as an ordinary column** (see changes).
+**What the Python code does** — Uses `scipy.optimize.brentq` to locate each
+endpoint, on the closed-form MLE `x/n`. **Returns `x` as an ordinary column**
+(see changes).
 
 **R → Py changes** — Naming lowercased; pandas `DataFrame`; numerical solve via
-`scipy.optimize.minimize_scalar`. **Fix:** the earlier Python port returned `x`
+`scipy.optimize.brentq`. **Fix (port):** the earlier Python port returned `x`
 as a hidden `MultiIndex` (unlike every other method); this port returns `x` as a
-plain column so `cilr` composes correctly with the other functions.
+plain column so `cilr` composes correctly with the other functions. **Fix
+(2026-09-28):** the MLE step originally minimized the *raw* likelihood
+(`scipy.stats.binom.pmf`), which underflows to exactly `0.0` for large `n` away
+from the mode — `scipy.optimize.minimize_scalar` could then converge to a
+wrong "MLE" (observed snapping to ~1.0 for a true value of 0.5 at `n=26,000`),
+silently corrupting the whole interval. Replaced with the closed-form MLE and a
+proper `brentq` root-find; see `docs/under_the_hood.md` "Sample-size / power".
 
 {doc}`← Back to the R → Python mapping table </r_to_python_mapping>`
 

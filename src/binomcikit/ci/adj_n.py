@@ -203,31 +203,34 @@ def cialr(n, alp, h):
     # Critical values
     cv = stats.norm.ppf(1 - (alp / 2))
 
-    def likelhd(p, i):
-        return stats.binom.pmf(y1[i], n1, p)
-
     def loglik(p, i):
         return stats.binom.logpmf(y1[i], n1, p)
 
-    def loglik_optim(p, i):
-        return abs(cutoff[i] - loglik(p, i))
+    _eps = 1e-12
 
     # LIKELIHOOD-RATIO METHOD
     for i in range(k):
-        # Find MLE
-        mle[i] = optimize.minimize_scalar(
-            lambda p: -likelhd(p, i), bounds=(0, 1), method="bounded"
-        ).x
+        # MLE of a binomial proportion has a closed form, y1[i]/n1 -- no need
+        # to numerically optimize for it. (This used to be found by
+        # minimizing the RAW likelihood stats.binom.pmf, which underflows to
+        # exactly 0.0 for large n away from the mode; minimize_scalar could
+        # then converge to a wrong "MLE", silently corrupting the whole
+        # interval -- the same bug as unadjusted LR, see
+        # docs/under_the_hood.md. The single-x sibling, cialrx in
+        # adj_n_x.py, already used logpmf here and was unaffected.)
+        mle[i] = y1[i] / n1
 
         cutoff[i] = loglik(mle[i], i) - (cv**2 / 2)
 
-        # Find LALR and UALR
-        LALR[i] = optimize.minimize_scalar(
-            lambda p: loglik_optim(p, i), bounds=(0, mle[i]), method="bounded"
-        ).x
-        UALR[i] = optimize.minimize_scalar(
-            lambda p: loglik_optim(p, i), bounds=(mle[i], 1), method="bounded"
-        ).x
+        def signed(p, i=i):
+            return loglik(p, i) - cutoff[i]
+
+        # loglik(p) - cutoff is positive at mle[i] and strictly decreasing
+        # away from it in each direction, so brentq root-finding is both
+        # correct and far more numerically robust than minimizing
+        # abs(cutoff - loglik(p)).
+        LALR[i] = 0.0 if y1[i] == 0 else optimize.brentq(signed, _eps, mle[i])
+        UALR[i] = 1.0 if y1[i] == n1 else optimize.brentq(signed, mle[i], 1 - _eps)
 
         LABB[i] = "YES" if LALR[i] < 0 else "NO"
         UABB[i] = "YES" if UALR[i] > 1 else "NO"

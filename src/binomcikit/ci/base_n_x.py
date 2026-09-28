@@ -135,7 +135,7 @@ def ciasx(x=None, n=None, alp=None):
     )
 
 
-from scipy.optimize import minimize_scalar
+from scipy.optimize import brentq
 
 
 def cilrx(x=None, n=None, alp=None):
@@ -164,28 +164,31 @@ def cilrx(x=None, n=None, alp=None):
     # Likelihood-ratio method
     y = x
 
-    def likelhd(p):
-        return stats.binom.pmf(y, n, p)
-
     def loglik(p):
         return stats.binom.logpmf(y, n, p)
 
-    # Find MLE (maximum likelihood estimate)
-    mle_result = minimize_scalar(lambda p: -likelhd(p), bounds=(0, 1), method="bounded")
-    mle = mle_result.x
+    # MLE of a binomial proportion has a closed form, y/n -- no need to
+    # numerically optimize for it. (This used to be found by minimizing the
+    # RAW likelihood stats.binom.pmf, which underflows to exactly 0.0 for
+    # large n away from the mode; minimize_scalar could then converge to a
+    # wrong "MLE" -- observed snapping to ~1.0 for y/n=0.5 at n=26000 -- which
+    # silently corrupted the whole interval. See docs/under_the_hood.md.)
+    mle = y / n
 
     # Calculate cutoff
     cutoff = loglik(mle) - (cv**2 / 2)
 
-    def loglik_optim(p):
-        return abs(cutoff - loglik(p))
+    def signed(p):
+        return loglik(p) - cutoff
 
-    # Find lower and upper bounds
-    LLRx_result = minimize_scalar(loglik_optim, bounds=(0, mle), method="bounded")
-    LLRx = LLRx_result.x
-
-    ULRx_result = minimize_scalar(loglik_optim, bounds=(mle, 1), method="bounded")
-    ULRx = ULRx_result.x
+    # loglik(p) - cutoff is positive at mle (cutoff = loglik(mle) - cv**2/2)
+    # and strictly decreasing away from mle in each direction (down to -inf
+    # at p=0/1, for y>0/y<n respectively), so it has exactly one root on each
+    # side -- brentq root-finding on this signed function is both correct and
+    # far more numerically robust than minimizing abs(cutoff - loglik(p)).
+    _eps = 1e-12
+    LLRx = 0.0 if y == 0 else brentq(signed, _eps, mle)
+    ULRx = 1.0 if y == n else brentq(signed, mle, 1 - _eps)
 
     # Adjustments for bounds
     LABB = "YES" if LLRx < 0 else "NO"
