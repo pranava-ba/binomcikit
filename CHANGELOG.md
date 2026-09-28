@@ -42,6 +42,16 @@ what to build next, not because they're a code change.
   it should also pull "safe anytime-valid inference" / betting confidence sequences and LLM-evaluation-
   statistics literature, so the corpus/novelty analysis reflects this positioning angle too, not just
   the original method-comparison scope. Not actioned this session — noted for later.
+- **Actioned (2026-09-28): the cheap, no-new-architecture pieces of the LLM-eval positioning.** New
+  tutorial `docs/tutorials/llm_eval_benchmark.md` — a 5-point gap on a 100-question benchmark (78 vs.
+  83) has overlapping Wilson intervals and only ~18% power to detect a real gap that size; power
+  reaches 80% only around n≈506. New `examples/ci-eval-check/` — a copy-paste GitHub Actions template
+  (`compare_eval_results.py` + `example-workflow.yml`) that posts this comparison as a PR comment;
+  not an active workflow in this repo (nothing here has eval results of its own to compare). Both
+  linked from each other and from the homepage/tutorials-index. **`planning/ROADMAP.md` §10.3 (new):**
+  reopens the Phase 2/3 Streamlit-vs-PyQt decision given this research — recommends neither right now,
+  ships these two pieces instead, and notes (not yet built) a narrow sample-size/power calculator as
+  the likely replacement for Phase 3's original full-library-GUI scope if a GUI is built at all.
 
 ### Added
 - **Sample-size / power planning — sub-phase 1.12, NEW code beyond R `proportion`**

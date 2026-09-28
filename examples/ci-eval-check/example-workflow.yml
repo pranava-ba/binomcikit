@@ -1,0 +1,61 @@
+# Example: post an eval comparison as a PR comment using binomcikit.
+#
+# This is a TEMPLATE, not an active workflow -- copy it into your own repo's
+# `.github/workflows/` and adapt the two steps marked "ADAPT THIS" to however
+# your eval harness reports pass/fail counts. It does not run in binomcikit's
+# own CI (binomcikit has no eval results of its own to compare).
+#
+# What it does: on every PR, runs your eval suite for the base and head
+# commits, computes a confidence interval + power comparison with
+# compare_eval_results.py (see that file / docs/tutorials/llm_eval_benchmark.md
+# for the statistics), and posts the result as a PR comment.
+
+name: Eval comparison
+
+on:
+  pull_request:
+
+jobs:
+  compare-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install binomcikit
+        run: pip install binomcikit
+
+      # ADAPT THIS: run your eval suite and capture "correct" and "total" for
+      # the PR's head commit. Replace the two placeholder lines with whatever
+      # your harness actually prints/writes.
+      - name: Run eval (head)
+        id: eval_head
+        run: |
+          # correct=$(python run_my_eval.py --model ./head_model | tail -1)
+          echo "correct=83" >> "$GITHUB_OUTPUT"
+          echo "total=100" >> "$GITHUB_OUTPUT"
+
+      # ADAPT THIS: same, but for the PR's base (e.g. checked out to a temp
+      # dir, or read from a stored baseline result file committed to the repo).
+      - name: Run eval (base)
+        id: eval_base
+        run: |
+          echo "correct=78" >> "$GITHUB_OUTPUT"
+          echo "total=100" >> "$GITHUB_OUTPUT"
+
+      - name: Compare
+        id: compare
+        run: |
+          python compare_eval_results.py \
+            --a-name "base" --a-correct "${{ steps.eval_base.outputs.correct }}" --a-total "${{ steps.eval_base.outputs.total }}" \
+            --b-name "head" --b-correct "${{ steps.eval_head.outputs.correct }}" --b-total "${{ steps.eval_head.outputs.total }}" \
+            > comparison.md
+          cat comparison.md
+
+      - name: Post PR comment
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file comparison.md
+        env:
+          GH_TOKEN: ${{ github.token }}

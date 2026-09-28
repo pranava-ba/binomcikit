@@ -58,7 +58,7 @@ One page per interval — *Use it* and *Understand it*.
 :::{grid-item-card} {octicon}`checklist` Tutorials
 :link: tutorials/index
 :link-type: doc
-Worked scenarios: A/B tests, quality control, zero events, choosing a method.
+Worked scenarios: A/B tests, quality control, zero events, choosing a method, sizing an LLM eval.
 :::
 
 :::{grid-item-card} {octicon}`sync` The Bayesian toolbox

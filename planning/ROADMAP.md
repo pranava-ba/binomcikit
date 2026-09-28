@@ -29,8 +29,8 @@
 
 ## 1. The four goals
 1. **PyPI** — a well-documented, mathematically rigorous package.
-2. **Streamlit** — a live hosted app.
-3. **PyQt** — a desktop `.exe`.
+2. **Streamlit** — a live hosted app. *(Reopened as §10.3, 2026-09-28 — see there before starting this.)*
+3. **PyQt** — a desktop `.exe`. *(Reopened as §10.3.)*
 4. **Paper** — a journal submission.
 
 **Design principle: one core engine, three front-ends** — never fork the logic.
@@ -407,3 +407,29 @@ Either way, results are identical; only speed and install weight change.
   bumping the base Python. (Build-from-source is a maintainer-only escape hatch, not a user story.)
 - **Optional polish:** an environment marker on `[fast]` (`numba>=…; python_version < "3.x"`) so
   `pip install binomcikit[fast]` **degrades gracefully** instead of erroring on a too-new Python.
+
+### 10.3 Which app, if any — Streamlit vs. PyQt vs. no general app (opened 2026-09-28)
+Prompted by real-world-use-case research (see `CHANGELOG.md`'s "Research notes" under `[Unreleased]`):
+the audience this package actually reaches (researchers/data scientists/quants) already has Python and
+is comfortable with `pip install` — a general GUI removes a barrier that mostly isn't there for them,
+while adding an ongoing maintenance surface (every core-library change now has a UI to keep in sync,
+with its own QA separate from the library's test suite).
+
+- **(A) Neither Streamlit nor PyQt right now — recommended.** Don't build a dashboard wrapping the
+  whole library. Instead: ship the narrow, high-leverage pieces that are already done or cheap —
+  `docs/tutorials/llm_eval_benchmark.md` (done, 2026-09-28) and the `examples/ci-eval-check/` CI
+  template (done, 2026-09-28) — and revisit Phase 2/3 only if those actually drive usage.
+- **(B) A single narrow calculator, packaged as a small exe, if a GUI is wanted at all.** Not a
+  dashboard exposing all 13 methods + the Bayesian toolbox — the Evan-Miller-style model (a
+  sample-size/power calculator is famous specifically for being three inputs and an answer, not a
+  dashboard). If built, this replaces the original "Phase 3: PyQt `.exe`" scope, which was a full-
+  library GUI; **noted here, not started.** Whether it's Streamlit-hosted (a URL, zero install, easier
+  to share) or a packaged exe (works offline, but asks a Python-fluent audience to trust an unsigned
+  binary — a real friction point paper-explorer didn't have, since that was always a personal, local
+  tool) is still open; lean Streamlit for the same reasons as (A) unless an offline/no-browser
+  requirement shows up.
+- **(C) Original plan — full Streamlit app, then full PyQt exe, both wrapping the whole library.**
+  Not recommended given the above; keeping as the literal original plan for the record.
+
+**Recommended sequencing:** (A) now. Decide between (B) and stopping there only after seeing whether
+the tutorial/CI-template actually get used — don't commit Phase 2/3 scope on a hypothesis.

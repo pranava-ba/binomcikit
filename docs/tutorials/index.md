@@ -22,6 +22,8 @@ concepts it uses.
    happened, why Wald gives the useless `[0, 0]`, and where "3/n" comes from.
 4. **{doc}`Choosing a method for your own data <choosing_a_method>`** — let `compare` and `recommend` do
    the measuring, and learn to read their tables.
+5. **{doc}`Sizing and comparing an LLM eval benchmark <llm_eval_benchmark>`** — a 5-point gap on 100
+   questions looks real; `bk.power` shows you have roughly a 1-in-5 chance of having caught it at all.
 
 ## Cookbook
 
@@ -36,5 +38,6 @@ ab_test
 quality_control
 zero_events
 choosing_a_method
+llm_eval_benchmark
 cookbook
 ```

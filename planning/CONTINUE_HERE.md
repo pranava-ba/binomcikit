@@ -133,6 +133,17 @@
   cross-cutting polish (below) + Phase-0 relicense. Check in with the user before picking one — they
   asked for bootstrap/p-value-tests/sample-size "one by one" and to stop after that list; the LR bug fix
   and audit were a separate, explicit follow-up request, not an invitation to keep going unprompted.
+- **Positioning pivot (2026-09-28) — Phase 2/3 (Streamlit / PyQt) reopened, don't start either without
+  reading `ROADMAP.md` §10.3 first.** Real-world-use-case research (`CHANGELOG.md` "Research notes")
+  surfaced LLM-eval-benchmark statistics as a currently underserved niche this package already fits.
+  Shipped the cheap, no-new-architecture pieces of that: `docs/tutorials/llm_eval_benchmark.md` (new
+  tutorial, wired into the toctree + homepage card) and `examples/ci-eval-check/` (a copy-paste GitHub
+  Actions template + script, not an active workflow in this repo's own CI — nothing here has eval
+  results of its own). **Noted, not built:** a narrow sample-size/power calculator, possibly packaged
+  as a small exe — this would replace Phase 3's original full-library-GUI scope if built; see
+  `ROADMAP.md` §10.3 option (B). Also noted, not built: `paper-explorer`'s search topics need expanding
+  to cover this angle (SAVI/betting confidence sequences, LLM-eval-statistics literature) — it's a
+  separate, gitignored tool, not part of this package.
 
 ### Remaining Phase-1 work
 - ~~**1.10 Bootstrap**~~ ✅ **DONE 2026-09-28** (see §1 above) — previously deferred 2026-07-24 for
