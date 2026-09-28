@@ -4,6 +4,39 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
 ## [Unreleased] — Phase 1 (in progress)
+### Research notes — real-world use case & positioning (2026-09-28)
+Findings from grounding "is any of this actually used/researched" against current (2026) sources,
+prompted by a request to assess the project's real-world relevance — recorded here since they inform
+what to build next, not because they're a code change.
+- **The underlying methods are already load-bearing, beyond the FDA/SAS/production-ranking evidence
+  already in `planning/RESEARCH.md`:** Adobe's Experience Platform experimentation service and
+  **Optimizely** (a major commercial A/B-testing platform) have both adopted always-valid p-values /
+  betting-based confidence sequences for continuous experiment monitoring — production infrastructure,
+  not academic curiosities.
+- **New angle: LLM evaluation.** OpenAI Evals and EleutherAI's eval pipeline have started using
+  confidence-sequence-based stopping for adaptive benchmark sizing. There is active, public frustration
+  in the field (2026) about how badly binomial-proportion statistics are usually handled in benchmark
+  reporting — e.g. a widely-discussed finding that 80% on 100 test cases has a 95% CI of roughly
+  71–87%, and leaderboard models are routinely reported as different while their intervals overlap.
+  Pass/fail-per-example is a binomial proportion; this is exactly binomcikit's domain.
+- **Active research, not a settled field:** "safe anytime-valid inference" is described in the current
+  literature as rapidly growing; a 2024 rare-event binomial-CI paper made it into *The American
+  Statistician* (peer-reviewed), still comparing Wilson/Jeffreys/CP tradeoffs; the LLM-eval-statistics
+  sub-area has multiple arXiv papers from recent months (benchmark CI width, measurement error in eval
+  pipelines, effective-sample-size gains for adaptive evaluation).
+- **The idea:** binomcikit fits a currently underserved niche it wasn't designed for — LLM benchmark
+  sizing and comparison. "How many eval examples to reliably detect a 3-point accuracy gap between two
+  models?" is exactly `sample_size()`/`power()` on a binomial proportion; people in that space currently
+  roll ad hoc bootstrap-only CIs or naive normal approximations (the same Wald boundary pathology this
+  package's own docs already explain) rather than reach for a real toolkit. A tutorial targeting this
+  (`docs/tutorials/`) would cost near-zero — every tool it needs (`sample_size`, `power`, `compare`,
+  Wilson-as-default) already exists — and could reposition the README/homepage alongside the existing
+  clinical/quality-control framing.
+- **Recommendation on sequencing:** slot that tutorial in *before* Phase 2 (Streamlit), not after — it's
+  cheap given what's already built, and it may change what Phase 2 should even be (e.g. a
+  benchmark-sizing calculator could matter more to this audience than a general Streamlit GUI). Decide
+  Streamlit-vs-alternative after seeing whether the tutorial resonates, not before.
+
 ### Added
 - **Sample-size / power planning — sub-phase 1.12, NEW code beyond R `proportion`**
   (`binomcikit.sample_size`/`power`, access layer). Sample-size determination is a *pre-data* design
