@@ -116,16 +116,20 @@ different code path from the LR bug above (not the same root cause).
 ## Coverage — measured, not just counted
 
 Passing tests answers "does the suite pass"; it says nothing about how much of the source the suite
-actually exercises. As of **2026-09-28**, `pytest --cov=binomcikit` (branch coverage) reports:
+actually exercises. As of **2026-10-03**, `pytest --cov=binomcikit` (branch coverage) reports:
 
 | | |
 |---|---|
-| **Total** | **64.8%** branch coverage (4,171 statements, 1,464 branches) |
-| Best covered | `_accel.py`, `__init__.py` — 100%; most `ci`/`covp`/`err`/`expl`/`pconf` numeric modules sit 65–95% |
-| Worst covered | the **legacy plotnine** `*_graph.py` modules (`adj_n_graph.py`, `base_n_graph.py`, `cc_n_graph.py`, `base_n_x_graph.py`) at **4–8%** — they render static figures that aren't asserted, and are slated for retirement once the Plotly migration (§ Plotting, below) finishes. They're the single biggest drag on the total; the numeric core is meaningfully higher than the headline number suggests. **Not excluded from the report** on purpose — the number stays honest rather than flattered.
+| **Total** | **84.7%** branch coverage (5,950 statements, 1,934 branches); it was 64.8% on 2026-09-28 |
+| Best covered | 10 of 71 modules at 100% (`__init__.py`, `_accel.py`, `methods.py`, `ci/adj_n.py`, `ci/cc_n.py`, `ext/pires.py`, `pconf/plots.py`, ...); `twoprop.py` is at 98.9% |
+| Worst covered | the legacy plotnine `ci/base_n_x_graph.py` (44%), `ci/base_n_graph.py` (51%) and `ci/cc_n_graph.py` (60%), then the "general" (user-supplied limits) modules in `expl`, `err`, `covp`, `pconf` and `bayes/posterior.py` at 60–65%. The legacy plotting modules are slated for retirement once the Plotly migration (§ Plotting, below) finishes; they are **not excluded** from the report, so the number stays honest rather than flattered. |
+
+What moved it: `tests/test_plot_smoke.py` draws every plotnine plotting function whose arguments it can supply (52 of 150; the others
+need explicit limit tables, so they stay untested), `tests/test_ci_input_validation.py` feeds bad arguments to every `ci*` function, and the
+new two-proportion, property and extension tests. The smoke tests only prove that each plot draws without error, not that it looks right.
 
 The `coverage` CI job (`.github/workflows/ci.yml`) runs this on every push (Python 3.12, Ubuntu),
-uploads the XML report as a build artifact, and **fails the build below 60%** — a regression floor
+uploads the XML report as a build artifact, and **fails the build below 80%** — a regression floor
 set under the current baseline, not a target to hit. Raise the floor as real coverage grows; never
 lower it just to turn a red build green. Config lives in `pyproject.toml`'s `[tool.coverage.*]`
 tables (`source = ["binomcikit"]`, `branch = true`).
@@ -207,7 +211,7 @@ Every push runs, via GitHub Actions:
 - **lint** — `ruff` + `black`;
 - **`import-core`** — proves the package imports with **no** plotting stack (the optional-plotting guarantee);
 - **`test-fast`** — installs `[fast]` and runs the suite against the numba path;
-- **`coverage`** — runs the suite under `pytest-cov`, uploads the XML report, and fails below 60% branch coverage (see Coverage, above);
+- **`coverage`** — runs the suite under `pytest-cov`, uploads the XML report, and fails below 80% branch coverage (see Coverage, above);
 - **release** — publishes to PyPI on a GitHub Release via **Trusted Publishing (OIDC)**, no stored tokens.
 
 ---

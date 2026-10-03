@@ -248,7 +248,7 @@ def _bet_chunk_py(
     xs3, lam3, c, logth, log1mth, thresh, phats, iters, lower, upper
 ):  # pragma: no cover
     """Both limits for a chunk of rows, one row per thread (compiled with ``prange``)."""
-    for i in prange(xs3.shape[0]):  # noqa: F821 - prange is injected by _compile()
+    for i in prange(xs3.shape[0]):  # type: ignore[name-defined]  # noqa: F821 - injected by _compile()
         lower[i], upper[i] = _bet_limits_nb(
             xs3[i], lam3[i], c, logth, log1mth, thresh, phats[i], iters
         )
@@ -366,7 +366,7 @@ def cibetting(n, alp, B=50, seed=0, theta=0.5, trunc=0.5, use_numba=None):
             phats = np.array([x / n for x in xr])
             lo_c = np.empty(len(xr))
             up_c = np.empty(len(xr))
-            _bet_chunk_nb(xs3, lam3, trunc, logth, log1mth, thresh, phats, 52, lo_c, up_c)
+            _bet_chunk_nb(xs3, lam3, trunc, logth, log1mth, thresh, phats, 52, lo_c, up_c)  # type: ignore[misc]
             lower[start : start + len(xr)] = lo_c
             upper[start : start + len(xr)] = up_c
     else:

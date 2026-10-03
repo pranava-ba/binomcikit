@@ -24,8 +24,10 @@
    small `n` (168 µs vs 97 µs for Wilson at n = 100; about three-quarters of the time is pandas building the frame). We import
    more slowly than `scipy.stats` (1.22 s vs 0.85 s) and `astropy.stats` (0.29 s) because we depend on pandas. And our adoption is
    the smallest in the table (13 downloads/month; PyPI still serves a stale 0.0.5).
-4. **Licence:** binomcikit is GPL-3.0 (inherited from the R package). Every maintained Python competitor is MIT or BSD. Whether that
-   limits adoption is a decision for the maintainer; it is flagged here, not recommended.
+4. **Licence:** binomcikit is GPL-3.0 (inherited from the R package). Every maintained *Python* competitor is MIT or BSD, but the
+   *R* packages in the same lineage (`proportion`, `DescTools`, `binom`, `PropCIs`, `exactci`, `binGroup`, `Hmisc`) are all GPL (section 2b),
+   so GPL matches the ecosystem we port from and differs from the one we compete in. Whether that limits adoption is a decision for the
+   maintainer; it is flagged here, not recommended.
 5. **statsmodels' two-proportion `score` interval is wrong in the released versions and already fixed on `main`.** In 0.14.5 and
    0.15.0 the Miettinen–Nurminen constrained-MLE cubic uses `count0 * diff` where the paper has `N0 * diff`
    (upstream issue #10269, closed; `main` now has `nobs0 * diff`). We confirmed it independently: with `nobs0` the closed form
@@ -73,13 +75,32 @@ Downloads are PyPI last-30-days from pypistats and include mirrors and bots.
 Bus factor from the clones' full history (top contributor's share of commits): DBCI 275/304 (90%), binomial_cis 63/74 (85%),
 confseq 191/227 (84%), binoculars 21/21 (100%), pynomial (Dpananos) 17/17 (100%), binomcikit 72/72 (100%, `git shortlog`).
 
-Not measured: GitHub dependents counts, libraries.io reverse dependencies, conda downloads, citation counts, Stack Overflow /
+Not measured: GitHub dependents counts (no API), libraries.io reverse dependencies, conda downloads, citation counts, Stack Overflow /
 Cross Validated mentions (no API access configured). The scipy closed-issue and closed-PR totals came back empty from the search API.
 
 Reading it: DBCI is the only direct competitor with real momentum (69 commits in 12 months, pre-commit.ci, 6 GitHub workflows,
 hatch-vcs versioning) but it has not cut a release in 14 months, while `main` has merged fixes since (Wang plateau logic, build and CI changes) that PyPI users do not get. `binomial_cis`, `binoculars` and `pynomial` are effectively dormant (`pynomial` is three days of
 commits in August 2025). `confseq` is the reference for betting sequences, with no PyPI release since January 2023. The mainstream
 libraries are not competitors on scope but set the speed and install-friction bar.
+
+### 2b. R packages in the same lineage (CRAN, 2026-10-03)
+
+Source: `cranlogs.r-pkg.org` (last 30 days, includes mirrors) and `crandb.r-pkg.org`; not measured here: reverse dependencies.
+
+| R package | Version (published) | Licence | Downloads / month |
+|---|---|---|--:|
+| Hmisc | 5.3-0 (2026-09-06) | GPL (≥ 2) | 229,493 |
+| DescTools | 0.99.60 (2025-03-28) | GPL (≥ 2) | 65,586 |
+| binom | 1.1-2 (2026-07-07) | GPL | 16,007 |
+| epitools | 0.5-10.1 (2020-03-22) | GPL (≥ 2) | 9,791 |
+| binGroup | 2.2-3 (2025-05-14) | GPL (≥ 3) | 5,783 |
+| exactci | 1.4-5 (2025-08-20) | GPL-3 | 2,770 |
+| PropCIs | 0.3-0 (2018-02-23) | GPL | 1,391 |
+| binomCI | 1.3 (2026-02-01) | GPL (≥ 2) | 409 |
+| binGroup2 | 1.3.4 (2026-09-17) | GPL (≥ 3) | 367 |
+| proportion (the package binomcikit ports) | 2.0.0 (2017-05-03; archived from CRAN since 2022) | GPL-2 | 22 |
+
+For scale: `DescTools::BinomCI` is reached by about 65 k R installs a month against 74 for DBCI and 13 for binomcikit.
 
 ## 3. Footprint (measured)
 
@@ -122,6 +143,19 @@ editable here, so its own size was measured from `src/binomcikit` instead: **469
 4 MB extra (binomcikit `ci()` 2.7 MB for Wilson at n = 10,000; `limits()` 0.4 MB; statsmodels 0.5 MB), except astropy (26 MB for
 the same table). Post-import resident size: binomcikit 144 MB, statsmodels 136 MB, DBCI 163 MB, scipy 95 MB, binoculars 95 MB,
 astropy 46 MB. Memory is not a differentiator.
+
+**Very large tables** (`benchmarks/competitors/data/large_n.json`, best of 2–3, one call builds all n + 1 intervals; max abs difference
+from statsmodels ≤ 2.2e-16):
+
+| n | method | `bk.limits` | `bk.ci` | statsmodels | astropy |
+|--:|---|--:|--:|--:|--:|
+| 10^5 | Wilson | 1 ms | 5 ms | 1 ms | 2 ms |
+| 10^5 | Clopper–Pearson | 150 ms | 168 ms | 319 ms | n/a |
+| 10^6 | Wilson | 28 ms | 72 ms | **21 ms** | 26 ms |
+| 10^6 | Clopper–Pearson | 1.98 s | 2.13 s | 4.05 s | n/a |
+
+So the lean path's lead on Wilson disappears at n ≈ 10^5–10^6 (statsmodels and astropy are as fast or slightly faster); the exact interval stays about
+2× faster than statsmodels. Worth a look if very large `n` matters to anyone.
 
 ## 4. Accuracy against a 30-digit mpmath reference
 
@@ -258,7 +292,8 @@ likelihood-ratio agree to ≤ 5e-13 (interior x). `PyPI 0.1.0` and `main` gave i
 | 7 | Root-cause `pynomial`, `astropy`, DBCI arcsine deviations | **Done** (section 5): two harness mistakes (fixed), one convention, one different arcsine variant |
 | 8 | Randomised / property tests for `limits` vs `ci` vs `interval` | **Done:** `tests/test_limits_ci_property.py` (+ an exhaustive grid check, 0 failures) |
 | 9 | Adopt `hatch-vcs` + pre-commit | **Half done:** `.pre-commit-config.yaml` added and validated (`pre-commit run --all-files` passes). `hatch-vcs` **not adopted**: it replaces the hand-set version string, which interacts with the pending release decision (item 4) and with `CITATION.cff` / docs version sync |
-| 10 | *(new)* add DBCI's arcsine variant (3/8-shifted centre, 1/(2√n) width) | open, small |
+| 10 | add DBCI/DescTools' arcsine variant (3/8-shifted centre, `1/(2√n)` width) | **Done:** registry method `"arcsine-shifted"` (35th); reproduces DescTools' recorded 84/101 limits to 1e-15 and DBCI's for every x with `clamp=False` (default clamps the angle so the interval contains `x/n`) |
+| 11 | *(new)* look at the lean Wilson path at n ≈ 10^6 | open: 28 ms vs statsmodels 21 ms / astropy 26 ms (section 3, large tables) |
 
 ## 8. Upstream reports
 

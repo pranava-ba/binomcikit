@@ -13,6 +13,7 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
   Also reproduces 88 published intervals (Newcombe 1998 Table II as recast in the SAS paper, plus SAS output) to 4 decimals. Page `docs/methods/two_proportions.md`; ~90 tests in `tests/test_twoprop.py` (oracles, equation residual, Hypothesis properties, exact coverage).
 - `benchmarks/regression_check.py`, `benchmarks/baseline.json` and a weekly `.github/workflows/benchmark.yml` that fails when a tracked
   call is more than 2x slower than the baseline (timings are divided by an in-process calibration workload). `.pre-commit-config.yaml`.
+- Coverage 64.8% to **84.7%** (CI floor 60% to 80%): `tests/test_plot_smoke.py` (every drawable plotnine function), `tests/test_ci_input_validation.py` (bad arguments to every `ci*` function; the R reference only enforces `c <= 1/(2n)` in `ciCSC`/`ciCAll`, and the port mirrors that) and the new extension tests.
 - Property tests `tests/test_limits_ci_property.py` (`limits` == `ci` table == `interval` row for random n/alpha/method) and
   `tests/test_lazy_plotting.py`. `benchmarks/competitors/` (re-runnable competitor measurements; report in `planning/COMPETITOR_REPOS.md`).
 ### Changed

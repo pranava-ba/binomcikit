@@ -76,7 +76,7 @@ plots = ["plotnine>=0.10", "plotly>=5.0"]
 # >>> Python release (check https://numba.readthedocs.io release notes first). <<<
 fast = ["numba>=0.59; python_version < '3.14'"]
 test = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10", "pytest-cov"]
-dev = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10", "numba>=0.59", "pytest-cov", "ruff", "black", "build", "twine"]
+dev = ["pytest", "hypothesis", "statsmodels", "plotnine>=0.10", "numba>=0.59", "pytest-cov", "ruff", "black", "mypy", "pre-commit", "build", "twine"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "tests"]
@@ -104,6 +104,19 @@ ignore = ["F403", "F405"]   # star-imports are intentional in some __init__ file
 line-length = 100
 target-version = ["py39"]
 extend-exclude = "reference|previous-work|planning"
+
+[tool.mypy]
+ignore_missing_imports = true
+# The package is largely unannotated; check_untyped_defs still type-checks function bodies, which is where
+# real mistakes (wrong argument counts, undefined names) show up.
+check_untyped_defs = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+# The legacy R-port modules take ``n`` as ``int | float`` and rely on a runtime coercion (ci/__init__.py) that mypy
+# cannot see; these few codes are noise there, everything else is still checked.
+module = ["binomcikit.ci.*", "binomcikit.expl.base_all"]
+disable_error_code = ["arg-type", "index", "assignment", "call-arg"]
 
 [tool.coverage.run]
 source = ["binomcikit"]

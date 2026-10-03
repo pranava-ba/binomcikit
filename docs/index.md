@@ -146,5 +146,6 @@ theory/index
 api/index
 glossary
 migrating_from_r
+versioning
 under_the_hood
 ```

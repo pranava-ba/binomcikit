@@ -5,6 +5,9 @@ single given x, plus their plotting counterparts (which require the optional
 ``[plots]`` extra).
 """
 
+import functools
+import inspect
+
 from .adj_n import ciaall, ciaas, cialr, cialt, ciasc, ciatw, ciawd
 from .adj_n_x import (
     ciaallx,
@@ -39,6 +42,39 @@ from .cc_n_x import (
     cictwx,
     cicwdx,
 )
+
+
+def _as_int(n):
+    """A whole-number float (``8.0``, e.g. from pandas or numpy) becomes an int; any other float is an error."""
+    if isinstance(n, float):
+        if n != n or n in (float("inf"), float("-inf")) or n != int(n):
+            raise ValueError("'n' has to be an integer")
+        return int(n)
+    return n
+
+
+def _integral_n(fn):
+    """Accept ``n = 8.0`` like ``n = 8``: several ``ci*`` functions otherwise fail with an opaque ``TypeError``."""
+    params = list(inspect.signature(fn).parameters)
+    if "n" not in params:
+        return fn
+    pos = params.index("n")
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        if "n" in kwargs:
+            kwargs["n"] = _as_int(kwargs["n"])
+        elif len(args) > pos:
+            args = args[:pos] + (_as_int(args[pos]),) + args[pos + 1 :]
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
+for _name in [_n for _n in dir() if _n.startswith("ci") and callable(globals()[_n])]:
+    globals()[_name] = _integral_n(globals()[_name])
+del _name
+
 
 # Plotting counterparts need plotnine (the [plots] extra); they are imported on first use so that
 # numeric-only users do not pay for plotnine at ``import binomcikit``.
