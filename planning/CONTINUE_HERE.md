@@ -17,8 +17,8 @@
   betting n=1000 ~80 s -> ~16 s on 16 threads (numba `prange` over chunks of x; orderings still drawn serially, so the
   table is bit-identical for a given seed; without numba it is unchanged); `cialr/ciatw/cialt/ciclt/cictw` vectorised
   (`_fast.lr_limits_y`; verified against the old loops, h=0 undefined rows keep their old [0, 1] fallback). 721 tests pass.
-  Betting is still the slowest method (kernel-bound, O(B n^2)); `benchmarks/RESULTS.md` still shows the pre-pass numbers
-  until `bench_competitors.py` is re-run. Open: five missing methods need primary texts (`planning/MISSING_METHODS.md`); the
+  Betting is still the slowest method (kernel-bound, O(B n^2)). Full benchmark re-run 2026-10-03 (`benchmarks/RESULTS.md`, `docs/benchmarks.md`
+  section F updated; that machine state was ~2x slower than 2026-10-01 for every package, see the page's caveat). Open: five missing methods need primary texts (`planning/MISSING_METHODS.md`); the
   outward-facing items in `planning/ADOPTION_PLAN.md` (PyPI, Zenodo, upstream issues) are the user's call.
 - **Version:** 3.0.8 (pre first real PyPI release; PyPI still has an old 0.0.5).
 - **Tests:** **302 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W`** (run it with

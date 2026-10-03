@@ -1,0 +1,856 @@
+{
+ "environment": {
+  "python": "3.13.5",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+  "numpy": "2.3.2",
+  "scipy": "1.16.1",
+  "pandas": "2.3.3",
+  "numba": "0.65.1",
+  "statsmodels": "0.14.5",
+  "astropy": "8.0.1",
+  "diff_binom_confint": "0.1.0",
+  "pynomial": "?",
+  "binoculars": "?",
+  "binomial_cis": "?",
+  "binomcikit": "3.0.8"
+ },
+ "rows": [
+  {
+   "task": "table",
+   "method": "wilson",
+   "n": 100,
+   "binomcikit_s": 0.00029488115915623695,
+   "binomcikit_arrays_s": 3.088577079914304e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00015415304299929867,
+     "parity": 2.220446049250313e-16
+    },
+    "astropy": {
+     "s": 4.958143440087008e-05,
+     "parity": 2.220446049250313e-16
+    },
+    "scipy (loop)": {
+     "s": 0.08787869999650866,
+     "parity": 2.220446049250313e-16
+    },
+    "DBCI (loop)": {
+     "s": 0.01280339997416983,
+     "parity": 2.220446049250313e-16
+    },
+    "pynomial (loop)": {
+     "s": 0.01626326667610556,
+     "parity": 0.007925784426888627
+    },
+    "binoculars (loop)": {
+     "s": 0.0004822447917831596,
+     "parity": 1.8379946529756275e-06
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "wilson",
+   "n": 1000,
+   "binomcikit_s": 0.0006573098031438741,
+   "binomcikit_arrays_s": 4.4060804729867624e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00015971240273481883,
+     "parity": 2.220446049250313e-16
+    },
+    "astropy": {
+     "s": 5.9912334005410235e-05,
+     "parity": 2.220446049250313e-16
+    },
+    "scipy (loop)": {
+     "s": 1.194616200053133,
+     "parity": 2.220446049250313e-16
+    },
+    "DBCI (loop)": {
+     "s": 0.1543567000189796,
+     "parity": 1.1102230246251565e-16
+    },
+    "pynomial (loop)": {
+     "s": 0.19888639997225255,
+     "parity": 0.000826226448867544
+    },
+    "binoculars (loop)": {
+     "s": 0.005168599994956619,
+     "parity": 5.705556355706243e-07
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "wilson",
+   "n": 10000,
+   "binomcikit_s": 0.004355012497399002,
+   "binomcikit_arrays_s": 0.00011171129723098986,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00022672611955942503,
+     "parity": 2.220446049250313e-16
+    },
+    "astropy": {
+     "s": 0.00014844977139542092,
+     "parity": 2.220446049250313e-16
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "exact",
+   "n": 100,
+   "binomcikit_s": 0.001052482756143757,
+   "binomcikit_arrays_s": 0.0002015187097112498,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.0007452204091740507,
+     "parity": 5.551115123125783e-17
+    },
+    "scipy (loop)": {
+     "s": 0.4050436000106856,
+     "parity": 4.5047299224165727e-13
+    },
+    "DBCI (loop)": {
+     "s": 0.03896590007934719,
+     "parity": 2.220446049250313e-16
+    },
+    "pynomial (loop)": {
+     "s": 0.027676499914377928,
+     "parity": 2.220446049250313e-16
+    },
+    "binoculars (loop)": {
+     "s": 0.05720159993506968,
+     "parity": 1.8058683344257531e-06
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "exact",
+   "n": 1000,
+   "binomcikit_s": 0.003989262506365776,
+   "binomcikit_arrays_s": 0.002646545450922779,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.004865028579453272,
+     "parity": 5.551115123125783e-17
+    },
+    "scipy (loop)": {
+     "s": 4.17598800000269,
+     "parity": 4.989342272665453e-13
+    },
+    "DBCI (loop)": {
+     "s": 0.3699353000847623,
+     "parity": 6.661338147750939e-16
+    },
+    "pynomial (loop)": {
+     "s": 0.28485259995795786,
+     "parity": 6.661338147750939e-16
+    },
+    "binoculars (loop)": {
+     "s": 0.5185583999846131,
+     "parity": 5.696160729762312e-07
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "exact",
+   "n": 10000,
+   "binomcikit_s": 0.030360299977473915,
+   "binomcikit_arrays_s": 0.022661600029096007,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.047036100062541664,
+     "parity": 5.551115123125783e-17
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "jeffreys",
+   "n": 100,
+   "binomcikit_s": 0.008955859998241066,
+   "binomcikit_arrays_s": 0.00035043076998116367,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.0010596266637245813,
+     "parity": 2.220446049250313e-16
+    },
+    "astropy": {
+     "s": 0.0007535566022303307,
+     "parity": 2.220446049250313e-16
+    },
+    "DBCI (loop)": {
+     "s": 0.05905709997750819,
+     "parity": 2.220446049250313e-16
+    },
+    "binoculars (loop)": {
+     "s": 0.0623438999755308,
+     "parity": 1.8059514490520456e-06
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "jeffreys",
+   "n": 1000,
+   "binomcikit_s": 0.044515600078739226,
+   "binomcikit_arrays_s": 0.002573170589611811,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.005542885728313455,
+     "parity": 6.661338147750939e-16
+    },
+    "astropy": {
+     "s": 0.004774499995013078,
+     "parity": 6.661338147750939e-16
+    },
+    "DBCI (loop)": {
+     "s": 0.4223026001127437,
+     "parity": 6.661338147750939e-16
+    },
+    "binoculars (loop)": {
+     "s": 0.44732280005700886,
+     "parity": 5.696160065848943e-07
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "jeffreys",
+   "n": 10000,
+   "binomcikit_s": 0.32488629990257323,
+   "binomcikit_arrays_s": 0.023616349964868277,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.05185719998553395,
+     "parity": 1.9984014443252818e-15
+    },
+    "astropy": {
+     "s": 0.04896799998823553,
+     "parity": 1.9984014443252818e-15
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "agresti-coull",
+   "n": 100,
+   "binomcikit_s": 0.0004950880003161728,
+   "binomcikit_arrays_s": 2.4847695947311442e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00016356226417042736,
+     "parity": 1.1102230246251565e-16
+    },
+    "DBCI (loop)": {
+     "s": 0.012926049996167421,
+     "parity": 0.0
+    },
+    "pynomial (loop)": {
+     "s": 0.016629199963063,
+     "parity": 0.003673233639004403
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "agresti-coull",
+   "n": 1000,
+   "binomcikit_s": 0.0008007644442841411,
+   "binomcikit_arrays_s": 3.1235076490628096e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00017133219189916367,
+     "parity": 1.1102230246251565e-16
+    },
+    "DBCI (loop)": {
+     "s": 0.1542885999660939,
+     "parity": 0.0
+    },
+    "pynomial (loop)": {
+     "s": 0.16804069990757853,
+     "parity": 0.0004223777747448614
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "agresti-coull",
+   "n": 10000,
+   "binomcikit_s": 0.004110749997198582,
+   "binomcikit_arrays_s": 0.00010802011485960891,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.0002575395679061147,
+     "parity": 1.1102230246251565e-16
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "wald",
+   "n": 100,
+   "binomcikit_s": 0.00035180891103267964,
+   "binomcikit_arrays_s": 2.3745243366502752e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00018706172848419276,
+     "parity": 1.1102230246251565e-16
+    },
+    "astropy": {
+     "s": 4.732454997379144e-05,
+     "parity": 0.00950139541798789
+    },
+    "DBCI (loop)": {
+     "s": 0.013922833333102366,
+     "parity": 0.0
+    },
+    "pynomial (loop)": {
+     "s": 0.02174549998017028,
+     "parity": 0.00950139541798789
+    },
+    "binoculars (loop)": {
+     "s": 0.00044098272707990624,
+     "parity": 0.009501753767289749
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "wald",
+   "n": 1000,
+   "binomcikit_s": 0.0008533901638030761,
+   "binomcikit_arrays_s": 4.9627689698898285e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.0001588938462261397,
+     "parity": 1.1102230246251565e-16
+    },
+    "astropy": {
+     "s": 5.026076294162009e-05,
+     "parity": 0.0009589837574297544
+    },
+    "DBCI (loop)": {
+     "s": 0.16495350003242493,
+     "parity": 0.0
+    },
+    "pynomial (loop)": {
+     "s": 0.1731172000290826,
+     "parity": 0.0009589837574297544
+    },
+    "binoculars (loop)": {
+     "s": 0.0042891222336846925,
+     "parity": 0.0009590197548774437
+    }
+   }
+  },
+  {
+   "task": "table",
+   "method": "wald",
+   "n": 10000,
+   "binomcikit_s": 0.0039428249971630676,
+   "binomcikit_arrays_s": 9.657984101695234e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00023088555576072798,
+     "parity": 1.1102230246251565e-16
+    },
+    "astropy": {
+     "s": 0.00011714098337640772,
+     "parity": 9.59865983891639e-05
+    }
+   }
+  },
+  {
+   "task": "single",
+   "method": "wilson",
+   "n": 1000,
+   "binomcikit_s": 0.0002598872178941405,
+   "binomcikit_arrays_s": 3.6012764174071417e-06,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.0001311427671989461
+    },
+    "scipy": {
+     "s": 0.0012161279981955887
+    },
+    "astropy": {
+     "s": 3.82159685433223e-05
+    },
+    "DBCI": {
+     "s": 0.00012696135265005814
+    },
+    "pynomial": {
+     "s": 0.00016613040271218552
+    }
+   }
+  },
+  {
+   "task": "single",
+   "method": "exact",
+   "n": 1000,
+   "binomcikit_s": 0.00041813174602649516,
+   "binomcikit_arrays_s": 1.0313800012227147e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00025008117697913857
+    },
+    "scipy": {
+     "s": 0.004627572721801698
+    },
+    "DBCI": {
+     "s": 0.0003632092311118658
+    },
+    "pynomial": {
+     "s": 0.0002863053685591725
+    }
+   }
+  },
+  {
+   "task": "single",
+   "method": "jeffreys",
+   "n": 1000,
+   "binomcikit_s": 0.000643436365168203,
+   "binomcikit_arrays_s": 1.1220997202032235e-05,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.0002875200007110834
+    },
+    "astropy": {
+     "s": 4.53346848345219e-05
+    },
+    "DBCI": {
+     "s": 0.00043528969039583637
+    }
+   }
+  },
+  {
+   "task": "single",
+   "method": "wald",
+   "n": 1000,
+   "binomcikit_s": 0.00030001215027453744,
+   "binomcikit_arrays_s": 3.1674059458298257e-06,
+   "competitors": {
+    "statsmodels": {
+     "s": 0.00016055000014603138
+    },
+    "astropy": {
+     "s": 2.7108736899926474e-05
+    },
+    "DBCI": {
+     "s": 0.00012454140596673824
+    },
+    "pynomial": {
+     "s": 0.0001628712177056668
+    }
+   }
+  },
+  {
+   "task": "exotic",
+   "method": "blaker",
+   "n": 60,
+   "binomcikit_s": 0.007751099998131394,
+   "competitors": {
+    "DBCI (loop)": {
+     "s": 27.259297200012952,
+     "parity": 9.867663373297475e-06
+    }
+   }
+  },
+  {
+   "task": "exotic",
+   "method": "midp",
+   "n": 60,
+   "binomcikit_s": 0.007064633343058328,
+   "competitors": {
+    "DBCI (loop)": {
+     "s": 0.3036673000315204,
+     "parity": 4.988232049640828e-13
+    }
+   }
+  },
+  {
+   "task": "exotic",
+   "method": "pratt",
+   "n": 60,
+   "binomcikit_s": 0.0005504365365665692,
+   "competitors": {
+    "DBCI (loop)": {
+     "s": 0.008127620001323521,
+     "parity": 0.05310308467541658
+    }
+   }
+  },
+  {
+   "task": "exotic",
+   "method": "lr",
+   "n": 60,
+   "binomcikit_s": 0.0034115750022465363,
+   "competitors": {
+    "DBCI (loop)": {
+     "s": 0.23963470000308007,
+     "parity": 3.705646900442616e-13
+    }
+   }
+  },
+  {
+   "task": "exotic",
+   "method": "modified-wilson",
+   "n": 60,
+   "binomcikit_s": 0.001052789286144876,
+   "competitors": {
+    "DBCI (loop)": {
+     "s": 0.010077500017359853,
+     "parity": 0.9987231482938026
+    }
+   }
+  },
+  {
+   "task": "exotic",
+   "method": "modified-jeffreys",
+   "n": 60,
+   "binomcikit_s": 0.0011268175003351644,
+   "competitors": {
+    "DBCI (loop)": {
+     "s": 0.02108715003123507,
+     "parity": 4.440892098500626e-16
+    }
+   }
+  },
+  {
+   "task": "evaluation",
+   "method": "wilson coverage curve",
+   "n": 100,
+   "points": 2000,
+   "binomcikit_s": 0.034178399946540594,
+   "competitors": {
+    "numpy/scipy reference": {
+     "s": 0.053894200013019145,
+     "parity": 3.952393967665557e-14
+    }
+   }
+  },
+  {
+   "task": "evaluation",
+   "method": "wilson coverage curve",
+   "n": 1000,
+   "points": 2000,
+   "binomcikit_s": 0.009919900097884238,
+   "competitors": {
+    "numpy/scipy reference": {
+     "s": 0.727180999936536,
+     "parity": 7.801537194040975e-13
+    }
+   }
+  },
+  {
+   "task": "evaluation",
+   "method": "wilson coverage curve",
+   "n": 10000,
+   "points": 2000,
+   "binomcikit_s": 0.0382178999716416,
+   "competitors": {
+    "numpy/scipy reference": {
+     "s": 9.946148000075482,
+     "parity": 9.11160036309866e-12
+    }
+   }
+  },
+  {
+   "task": "sequence",
+   "method": "hedged betting CS (breaks=100)",
+   "n": 1000,
+   "binomcikit_s": 0.007098599996728201,
+   "competitors": {
+    "confseq": {
+     "s": 0.05196300009265542,
+     "parity": 1.1102230246251565e-16
+    }
+   }
+  },
+  {
+   "task": "sequence",
+   "method": "hedged betting CS (breaks=1000)",
+   "n": 1000,
+   "binomcikit_s": 0.06526689999736845,
+   "competitors": {
+    "confseq": {
+     "s": 0.5036518999841064,
+     "parity": 1.1102230246251565e-16
+    }
+   }
+  },
+  {
+   "task": "new",
+   "method": "sterne",
+   "n": 50,
+   "binomcikit_s": 0.008567599987145513,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "sterne",
+   "n": 200,
+   "binomcikit_s": 0.05083529988769442,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "sterne",
+   "n": 1000,
+   "binomcikit_s": 0.5483788999263197,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "sterne",
+   "n": 5000,
+   "binomcikit_s": 12.497166000073776,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "bsc",
+   "n": 50,
+   "binomcikit_s": 0.03784650005400181,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "bsc",
+   "n": 200,
+   "binomcikit_s": 0.1313289999961853,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "bsc",
+   "n": 1000,
+   "binomcikit_s": 0.7179524999810383,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "olc",
+   "n": 50,
+   "binomcikit_s": 0.0036166749972229204,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "olc",
+   "n": 200,
+   "binomcikit_s": 0.013888333303232988,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "olc",
+   "n": 1000,
+   "binomcikit_s": 0.08667190000414848,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "olc",
+   "n": 5000,
+   "binomcikit_s": 0.41321309993509203,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "lr-star",
+   "n": 50,
+   "binomcikit_s": 0.007241016680685182,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "lr-star",
+   "n": 200,
+   "binomcikit_s": 0.009322479995898903,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "lr-star",
+   "n": 1000,
+   "binomcikit_s": 0.016078533333105344,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "lr-star",
+   "n": 5000,
+   "binomcikit_s": 0.04917599994223565,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "cressie-read",
+   "n": 50,
+   "binomcikit_s": 0.007772016668847452,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "cressie-read",
+   "n": 200,
+   "binomcikit_s": 0.008516060002148152,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "cressie-read",
+   "n": 1000,
+   "binomcikit_s": 0.015422400009507934,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "cressie-read",
+   "n": 5000,
+   "binomcikit_s": 0.046893800026737154,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "mixture",
+   "n": 50,
+   "binomcikit_s": 0.003015015390701592,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "mixture",
+   "n": 200,
+   "binomcikit_s": 0.004055783327203244,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "mixture",
+   "n": 1000,
+   "binomcikit_s": 0.007390066670874755,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "mixture",
+   "n": 5000,
+   "binomcikit_s": 0.023755849979352206,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "betting",
+   "n": 50,
+   "binomcikit_s": 0.053950499976053834,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "betting",
+   "n": 200,
+   "binomcikit_s": 0.7419372999574989,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "betting",
+   "n": 1000,
+   "binomcikit_s": 15.525936499936506,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "pratt",
+   "n": 50,
+   "binomcikit_s": 0.0007104276595240894,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "pratt",
+   "n": 200,
+   "binomcikit_s": 0.0006103055568894854,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "pratt",
+   "n": 1000,
+   "binomcikit_s": 0.0009735874991747551,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "pratt",
+   "n": 5000,
+   "binomcikit_s": 0.002688613332187136,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "hoeffding",
+   "n": 50,
+   "binomcikit_s": 0.000300803418772725,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "hoeffding",
+   "n": 200,
+   "binomcikit_s": 0.00036413103426357024,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "hoeffding",
+   "n": 1000,
+   "binomcikit_s": 0.0006538450711367416,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "hoeffding",
+   "n": 5000,
+   "binomcikit_s": 0.0021444318170489914,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "chernoff",
+   "n": 50,
+   "binomcikit_s": 0.004220572723583741,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "chernoff",
+   "n": 200,
+   "binomcikit_s": 0.007501666666939855,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "chernoff",
+   "n": 1000,
+   "binomcikit_s": 0.025404949963558465,
+   "competitors": {}
+  },
+  {
+   "task": "new",
+   "method": "chernoff",
+   "n": 5000,
+   "binomcikit_s": 0.11242670007050037,
+   "competitors": {}
+  }
+ ]
+}

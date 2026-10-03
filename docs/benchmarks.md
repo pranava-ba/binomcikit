@@ -77,8 +77,8 @@ found no other Python package with a coverage-curve function to compare against.
 
 ## E. Anytime-valid betting confidence sequence
 
-Against `confseq` (the authors' reference implementation) the hedged-capital sequence over 1000 observations takes 3.8 ms
-(`breaks=100`) and 34.5 ms (`breaks=1000`) versus 28.7 and 268.8 ms: **about 7.5×**, with identical output to 1e-16.
+Against `confseq` (the authors' reference implementation) the hedged-capital sequence over 1000 observations takes 7.1 ms
+(`breaks=100`) and 65.3 ms (`breaks=1000`) versus 52.0 and 503.7 ms: **about 7.5×**, with identical output to 1e-16.
 (`confseq` could not be pip-installed on this machine, so the benchmark imports its Python sources directly.)
 
 ## F. Methods only binomcikit has: absolute cost, including the slow ones
@@ -87,19 +87,22 @@ These have no competitor to compare with, so only the absolute time of the whole
 
 | method | n=50 | n=200 | n=1000 | n=5000 |
 |---|---:|---:|---:|---:|
-| Pratt | 0.6 ms | 0.8 ms | 1.5 ms | 3.1 ms |
-| Hoeffding | 0.4 ms | 0.4 ms | 0.7 ms | 2.1 ms |
-| Cressie–Read | 3.8 ms | 4.5 ms | 8.1 ms | 24 ms |
-| higher-order likelihood (r*) | 3.7 ms | 4.5 ms | 7.9 ms | 24 ms |
-| mixture confidence sequence | 1.5 ms | 1.9 ms | 3.6 ms | 11.6 ms |
-| Chernoff / KL | 4.4 ms | 7.6 ms | 24 ms | 113 ms |
-| length-optimal (OLC) | 1.9 ms | 7.3 ms | 50 ms | 200 ms |
-| Blyth–Still–Casella | 20 ms | 69 ms | 361 ms | not run |
-| **Sterne** | 33 ms | 213 ms | **3.3 s** | **82 s** |
-| **hedged betting (full table)** | 166 ms | 2.8 s | **80 s** | not run |
+| Pratt | 710 µs | 610 µs | 974 µs | 2.7 ms |
+| Hoeffding | 301 µs | 364 µs | 654 µs | 2.1 ms |
+| Cressie–Read | 7.8 ms | 8.5 ms | 15.4 ms | 46.9 ms |
+| higher-order likelihood (r*) | 7.2 ms | 9.3 ms | 16.1 ms | 49.2 ms |
+| mixture confidence sequence | 3.0 ms | 4.1 ms | 7.4 ms | 23.8 ms |
+| Chernoff / KL | 4.2 ms | 7.5 ms | 25.4 ms | 112 ms |
+| length-optimal (OLC) | 3.6 ms | 13.9 ms | 86.7 ms | 413 ms |
+| Blyth–Still–Casella | 37.8 ms | 131 ms | 718 ms | not run |
+| **Sterne** | 8.6 ms | 50.8 ms | **548 ms** | **12.5 s** |
+| **hedged betting (full table)** | 54.0 ms | 742 ms | **15.5 s** | not run |
 
-Sterne and the full-table betting interval grow roughly as $n^{2.5}$–$n^3$. They are usable to a few hundred trials and are the
-obvious remaining optimisation targets; no claim of speed is made for them.
+Sterne now runs in about 0.5 s at `n=1000` and 12 s at `n=5000` (it was 3.3 s and 82 s before the 2026-10-03 pass, which replaced
+`scipy.stats` calls in the inner loop with precomputed log-pmfs and `scipy.special` ufuncs; the limits are unchanged to ~1e-14).
+The full-table betting interval takes about 16 s at `n=1000` (it was about 80 s; numba now runs chunks of rows in parallel, and the
+table is bit-identical for a given seed). Betting is still the slowest method here, at roughly $O(B\,n^2)$ per table, and it needs
+numba plus several cores to get that figure. Both are usable to a few hundred trials without waiting; no speed claim is made beyond that.
 
 ## What this does and does not show
 
@@ -107,4 +110,7 @@ obvious remaining optimisation targets; no claim of speed is made for them.
 * It does **not** show that `bk.ci()` beats statsmodels or astropy for closed-form intervals; it does not. Use `bk.limits()`
   or `bk.interval()` when raw speed on those matters.
 * One machine, one run, `n` at most 10,000 for tables. Timings under load vary (an earlier first pass looked slow only because
-  of other processes running).
+  of other processes running). The tables in sections A–E and the headline figures quoted above were measured on 2026-10-01; the
+  full re-run on 2026-10-03 (`benchmarks/RESULTS.md`) is about 2× slower in absolute terms for *every* package, including code that
+  did not change (e.g. the hedged betting sequence, 3.8 ms then, 7.1 ms now), so the machine was in a slower state; the ratios
+  between packages agree between the two runs. Section F and the betting-sequence timings above are from the 2026-10-03 run.
