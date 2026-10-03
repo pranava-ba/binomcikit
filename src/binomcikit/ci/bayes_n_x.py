@@ -1,9 +1,12 @@
 """1xx family - Bayesian credible interval for a single x (port of R ciBAx)."""
 
+import numpy as np
 import pandas as pd
 import scipy.stats as stats
+from scipy import special
 
 from .._hpd import hpd_beta
+from . import _fast
 
 
 def cibax(x, n, alp, a, b):
@@ -28,9 +31,24 @@ def cibax(x, n, alp, a, b):
         raise ValueError("'a' and 'b' have to be greater than or equal to 0")
 
     s1, s2 = x + a, n - x + b
-    lbaqx = stats.beta.ppf(alp / 2, s1, s2)
-    ubaqx = stats.beta.ppf(1 - alp / 2, s1, s2)
-    lbahx, ubahx = hpd_beta(s1, s2, conf=1 - alp)
+    lbaqx = (
+        float(special.betaincinv(s1, s2, alp / 2))
+        if s1 > 0 and s2 > 0
+        else stats.beta.ppf(alp / 2, s1, s2)
+    )
+    ubaqx = (
+        float(special.betaincinv(s1, s2, 1 - alp / 2))
+        if s1 > 0 and s2 > 0
+        else stats.beta.ppf(1 - alp / 2, s1, s2)
+    )
+    # HPD by the vectorised Newton search (a degenerate prior -- a shape of 0 -- falls back to the scalar one)
+    lo, hi = _fast.hpd_beta_vec(
+        np.array([s1], dtype=float), np.array([s2], dtype=float), conf=1 - alp
+    )
+    if np.isnan(lo[0]):
+        lbahx, ubahx = hpd_beta(s1, s2, conf=1 - alp)
+    else:
+        lbahx, ubahx = float(lo[0]), float(hi[0])
 
     return pd.DataFrame(
         [

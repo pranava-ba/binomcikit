@@ -11,6 +11,7 @@ import pandas as pd
 import scipy.stats as stats
 
 from .._hpd import hpd_beta
+from . import _fast
 
 
 def ciba(n, alp, a, b):
@@ -34,18 +35,16 @@ def ciba(n, alp, a, b):
     if np.any(a_vec < 0) or np.any(b_vec < 0):
         raise ValueError("'a' and 'b' have to be greater than or equal to 0")
 
-    pomean = np.empty(n + 1)
-    lbaq = np.empty(n + 1)
-    ubaq = np.empty(n + 1)
-    lbah = np.empty(n + 1)
-    ubah = np.empty(n + 1)
-    for i in range(n + 1):
-        ai, bi = a_vec[i], b_vec[i]
-        s1, s2 = x[i] + ai, n - x[i] + bi
-        pomean[i] = (x[i] + ai) / (n + ai + bi)
-        lbaq[i] = stats.beta.ppf(alp / 2, s1, s2)
-        ubaq[i] = stats.beta.ppf(1 - alp / 2, s1, s2)
-        lbah[i], ubah[i] = hpd_beta(s1, s2, conf=1 - alp)
+    # Posterior Beta(s1, s2) for every x at once: quantile limits in two ppf calls, HPD limits by a
+    # vectorised golden-section search. Degenerate shapes (a prior of 0, e.g. Haldane at x = 0)
+    # have a non-finite quantile and fall back to the scalar search.
+    s1, s2 = x + a_vec, n - x + b_vec
+    pomean = (x + a_vec) / (n + a_vec + b_vec)
+    lbaq = stats.beta.ppf(alp / 2, s1, s2)
+    ubaq = stats.beta.ppf(1 - alp / 2, s1, s2)
+    lbah, ubah = _fast.hpd_beta_vec(s1, s2, conf=1 - alp)
+    for i in np.flatnonzero(np.isnan(lbah)):
+        lbah[i], ubah[i] = hpd_beta(s1[i], s2[i], conf=1 - alp)
 
     return pd.DataFrame(
         {

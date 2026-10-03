@@ -17,6 +17,7 @@ import numpy as np
 
 from ._accel import coverage_series
 from .ci import cias, ciba, ciblaker, ciboot, ciex, cilr, cilt, cisc, citw, ciwd
+from .methods import _ALIAS, REGISTRY
 
 
 def _exact(e):
@@ -75,6 +76,22 @@ _METHODS = {
     "bayesian": (_bayes(1.0, 1.0), "LBAQ", "UBAQ", "Bayesian (flat)"),
     "jeffreys": (_bayes(0.5, 0.5), "LBAQ", "UBAQ", "Jeffreys"),
 }
+
+
+def _from_spec(spec):
+    """Adapt a registry method to the ``fn(n, alpha)`` shape (default parameters)."""
+
+    def _f(n, alpha):
+        return spec.table(n, alpha)
+
+    return _f
+
+
+# The extended methods come from the registry: every name and alias is plottable and
+# usable by compare()/recommend()/coverage_curve() with no per-method wiring.
+for _alias, _key in _ALIAS.items():
+    _s = REGISTRY[_key]
+    _METHODS[_alias] = (_from_spec(_s), _s.lo, _s.hi, _s.label)
 
 
 def _go():

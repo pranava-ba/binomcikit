@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-import scipy.optimize as optimize
 import scipy.stats as stats
+
+from . import _fast
 
 
 def ciawd(n, alp, h):
@@ -21,38 +22,16 @@ def ciawd(n, alp, h):
 
     # Input n
     x = np.arange(n + 1)
-    k = n + 1
     y = x + h
     n1 = n + (2 * h)
 
-    # Initializations
-    pAW = np.zeros(k)
-    qAW = np.zeros(k)
-    seAW = np.zeros(k)
-    LAWD = np.zeros(k)
-    UAWD = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
-
     # Critical values
-    cv = stats.norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
 
-    # WALD METHOD
-    for i in range(k):
-        pAW[i] = y[i] / n1
-        qAW[i] = 1 - pAW[i]
-        seAW[i] = np.sqrt(pAW[i] * qAW[i] / n1)
-        LAWD[i] = pAW[i] - (cv * seAW[i])
-        UAWD[i] = pAW[i] + (cv * seAW[i])
-
-        LABB[i] = "YES" if LAWD[i] < 0 else "NO"
-        LAWD[i] = max(0, LAWD[i])
-
-        UABB[i] = "YES" if UAWD[i] > 1 else "NO"
-        UAWD[i] = min(1, UAWD[i])
-
-        ZWI[i] = "YES" if UAWD[i] - LAWD[i] == 0 else "NO"
+    # WALD METHOD (vectorised over every x)
+    pAW = y / n1
+    seAW = np.sqrt(pAW * (1 - pAW) / n1)
+    LAWD, UAWD, LABB, UABB, ZWI = _fast.flags(pAW - cv * seAW, pAW + cv * seAW)
 
     return pd.DataFrame(
         {"x": x, "LAWD": LAWD, "UAWD": UAWD, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -76,40 +55,21 @@ def ciasc(n, alp, h):
 
     # Input n
     x = np.arange(n + 1)
-    k = n + 1
     y = x + h
     n1 = n + (2 * h)
 
-    # Initializations
-    pAS = np.zeros(k)
-    qAS = np.zeros(k)
-    seAS = np.zeros(k)
-    LASC = np.zeros(k)
-    UASC = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
-
     # Critical values
-    cv = stats.norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
     cv1 = (cv**2) / (2 * n1)
     cv2 = (cv / (2 * n1)) ** 2
 
-    # ASCORE (WILSON) METHOD
-    for i in range(k):
-        pAS[i] = y[i] / n1
-        qAS[i] = 1 - pAS[i]
-        seAS[i] = np.sqrt((pAS[i] * qAS[i] / n1) + cv2)
-        LASC[i] = (n1 / (n1 + cv**2)) * ((pAS[i] + cv1) - (cv * seAS[i]))
-        UASC[i] = (n1 / (n1 + cv**2)) * ((pAS[i] + cv1) + (cv * seAS[i]))
-
-        LABB[i] = "YES" if LASC[i] < 0 else "NO"
-        LASC[i] = max(0, LASC[i])
-
-        UABB[i] = "YES" if UASC[i] > 1 else "NO"
-        UASC[i] = min(1, UASC[i])
-
-        ZWI[i] = "YES" if UASC[i] - LASC[i] == 0 else "NO"
+    # ASCORE (WILSON) METHOD (vectorised over every x)
+    pAS = y / n1
+    seAS = np.sqrt((pAS * (1 - pAS) / n1) + cv2)
+    LASC, UASC, LABB, UABB, ZWI = _fast.flags(
+        (n1 / (n1 + cv**2)) * ((pAS + cv1) - (cv * seAS)),
+        (n1 / (n1 + cv**2)) * ((pAS + cv1) + (cv * seAS)),
+    )
 
     return pd.DataFrame(
         {"x": x, "LASC": LASC, "UASC": UASC, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -133,37 +93,17 @@ def ciaas(n, alp, h):
 
     # Input
     x = np.arange(n + 1)
-    k = n + 1
     y = x + h
     m = n + (2 * h)
 
-    # Initializations
-    pA = np.zeros(k)
-    qA = np.zeros(k)
-    seA = np.zeros(k)
-    LAAS = np.zeros(k)
-    UAAS = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
+    cv = _fast.zcrit(alp)
 
-    cv = stats.norm.ppf(1 - (alp / 2))
-
-    # ARC-SINE METHOD
-    for i in range(k):
-        pA[i] = y[i] / m
-        qA[i] = 1 - pA[i]
-        seA[i] = cv / np.sqrt(4 * m)
-        LAAS[i] = (np.sin(np.arcsin(np.sqrt(pA[i])) - seA[i])) ** 2
-        UAAS[i] = (np.sin(np.arcsin(np.sqrt(pA[i])) + seA[i])) ** 2
-
-        LABB[i] = "YES" if LAAS[i] < 0 else "NO"
-        LAAS[i] = max(0, LAAS[i])
-
-        UABB[i] = "YES" if UAAS[i] > 1 else "NO"
-        UAAS[i] = min(1, UAAS[i])
-
-        ZWI[i] = "YES" if UAAS[i] - LAAS[i] == 0 else "NO"
+    # ARC-SINE METHOD (vectorised over every x)
+    pA = y / m
+    seA = cv / np.sqrt(4 * m)
+    LAAS, UAAS, LABB, UABB, ZWI = _fast.flags(
+        (np.sin(np.arcsin(np.sqrt(pA)) - seA)) ** 2, (np.sin(np.arcsin(np.sqrt(pA)) + seA)) ** 2
+    )
 
     return pd.DataFrame(
         {"x": x, "LAAS": LAAS, "UAAS": UAAS, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -188,53 +128,15 @@ def cialr(n, alp, h):
     # Input n
     x = np.arange(n + 1)
     y1 = x + h
-    k = n + 1
     n1 = n + (2 * h)
 
-    # Initializations
-    mle = np.zeros(k)
-    cutoff = np.zeros(k)
-    LALR = np.zeros(k)
-    UALR = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
-
-    # Critical values
-    cv = stats.norm.ppf(1 - (alp / 2))
-
-    def loglik(p, i):
-        return stats.binom.logpmf(y1[i], n1, p)
-
-    _eps = 1e-12
-
-    # LIKELIHOOD-RATIO METHOD
-    for i in range(k):
-        # MLE of a binomial proportion has a closed form, y1[i]/n1 -- no need
-        # to numerically optimize for it. (This used to be found by
-        # minimizing the RAW likelihood stats.binom.pmf, which underflows to
-        # exactly 0.0 for large n away from the mode; minimize_scalar could
-        # then converge to a wrong "MLE", silently corrupting the whole
-        # interval -- the same bug as unadjusted LR, see
-        # docs/under_the_hood.md. The single-x sibling, cialrx in
-        # adj_n_x.py, already used logpmf here and was unaffected.)
-        mle[i] = y1[i] / n1
-
-        cutoff[i] = loglik(mle[i], i) - (cv**2 / 2)
-
-        def signed(p, i=i):
-            return loglik(p, i) - cutoff[i]
-
-        # loglik(p) - cutoff is positive at mle[i] and strictly decreasing
-        # away from it in each direction, so brentq root-finding is both
-        # correct and far more numerically robust than minimizing
-        # abs(cutoff - loglik(p)).
-        LALR[i] = 0.0 if y1[i] == 0 else optimize.brentq(signed, _eps, mle[i])
-        UALR[i] = 1.0 if y1[i] == n1 else optimize.brentq(signed, mle[i], 1 - _eps)
-
-        LABB[i] = "YES" if LALR[i] < 0 else "NO"
-        UABB[i] = "YES" if UALR[i] > 1 else "NO"
-        ZWI[i] = "YES" if UALR[i] - LALR[i] == 0 else "NO"
+    # LIKELIHOOD-RATIO METHOD (vectorised over every x). The MLE has the closed form y1/n1 and
+    # the deviance is used instead of the raw likelihood, which underflows for large n (see
+    # docs/under_the_hood.md).
+    LALR, UALR = _fast.lr_limits_y(y1, n1, alp)
+    LABB = np.where(LALR < 0, "YES", "NO").astype(object)
+    UABB = np.where(UALR > 1, "YES", "NO").astype(object)
+    ZWI = np.where(UALR - LALR == 0, "YES", "NO").astype(object)
 
     return pd.DataFrame(
         {"x": x, "LALR": LALR, "UALR": UALR, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -258,21 +160,8 @@ def ciatw(n, alp, h):
 
     # Input n
     x = np.arange(n + 1)
-    k = n + 1
     y = x + h
     n1 = n + (2 * h)
-
-    # Initializations
-    pATW = np.zeros(k)
-    qATW = np.zeros(k)
-    seATW = np.zeros(k)
-    LATW = np.zeros(k)
-    UATW = np.zeros(k)
-    DOF = np.zeros(k)
-    cv = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
 
     def f1(p, n):
         return p * (1 - p) / n
@@ -290,23 +179,15 @@ def ciatw(n, alp, h):
             - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
         )
 
-    # MODIFIED_t-ADJ_WALD METHOD
-    for i in range(k):
-        pATW[i] = y[i] / n1
-        qATW[i] = 1 - pATW[i]
-        DOF[i] = 2 * ((f1(pATW[i], n1)) ** 2) / f2(pATW[i], n1)
-        cv[i] = stats.t.ppf(1 - (alp / 2), df=DOF[i])
-        seATW[i] = cv[i] * np.sqrt(f1(pATW[i], n1))
-        LATW[i] = pATW[i] - seATW[i]
-        UATW[i] = pATW[i] + seATW[i]
-
-        LABB[i] = "YES" if LATW[i] < 0 else "NO"
-        LATW[i] = max(0, LATW[i])
-
-        UABB[i] = "YES" if UATW[i] > 1 else "NO"
-        UATW[i] = min(1, UATW[i])
-
-        ZWI[i] = "YES" if UATW[i] - LATW[i] == 0 else "NO"
+    # MODIFIED_t-ADJ_WALD METHOD (vectorised over every x)
+    pATW = y / n1
+    DOF = 2 * ((f1(pATW, n1)) ** 2) / f2(pATW, n1)
+    cv = stats.t.ppf(1 - (alp / 2), df=DOF)
+    seATW = cv * np.sqrt(f1(pATW, n1))
+    LATW, UATW, LABB, UABB, ZWI = _fast.flags(pATW - seATW, pATW + seATW)
+    # undefined rows (h = 0 at x = 0 / n: 0/0 degrees of freedom) fall back to [0, 1]
+    LATW, UATW = np.nan_to_num(LATW, nan=0.0), np.nan_to_num(UATW, nan=1.0)
+    ZWI = np.where(UATW - LATW == 0, "YES", "NO").astype(object)
 
     return pd.DataFrame(
         {"x": x, "LATW": LATW, "UATW": UATW, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -330,40 +211,21 @@ def cialt(n, alp, h):
 
     # Input n
     x = np.arange(n + 1)
-    k = n + 1
     y = x + h
     n1 = n + (2 * h)
 
-    # Initializations
-    pALT = np.zeros(k)
-    qALT = np.zeros(k)
-    seALT = np.zeros(k)
-    lgit = np.zeros(k)
-    LALT = np.zeros(k)
-    UALT = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
-
-    # Critical values
-    cv = stats.norm.ppf(1 - (alp / 2))
-
-    # LOGIT-WALD METHOD
-    for i in range(k):
-        pALT[i] = y[i] / n1
-        qALT[i] = 1 - pALT[i]
-        lgit[i] = np.log(pALT[i] / qALT[i])
-        seALT[i] = np.sqrt(pALT[i] * qALT[i] * n1)
-        LALT[i] = 1 / (1 + np.exp(-lgit[i] + (cv / seALT[i])))
-        UALT[i] = 1 / (1 + np.exp(-lgit[i] - (cv / seALT[i])))
-
-        LABB[i] = "YES" if LALT[i] < 0 else "NO"
-        LALT[i] = max(0, LALT[i])
-
-        UABB[i] = "YES" if UALT[i] > 1 else "NO"
-        UALT[i] = min(1, UALT[i])
-
-        ZWI[i] = "YES" if UALT[i] - LALT[i] == 0 else "NO"
+    # LOGIT-WALD METHOD (vectorised over every x)
+    cv = _fast.zcrit(alp)
+    pALT = y / n1
+    qALT = 1 - pALT
+    lgit = np.log(pALT / qALT)
+    seALT = np.sqrt(pALT * qALT * n1)
+    LALT, UALT, LABB, UABB, ZWI = _fast.flags(
+        1 / (1 + np.exp(-lgit + (cv / seALT))), 1 / (1 + np.exp(-lgit - (cv / seALT)))
+    )
+    # undefined rows (h = 0 at x = 0 / n: logit of 0 or 1) fall back to [0, 1]
+    LALT, UALT = np.nan_to_num(LALT, nan=0.0), np.nan_to_num(UALT, nan=1.0)
+    ZWI = np.where(UALT - LALT == 0, "YES", "NO").astype(object)
 
     return pd.DataFrame(
         {"x": x, "LALT": LALT, "UALT": UALT, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}

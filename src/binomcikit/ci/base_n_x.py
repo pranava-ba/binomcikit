@@ -1,5 +1,7 @@
 import pandas as pd
-import scipy.stats as stats
+from scipy import special
+
+from . import _fast
 
 
 def ciwdx(x=None, n=None, alp=None):
@@ -23,7 +25,7 @@ def ciwdx(x=None, n=None, alp=None):
         raise ValueError("'alpha' has to be between 0 and 1")
 
     # Critical value
-    cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
+    cv = _fast.zcrit(alp)
 
     # Wald method
     pW = x / n
@@ -66,7 +68,7 @@ def ciscx(x=None, n=None, alp=None):
         raise ValueError("'alpha' has to be between 0 and 1")
 
     # Critical value
-    cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
+    cv = _fast.zcrit(alp)
     cv1 = (cv**2) / (2 * n)
     cv2 = (cv / (2 * n)) ** 2
 
@@ -114,7 +116,7 @@ def ciasx(x=None, n=None, alp=None):
         raise ValueError("'alpha' has to be between 0 and 1")
 
     # Critical value
-    cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
+    cv = _fast.zcrit(alp)
 
     # Arc-Sine method
     pA = x / n
@@ -159,13 +161,15 @@ def cilrx(x=None, n=None, alp=None):
         raise ValueError("'alpha' has to be between 0 and 1")
 
     # Critical value
-    cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
+    cv = _fast.zcrit(alp)
 
     # Likelihood-ratio method
     y = x
 
     def loglik(p):
-        return stats.binom.logpmf(y, n, p)
+        # log-likelihood up to the binomial coefficient (which cancels against the cutoff) -- the
+        # direct logs, not scipy's logpmf wrapper (~100x cheaper per evaluation, identical roots)
+        return special.xlogy(y, p) + special.xlog1py(n - y, -p)
 
     # MLE of a binomial proportion has a closed form, y/n -- no need to
     # numerically optimize for it. (This used to be found by minimizing the
@@ -230,13 +234,8 @@ def ciexx(x, n, alp, e):
     if len(e) > 10:
         raise ValueError("'e' can have only 10 intervals")
 
-    res = pd.DataFrame()
-
-    for ei in e:
-        lu = lufn103(x, n, alp, ei)
-        res = pd.concat([res, lu], ignore_index=True)
-
-    return res
+    frames = [lufn103(x, n, alp, ei) for ei in e]
+    return frames[0] if len(frames) == 1 else pd.concat(frames, ignore_index=True)
 
 
 def lufn103(x, n, alp, e):
@@ -259,20 +258,23 @@ def lufn103(x, n, alp, e):
     return resx
 
 
+def _pmf(x, n, p):
+    """Binomial pmf at one ``x`` from the (accurate) cdf ufunc -- no scipy.stats overhead."""
+    return special.bdtr(x, n, p) - special.bdtr(x - 1, n, p)
+
+
 def exlim103l(x, n, alp, e):
     if x == 0:
         return 0
     elif x == n:
         return (alp / (2 * e)) ** (1 / n)
+    elif e == 1:
+        # Clopper-Pearson: the root of P(X >= x) = alpha/2 is a beta quantile
+        return float(special.betaincinv(x, n - x + 1, alp / 2))
     else:
-        z = np.arange(0, x)
 
         def f1(p):
-            return (
-                (1 - e) * stats.binom.pmf(x, n, p)
-                + np.sum(stats.binom.pmf(z, n, p))
-                - (1 - (alp / 2))
-            )
+            return (1 - e) * _pmf(x, n, p) + special.bdtr(x - 1, n, p) - (1 - (alp / 2))
 
         return optimize.brentq(f1, 0, 1)
 
@@ -282,11 +284,12 @@ def exlim103u(x, n, alp, e):
         return 1 - ((alp / (2 * e)) ** (1 / n))
     elif x == n:
         return 1
+    elif e == 1:
+        return float(special.betaincinv(x + 1, n - x, 1 - alp / 2))
     else:
-        z = np.arange(0, x)
 
         def f2(p):
-            return e * stats.binom.pmf(x, n, p) + np.sum(stats.binom.pmf(z, n, p)) - (alp / 2)
+            return e * _pmf(x, n, p) + special.bdtr(x - 1, n, p) - (alp / 2)
 
         return optimize.brentq(f2, 0, 1)
 
@@ -311,7 +314,7 @@ def ciltx(x, n, alp):
     LABB, UABB, ZWI = "NO", "NO", "NO"
 
     # Critical values
-    cv = stats.norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
 
     # Logit-Wald Method
     if x == 0:
@@ -344,9 +347,6 @@ def ciltx(x, n, alp):
     return pd.DataFrame(
         [{"x": x, "LLTx": LLTx, "ULTx": ULTx, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}]
     )
-
-
-from scipy.stats import t
 
 
 def citwx(x, n, alp):
@@ -391,7 +391,7 @@ def citwx(x, n, alp):
         )
 
     DOFx = 2 * (f1(pTWx, n) ** 2) / f2(pTWx, n)
-    cvx = t.ppf(1 - (alp / 2), df=DOFx)
+    cvx = float(special.stdtrit(DOFx, 1 - (alp / 2)))  # == scipy.stats.t.ppf, without its overhead
     seTWx = cvx * np.sqrt(f1(pTWx, n))
     LTWx = pTWx - seTWx
     UTWx = pTWx + seTWx

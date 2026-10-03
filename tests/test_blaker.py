@@ -1,8 +1,8 @@
-"""Blaker's exact interval — new code in binomcikit (not in the R ``proportion``
+﻿"""Blaker's exact interval â€” new code in binomcikit (not in the R ``proportion``
 package), so it gets property-based verification against its two defining theorems:
 
-* **nesting** — the interval is contained in Clopper-Pearson (never wider), and
-* **guaranteed coverage** — true coverage is >= 1 - alpha for every theta.
+* **nesting** â€” the interval is contained in Clopper-Pearson (never wider), and
+* **guaranteed coverage** â€” true coverage is >= 1 - alpha for every theta.
 
 These are exactly the properties that make Blaker worth having, so checking them
 is stronger evidence than matching some other implementation. Plus frozen
@@ -102,3 +102,48 @@ def test_blaker_inherits_metric_suite():
     assert len(b.lengthblaker(10, ALPHA, 1, 1, seed=1)) >= 1
     assert len(b.pcopbiblaker(10, ALPHA)) == 9
     assert len(b.errblaker(10, ALPHA, 0.05, 1)) == 1
+
+
+# --- regression: the outermost-crossing fix --------------------------------------------------
+# gamma(x, .) is not unimodal, so a plain root-finder can land on an *inner* crossing and return a
+# limit that is too short. The legacy per-row ``brentq`` did so for 24 of ~30,000 limits over
+# n = 2..100 and alpha in {.001, .01, .05, .1, .2}; the table kernel now walks inward from the
+# Clopper-Pearson bound to the *first* acceptable theta (as R's PropCIs::blakerci does). The
+# expected values below are brute-force outermost crossings from a 100,001-point scan.
+OUTERMOST = [  # (n, alpha, x, side, brute-force outermost limit, value the legacy code returned)
+    (21, 0.1, 0, "hi", 0.132664, 0.123256),
+    (31, 0.05, 1, "hi", 0.166911, 0.160628),
+    (57, 0.05, 0, "hi", 0.062625, 0.057609),
+    (42, 0.05, 5, "hi", 0.256303, 0.252614),
+    (21, 0.1, 21, "lo", 0.867336, 0.876744),
+    (38, 0.001, 38, "lo", 0.818954, 0.823489),
+]
+
+
+@pytest.mark.parametrize("n,alpha,x,side,truth,legacy", OUTERMOST)
+def test_blaker_returns_the_outermost_crossing_not_an_inner_one(n, alpha, x, side, truth, legacy):
+    df = b.ciblaker(n, alpha)
+    got = df.UBK[x] if side == "hi" else df.LBK[x]
+    assert got == pytest.approx(truth, abs=3e-6)
+    assert abs(got - legacy) > 1e-3  # and it differs from what the old root-finder gave
+    # the single-x path must agree with the table, and the old brentq really did return `legacy`\n    single = b.ciblakerx(x, n, alpha)\n    assert (single.UBKx[0] if side == "hi" else single.LBKx[0]) == pytest.approx(got, abs=1e-9)\n    from binomcikit.ci.blaker import _blaker_limits_brentq\n\n    assert _blaker_limits_brentq(x, n, alpha)[1 if side == "hi" else 0] == pytest.approx(legacy, abs=1e-5)\n
+
+
+@pytest.mark.parametrize("n,alpha", [(21, 0.1), (31, 0.05), (57, 0.05)])
+def test_blaker_coverage_guarantee_holds_exactly_where_the_legacy_limits_dipped_below(n, alpha):
+    df = b.ciblaker(n, alpha)
+    lo, hi = df.LBK.to_numpy(), df.UBK.to_numpy()
+    k = np.arange(n + 1)
+    th = np.linspace(1e-5, 1 - 1e-5, 60001)
+    pm = stats.binom.pmf(k[None, :], n, th[:, None])
+    cov = (pm * ((lo[None, :] <= th[:, None]) & (th[:, None] <= hi[None, :]))).sum(axis=1)
+    assert cov.min() >= 1 - alpha - 1e-6  # legacy: 0.89932 (n=21, a=.1), 0.94988 (n=57, a=.05)
+
+
+def test_blaker_numba_and_numpy_kernels_agree():
+    from binomcikit.ci import blaker as K
+
+    for n, alpha in ((12, 0.05), (29, 0.01), (45, 0.1)):
+        a = K._blaker_table(n, alpha)
+        c = K._blaker_table_np(n, alpha)
+        assert np.abs(a[0] - c[0]).max() < 1e-9 and np.abs(a[1] - c[1]).max() < 1e-9

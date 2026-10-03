@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import norm, t
+from scipy.stats import t
+
+from . import _fast
 
 
 def cicwd(n, alp, c):
@@ -22,45 +24,14 @@ def cicwd(n, alp, c):
 
     # Input n
     x = np.arange(0, n + 1)
-    k = n + 1
-
-    # Initializations
-    pCW = np.zeros(k)
-    qCW = np.zeros(k)
-    seCW = np.zeros(k)
-    LCW = np.zeros(k)
-    UCW = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
 
     # Critical values
-    cv = norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
 
-    # Wald Method
-    for i in range(k):
-        pCW[i] = x[i] / n
-        qCW[i] = 1 - pCW[i]
-        seCW[i] = np.sqrt(pCW[i] * qCW[i] / n)
-        LCW[i] = pCW[i] - ((cv * seCW[i]) + c)
-        UCW[i] = pCW[i] + ((cv * seCW[i]) + c)
-
-        if LCW[i] < 0:
-            LABB[i] = "YES"
-            LCW[i] = 0
-        else:
-            LABB[i] = "NO"
-
-        if UCW[i] > 1:
-            UABB[i] = "YES"
-            UCW[i] = 1
-        else:
-            UABB[i] = "NO"
-
-        if UCW[i] - LCW[i] == 0:
-            ZWI[i] = "YES"
-        else:
-            ZWI[i] = "NO"
+    # Wald Method (vectorised over every x)
+    pCW = x / n
+    seCW = np.sqrt(pCW * (1 - pCW) / n)
+    LCW, UCW, LABB, UABB, ZWI = _fast.flags(pCW - ((cv * seCW) + c), pCW + ((cv * seCW) + c))
 
     return pd.DataFrame({"x": x, "LCW": LCW, "UCW": UCW, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
@@ -84,53 +55,21 @@ def cicsc(n, alp, c):
 
     # Input n
     x = np.arange(0, n + 1)
-    k = n + 1
-
-    # Initializations
-    pCS = np.zeros(k)
-    qCS = np.zeros(k)
-    seCS_L = np.zeros(k)
-    seCS_U = np.zeros(k)
-    LCS = np.zeros(k)
-    UCS = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
 
     # Critical values
-    cv = norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
     cv1 = (cv**2) / (2 * n)
     cv2 = cv / (2 * n)
 
-    # Score (Wilson) Method
-    for i in range(k):
-        pCS[i] = x[i] / n
-        qCS[i] = 1 - pCS[i]
-        seCS_L[i] = np.sqrt(
-            (cv**2) - (4 * n * (c + c**2)) + (4 * n * pCS[i] * (1 - pCS[i] + (2 * c)))
-        )
-        seCS_U[i] = np.sqrt(
-            (cv**2) + (4 * n * (c - c**2)) + (4 * n * pCS[i] * (1 - pCS[i] - (2 * c)))
-        )
-        LCS[i] = (n / (n + (cv**2))) * ((pCS[i] - c + cv1) - (cv2 * seCS_L[i]))
-        UCS[i] = (n / (n + (cv**2))) * ((pCS[i] + c + cv1) + (cv2 * seCS_U[i]))
-
-        if LCS[i] < 0:
-            LABB[i] = "YES"
-            LCS[i] = 0
-        else:
-            LABB[i] = "NO"
-
-        if UCS[i] > 1:
-            UABB[i] = "YES"
-            UCS[i] = 1
-        else:
-            UABB[i] = "NO"
-
-        if UCS[i] - LCS[i] == 0:
-            ZWI[i] = "YES"
-        else:
-            ZWI[i] = "NO"
+    # Score (Wilson) Method (vectorised over every x)
+    pCS = x / n
+    with np.errstate(invalid="ignore"):
+        seCS_L = np.sqrt((cv**2) - (4 * n * (c + c**2)) + (4 * n * pCS * (1 - pCS + (2 * c))))
+        seCS_U = np.sqrt((cv**2) + (4 * n * (c - c**2)) + (4 * n * pCS * (1 - pCS - (2 * c))))
+    LCS, UCS, LABB, UABB, ZWI = _fast.flags(
+        (n / (n + (cv**2))) * ((pCS - c + cv1) - (cv2 * seCS_L)),
+        (n / (n + (cv**2))) * ((pCS + c + cv1) + (cv2 * seCS_U)),
+    )
 
     return pd.DataFrame({"x": x, "LCS": LCS, "UCS": UCS, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
@@ -154,47 +93,23 @@ def cicas(n, alp, c):
 
     # Input n
     x = np.arange(0, n + 1)
-    k = n + 1
-
-    # Initializations
-    pCA = np.zeros(k)
-    qCA = np.zeros(k)
-    seCA = np.zeros(k)
-    LCA = np.zeros(k)
-    UCA = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
 
     # Critical values
-    cv = norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
 
-    # Arc-Sine Method
-    for i in range(k):
-        pCA[i] = x[i] / n
-        qCA[i] = 1 - pCA[i]
-        seCA[i] = cv / np.sqrt(4 * n)
-        LCA[i] = (np.sin(np.arcsin(np.sqrt(pCA[i])) - seCA[i] - c)) ** 2
-        UCA[i] = (np.sin(np.arcsin(np.sqrt(pCA[i])) + seCA[i] + c)) ** 2
-
-        if LCA[i] < 0:
-            LABB[i] = "YES"
-            LCA[i] = 0
-        else:
-            LABB[i] = "NO"
-
-        if UCA[i] > 1:
-            UABB[i] = "YES"
-            UCA[i] = 1
-        else:
-            UABB[i] = "NO"
-
-        if UCA[i] - LCA[i] == 0:
-            ZWI[i] = "YES"
-        else:
-            ZWI[i] = "NO"
+    # Arc-Sine Method (vectorised over every x)
+    pCA = x / n
+    seCA = cv / np.sqrt(4 * n)
+    LCA, UCA, LABB, UABB, ZWI = _fast.flags(
+        (np.sin(np.arcsin(np.sqrt(pCA)) - seCA - c)) ** 2,
+        (np.sin(np.arcsin(np.sqrt(pCA)) + seCA + c)) ** 2,
+    )
 
     return pd.DataFrame({"x": x, "LCA": LCA, "UCA": UCA, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
+
+
+def _lgiti(t):
+    return np.exp(t) / (1 + np.exp(t))  # LOGIT INVERSE
 
 
 def ciclt(n, alp, c):
@@ -215,52 +130,20 @@ def ciclt(n, alp, c):
     x = np.arange(0, n + 1)
     k = n + 1
 
-    # INITIALIZATIONS
-    pCLT = np.zeros(k)
-    qCLT = np.zeros(k)
-    seCLT = np.zeros(k)
-    lgit = np.zeros(k)
+    # LOGIT-WALD METHOD (vectorised over every x); the x = 0 and x = n rows are closed form
+    cv = _fast.zcrit(alp)
+    inner = x[1:-1]
+    pCLT = inner / n
+    qCLT = 1 - pCLT
+    lgit = np.log(pCLT / qCLT)
+    seCLT = np.sqrt(pCLT * qCLT * n)
     LCLT = np.zeros(k)
-    UCLT = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
-
-    # CRITICAL VALUES
-    cv = norm.ppf(1 - (alp / 2))
-
-    # LOGIT-WALD METHOD
-    pCLT[0] = 0
-    qCLT[0] = 1
-    LCLT[0] = 0
+    UCLT = np.ones(k)
     UCLT[0] = 1 - ((alp / 2) ** (1 / n))
-
-    pCLT[k - 1] = 1
-    qCLT[k - 1] = 0
     LCLT[k - 1] = (alp / 2) ** (1 / n)
-    UCLT[k - 1] = 1
-
-    def lgiti(t):
-        return np.exp(t) / (1 + np.exp(t))  # LOGIT INVERSE
-
-    for j in range(1, k - 1):
-        pCLT[j] = x[j] / n
-        qCLT[j] = 1 - pCLT[j]
-        lgit[j] = np.log(pCLT[j] / qCLT[j])
-        seCLT[j] = np.sqrt(pCLT[j] * qCLT[j] * n)
-        LCLT[j] = lgiti(lgit[j] - (cv / seCLT[j]) - c)
-        UCLT[j] = lgiti(lgit[j] + (cv / seCLT[j]) + c)
-
-    for i in range(k):
-        LABB[i] = "YES" if LCLT[i] < 0 else "NO"
-        if LCLT[i] < 0:
-            LCLT[i] = 0
-
-        UABB[i] = "YES" if UCLT[i] > 1 else "NO"
-        if UCLT[i] > 1:
-            UCLT[i] = 1
-
-        ZWI[i] = "YES" if UCLT[i] - LCLT[i] == 0 else "NO"
+    LCLT[1:-1] = _lgiti(lgit - (cv / seCLT) - c)
+    UCLT[1:-1] = _lgiti(lgit + (cv / seCLT) + c)
+    LCLT, UCLT, LABB, UABB, ZWI = _fast.flags(LCLT, UCLT)
 
     return pd.DataFrame(
         {"x": x, "LCLT": LCLT, "UCLT": UCLT, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -286,68 +169,29 @@ def cictw(n, alp, c):
 
     # Input n
     x = np.arange(0, n + 1)
-    k = n + 1
 
-    # Initializations
-    pCTW = np.zeros(k)
-    qCTW = np.zeros(k)
-    seCTW = np.zeros(k)
-    LCTW = np.zeros(k)
-    UCTW = np.zeros(k)
-    DOF = np.zeros(k)
-    cv = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
+    def f1(p, n):
+        return p * (1 - p) / n
 
-    # Modified t-Wald Method
-    for i in range(k):
-        if x[i] == 0 or x[i] == n:
-            pCTW[i] = (x[i] + 2) / (n + 4)
-        else:
-            pCTW[i] = x[i] / n
-
-        qCTW[i] = 1 - pCTW[i]
-
-        # Functions for variance calculations
-        def f1(p, n):
-            return p * (1 - p) / n
-
-        def f2(p, n):
-            return (
-                (p * (1 - p) / (n**3))
-                + (
-                    p
-                    + ((6 * n) - 7) * (p**2)
-                    + (4 * (n - 1) * (n - 3) * (p**3))
-                    - (2 * (n - 1) * ((2 * n) - 3) * (p**4))
-                )
-                / (n**5)
-                - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+    def f2(p, n):
+        return (
+            (p * (1 - p) / (n**3))
+            + (
+                p
+                + ((6 * n) - 7) * (p**2)
+                + (4 * (n - 1) * (n - 3) * (p**3))
+                - (2 * (n - 1) * ((2 * n) - 3) * (p**4))
             )
+            / (n**5)
+            - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
+        )
 
-        DOF[i] = 2 * (f1(pCTW[i], n) ** 2) / f2(pCTW[i], n)
-        cv[i] = t.ppf(1 - (alp / 2), df=DOF[i])
-        seCTW[i] = cv[i] * np.sqrt(f1(pCTW[i], n))
-        LCTW[i] = pCTW[i] - (seCTW[i] + c)
-        UCTW[i] = pCTW[i] + (seCTW[i] + c)
-
-        if LCTW[i] < 0:
-            LABB[i] = "YES"
-            LCTW[i] = 0
-        else:
-            LABB[i] = "NO"
-
-        if UCTW[i] > 1:
-            UABB[i] = "YES"
-            UCTW[i] = 1
-        else:
-            UABB[i] = "NO"
-
-        if UCTW[i] - LCTW[i] == 0:
-            ZWI[i] = "YES"
-        else:
-            ZWI[i] = "NO"
+    # Modified t-Wald Method (vectorised over every x)
+    pCTW = np.where((x == 0) | (x == n), (x + 2) / (n + 4), x / n)
+    DOF = 2 * (f1(pCTW, n) ** 2) / f2(pCTW, n)
+    cv = t.ppf(1 - (alp / 2), df=DOF)
+    seCTW = cv * np.sqrt(f1(pCTW, n))
+    LCTW, UCTW, LABB, UABB, ZWI = _fast.flags(pCTW - (seCTW + c), pCTW + (seCTW + c))
 
     return pd.DataFrame(
         {"x": x, "LCTW": LCTW, "UCTW": UCTW, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}

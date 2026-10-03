@@ -3,6 +3,8 @@ import pandas as pd
 import scipy.optimize as optimize
 import scipy.stats as stats
 
+from . import _fast
+
 
 def ciwd(n, alp):
     r"""Wald confidence intervals for a binomial proportion, for every ``x``.
@@ -61,36 +63,14 @@ def ciwd(n, alp):
 
     # INPUT n
     x = np.arange(n + 1)
-    k = n + 1
-
-    # INITIALIZATIONS
-    pW = np.zeros(k)
-    qW = np.zeros(k)
-    seW = np.zeros(k)
-    LWD = np.zeros(k)
-    UWD = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
 
     # CRITICAL VALUES
-    cv = stats.norm.ppf(1 - (alp / 2))
+    cv = _fast.zcrit(alp)
 
-    # WALD METHOD
-    for i in range(k):
-        pW[i] = x[i] / n
-        qW[i] = 1 - (x[i] / n)
-        seW[i] = np.sqrt(pW[i] * qW[i] / n)
-        LWD[i] = pW[i] - (cv * seW[i])
-        UWD[i] = pW[i] + (cv * seW[i])
-
-        LABB[i] = "YES" if LWD[i] < 0 else "NO"
-        LWD[i] = max(0, LWD[i])
-
-        UABB[i] = "YES" if UWD[i] > 1 else "NO"
-        UWD[i] = min(1, UWD[i])
-
-        ZWI[i] = "YES" if UWD[i] - LWD[i] == 0 else "NO"
+    # WALD METHOD (vectorised over every x)
+    pW = x / n
+    seW = np.sqrt(pW * (1 - pW) / n)
+    LWD, UWD, LABB, UABB, ZWI = _fast.flags(pW - cv * seW, pW + cv * seW)
 
     return pd.DataFrame({"x": x, "LWD": LWD, "UWD": UWD, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
@@ -149,44 +129,19 @@ def cisc(n, alp):
 
     # INPUT n
     x = np.arange(n + 1)  # Generate values from 0 to n
-    k = n + 1
-
-    # INITIALIZATIONS
-    pS = np.zeros(k)
-    qS = np.zeros(k)
-    seS = np.zeros(k)
-    LSC = np.zeros(k)
-    USC = np.zeros(k)
-    LABB = np.full(k, "NO")
-    UABB = np.full(k, "NO")
-    ZWI = np.full(k, "NO")
 
     # CRITICAL VALUES
-    cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
+    cv = _fast.zcrit(alp)
     cv1 = (cv**2) / (2 * n)
     cv2 = (cv / (2 * n)) ** 2
 
-    # SCORE (WILSON) METHOD
-    for i in range(k):
-        pS[i] = x[i] / n
-        qS[i] = 1 - pS[i]
-        seS[i] = np.sqrt((pS[i] * qS[i] / n) + cv2)
-        LSC[i] = (n / (n + cv**2)) * ((pS[i] + cv1) - (cv * seS[i]))
-        USC[i] = (n / (n + cv**2)) * ((pS[i] + cv1) + (cv * seS[i]))
-
-        # Lower bound adjustments
-        if LSC[i] < 0:
-            LABB[i] = "YES"
-            LSC[i] = 0
-
-        # Upper bound adjustments
-        if USC[i] > 1:
-            UABB[i] = "YES"
-            USC[i] = 1
-
-        # Zero-width interval check
-        if USC[i] - LSC[i] == 0:
-            ZWI[i] = "YES"
+    # SCORE (WILSON) METHOD (vectorised over every x)
+    pS = x / n
+    seS = np.sqrt((pS * (1 - pS) / n) + cv2)
+    LSC, USC, LABB, UABB, ZWI = _fast.flags(
+        (n / (n + cv**2)) * ((pS + cv1) - (cv * seS)),
+        (n / (n + cv**2)) * ((pS + cv1) + (cv * seS)),
+    )
 
     return pd.DataFrame({"x": x, "LSC": LSC, "USC": USC, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
@@ -226,35 +181,15 @@ def cias(n, alp):
 
     # INPUT
     x = np.arange(n + 1)
-    k = n + 1
 
-    # INITIALIZATIONS
-    pA = np.zeros(k)
-    qA = np.zeros(k)
-    seA = np.zeros(k)
-    LAS = np.zeros(k)
-    UAS = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
+    cv = _fast.zcrit(alp)
 
-    cv = stats.norm.ppf(1 - (alp / 2))
-
-    # ARC-SINE METHOD
-    for i in range(k):
-        pA[i] = x[i] / n
-        qA[i] = 1 - pA[i]
-        seA[i] = cv / np.sqrt(4 * n)
-        LAS[i] = (np.sin(np.arcsin(np.sqrt(pA[i])) - seA[i])) ** 2
-        UAS[i] = (np.sin(np.arcsin(np.sqrt(pA[i])) + seA[i])) ** 2
-
-        LABB[i] = "YES" if LAS[i] < 0 else "NO"
-        LAS[i] = max(0, LAS[i])
-
-        UABB[i] = "YES" if UAS[i] > 1 else "NO"
-        UAS[i] = min(1, UAS[i])
-
-        ZWI[i] = "YES" if UAS[i] - LAS[i] == 0 else "NO"
+    # ARC-SINE METHOD (vectorised over every x)
+    pA = x / n
+    seA = cv / np.sqrt(4 * n)
+    LAS, UAS, LABB, UABB, ZWI = _fast.flags(
+        (np.sin(np.arcsin(np.sqrt(pA)) - seA)) ** 2, (np.sin(np.arcsin(np.sqrt(pA)) + seA)) ** 2
+    )
 
     return pd.DataFrame({"x": x, "LAS": LAS, "UAS": UAS, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
@@ -298,50 +233,15 @@ def cilr(n, alp):
         raise ValueError("'n' has to be greater than 0 and an integer or float")
 
     x = np.arange(n + 1)  # Generate values from 0 to n
-    k = n + 1
 
-    # INITIALIZATIONS
-    LLR = np.zeros(k)
-    ULR = np.zeros(k)
-    LABB = np.full(k, "NO")
-    UABB = np.full(k, "NO")
-    ZWI = np.full(k, "NO")
-
-    # Precompute critical value
-    cv = stats.norm.ppf(1 - (alp / 2), loc=0, scale=1)
-
-    # Likelihood function
-    def loglik(p, i):
-        return stats.binom.logpmf(x[i], n, p)
-
-    _eps = 1e-12
-    for i in range(k):
-        # MLE of a binomial proportion has a closed form, x[i]/n -- no need to
-        # numerically optimize for it. (This used to be found by minimizing
-        # the RAW likelihood stats.binom.pmf, which underflows to exactly 0.0
-        # for large n away from the mode; minimize_scalar could then converge
-        # to a wrong "MLE", silently corrupting the whole interval. See
-        # docs/under_the_hood.md.)
-        mle_i = x[i] / n
-
-        # Compute the cutoff
-        cutoff = loglik(mle_i, i) - (cv**2 / 2)
-
-        def signed(p, i=i, cutoff=cutoff):
-            return loglik(p, i) - cutoff
-
-        # loglik(p) - cutoff is positive at mle_i and strictly decreasing away
-        # from it in each direction (down to -inf at p=0/1), so it has
-        # exactly one root on each side -- brentq root-finding on this signed
-        # function is both correct and far more numerically robust than
-        # minimizing abs(cutoff - loglik(p)).
-        LLR[i] = 0.0 if x[i] == 0 else optimize.brentq(signed, _eps, mle_i)
-        ULR[i] = 1.0 if x[i] == n else optimize.brentq(signed, mle_i, 1 - _eps)
-
-        # Set flags based on conditions
-        LABB[i] = "YES" if LLR[i] < 0 else "NO"
-        UABB[i] = "YES" if ULR[i] > 1 else "NO"
-        ZWI[i] = "YES" if (ULR[i] - LLR[i]) == 0 else "NO"
+    # The MLE of a binomial proportion has a closed form, x / n -- never a numerical
+    # optimisation (a raw-likelihood search underflows for large n; see
+    # docs/under_the_hood.md). Each limit is the root of the *deviance*
+    #   2 [ x log(p_hat / p) + (n - x) log((1 - p_hat) / (1 - p)) ] - z^2,
+    # which is zero-free of the binomial coefficient, underflow-free, strictly monotone on each
+    # side of p_hat, and solved for every x at once by a vectorised bisection (ci/_fast.py).
+    LLR, ULR = _fast.lr_limits(n, alp)
+    LLR, ULR, LABB, UABB, ZWI = _fast.flags(LLR, ULR)
 
     # Return with 'x' as a column, matching the other ci* methods
     return pd.DataFrame(
@@ -425,27 +325,11 @@ def ciex(n, alp, e):
 # Lower and upper limit function
 def lufn101(n, alp, e):
     x = np.arange(n + 1)  # Generate values from 0 to n
-    LEX = np.zeros(n + 1)
-    UEX = np.zeros(n + 1)
-    LABB = np.full(n + 1, "NO")
-    UABB = np.full(n + 1, "NO")
-    ZWI = np.full(n + 1, "NO")
 
-    for i in range(n + 1):
-        LEX[i] = exlim102l(x[i], n, alp, e)
-        UEX[i] = exlim102u(x[i], n, alp, e)
-
-        # Update flags based on limits
-        if LEX[i] < 0:
-            LABB[i] = "YES"
-            LEX[i] = 0
-
-        if UEX[i] > 1:
-            UABB[i] = "YES"
-            UEX[i] = 1
-
-        if UEX[i] - LEX[i] == 0:
-            ZWI[i] = "YES"
+    # Every x at once: Clopper-Pearson (e = 1) is two beta quantiles; other e use a vectorised
+    # bisection on the same tail equations the scalar helpers below solve one x at a time.
+    LEX, UEX = _fast.exact_limits(n, alp, e)
+    LEX, UEX, LABB, UABB, ZWI = _fast.flags(LEX, UEX)
 
     # Create DataFrame for this e value
     return pd.DataFrame(
@@ -526,19 +410,6 @@ def citw(n, alp):
 
     # INPUT n
     x = np.arange(n + 1)
-    k = n + 1
-
-    # INITIALIZATIONS
-    pTW = np.zeros(k)
-    qTW = np.zeros(k)
-    seTW = np.zeros(k)
-    LTW = np.zeros(k)
-    UTW = np.zeros(k)
-    DOF = np.zeros(k)
-    cv = np.zeros(k)
-    LABB = np.empty(k, dtype=object)
-    UABB = np.empty(k, dtype=object)
-    ZWI = np.empty(k, dtype=object)
 
     # Helper functions
     def f1(p, n):
@@ -557,27 +428,12 @@ def citw(n, alp):
             - (2 * (p + ((2 * n) - 3) * (p**2) - 2 * (n - 1) * (p**3))) / (n**4)
         )
 
-    # MODIFIED_t-WALD METHOD
-    for i in range(k):
-        if x[i] == 0 or x[i] == n:
-            pTW[i] = (x[i] + 2) / (n + 4)
-        else:
-            pTW[i] = x[i] / n
-        qTW[i] = 1 - pTW[i]
-
-        DOF[i] = 2 * ((f1(pTW[i], n)) ** 2) / f2(pTW[i], n)
-        cv[i] = stats.t.ppf(1 - (alp / 2), df=DOF[i])
-        seTW[i] = cv[i] * np.sqrt(f1(pTW[i], n))
-        LTW[i] = pTW[i] - seTW[i]
-        UTW[i] = pTW[i] + seTW[i]
-
-        LABB[i] = "YES" if LTW[i] < 0 else "NO"
-        LTW[i] = max(0, LTW[i])
-
-        UABB[i] = "YES" if UTW[i] > 1 else "NO"
-        UTW[i] = min(1, UTW[i])
-
-        ZWI[i] = "YES" if UTW[i] - LTW[i] == 0 else "NO"
+    # MODIFIED_t-WALD METHOD (vectorised over every x)
+    pTW = np.where((x == 0) | (x == n), (x + 2) / (n + 4), x / n)
+    DOF = 2 * (f1(pTW, n) ** 2) / f2(pTW, n)
+    cv = stats.t.ppf(1 - (alp / 2), df=DOF)
+    seTW = cv * np.sqrt(f1(pTW, n))
+    LTW, UTW, LABB, UABB, ZWI = _fast.flags(pTW - seTW, pTW + seTW)
 
     return pd.DataFrame({"x": x, "LTW": LTW, "UTW": UTW, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
 
@@ -620,50 +476,24 @@ def cilt(n, alp):
     x = np.arange(n + 1)
     k = n + 1
 
-    # Initialize arrays
-    pLT = np.zeros(k)
-    qLT = np.zeros(k)
-    seLT = np.zeros(k)
-    lgit = np.zeros(k)
+    # Critical value for normal distribution
+    cv = _fast.zcrit(alp)
+
+    # Logit-Wald method: closed-form boundary rows, vectorised interior
     LLT = np.zeros(k)
     ULT = np.zeros(k)
-    LABB = np.full(k, "NO")
-    UABB = np.full(k, "NO")
-    ZWI = np.full(k, "NO")
-
-    # Critical value for normal distribution
-    cv = stats.norm.ppf(1 - (alp / 2))
-
-    # Logit-Wald method
-    pLT[0] = 0
-    qLT[0] = 1
-    LLT[0] = 0
     ULT[0] = 1 - ((alp / 2) ** (1 / n))
-
-    pLT[k - 1] = 1
-    qLT[k - 1] = 0
     LLT[k - 1] = (alp / 2) ** (1 / n)
     ULT[k - 1] = 1
 
-    for j in range(1, k - 1):
-        pLT[j] = x[j] / n
-        qLT[j] = 1 - pLT[j]
-        lgit[j] = np.log(pLT[j] / qLT[j])
-        seLT[j] = np.sqrt(pLT[j] * qLT[j] * n)
-        LLT[j] = 1 / (1 + np.exp(-lgit[j] + (cv / seLT[j])))
-        ULT[j] = 1 / (1 + np.exp(-lgit[j] - (cv / seLT[j])))
+    j = x[1 : k - 1]
+    pLT = j / n
+    lgit = np.log(pLT / (1 - pLT))
+    seLT = np.sqrt(pLT * (1 - pLT) * n)
+    LLT[1 : k - 1] = 1 / (1 + np.exp(-lgit + (cv / seLT)))
+    ULT[1 : k - 1] = 1 / (1 + np.exp(-lgit - (cv / seLT)))
 
-    for i in range(k):
-        if LLT[i] < 0:
-            LABB[i] = "YES"
-            LLT[i] = 0
-
-        if ULT[i] > 1:
-            UABB[i] = "YES"
-            ULT[i] = 1
-
-        if ULT[i] - LLT[i] == 0:
-            ZWI[i] = "YES"
+    LLT, ULT, LABB, UABB, ZWI = _fast.flags(LLT, ULT)
 
     # Create a DataFrame for output
     return pd.DataFrame({"x": x, "LLT": LLT, "ULT": ULT, "LABB": LABB, "UABB": UABB, "ZWI": ZWI})
