@@ -21,6 +21,7 @@ importable via ``import binomcikit.ci``. Third-party names used internally
 
 from . import bayes, covp, err, expl, pconf
 from . import ci as _ci_pkg  # kept private so the name ``ci`` is the dispatcher
+from . import ext as _ext_pkg  # extended methods (limit-producers beyond the R port)
 from .access import (  # noqa: E402  usability layer (data input, estimates, curves, compare)
     compare,
     coverage_curve,
@@ -41,8 +42,25 @@ from .ci import *  # noqa: F401,F403  (respects each subpackage __all__)
 from .covp import *  # noqa: F401,F403
 from .err import *  # noqa: F401,F403
 from .expl import *  # noqa: F401,F403
+from .ext import *  # noqa: F401,F403
+from .ext.criteria import locally_correct  # noqa: E402  Garthwaite et al. (2024) criterion
 from .highlevel import ci  # noqa: E402  high-level dispatcher: binomcikit.ci(...)
+from .limits import interval, limits  # noqa: E402  lean access: floats / arrays, no DataFrame
+from .methods import describe as describe_method  # noqa: E402  extended-method registry
+from .methods import list_methods  # noqa: E402
 from .pconf import *  # noqa: F401,F403
+from .planning import (  # noqa: E402  PASS/SAS-style sample-size, width and power planning
+    expected_width,
+    inflate_for_dropout,
+    power_equivalence,
+    power_test,
+    prob_width,
+    sample_size_assurance,
+    sample_size_bayes,
+    sample_size_equivalence,
+    sample_size_test,
+    sample_size_upper_bound,
+)
 from .plotly_viz import plot_ci, plot_coverage  # noqa: E402  interactive plotly figures
 
 __version__ = "3.0.8"
@@ -61,6 +79,17 @@ _ACCESS = [
     "reject",
     "sample_size",
     "power",
+    "prob_width",
+    "expected_width",
+    "sample_size_assurance",
+    "power_test",
+    "sample_size_test",
+    "power_equivalence",
+    "sample_size_equivalence",
+    "inflate_for_dropout",
+    "sample_size_upper_bound",
+    "sample_size_bayes",
+    "locally_correct",
 ]
 
 __all__ = sorted(
@@ -68,7 +97,12 @@ __all__ = sorted(
         "ci",
         "plot_ci",
         "plot_coverage",
+        "list_methods",
+        "describe_method",
+        "limits",
+        "interval",
         *_ACCESS,
+        *_ext_pkg.__all__,
         *_ci_pkg.__all__,
         *covp.__all__,
         *expl.__all__,

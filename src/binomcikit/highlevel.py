@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 from scipy.stats import norm
 
 from . import ci as _cimod
+from . import methods as _methods
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -60,9 +61,10 @@ def ci(
     e: float | None = None,
     a: float | None = None,
     b: float | None = None,
-    B: int = 2000,
+    B: int | None = None,
     seed: int | None = None,
     kind: str = "smooth",
+    **params,
 ) -> pd.DataFrame:
     """Confidence interval for a single binomial proportion (unified entry point).
 
@@ -78,7 +80,12 @@ def ci(
     method : str, default ``"wilson"``
         One of ``wald``, ``wilson``/``score``, ``arcsine``, ``logit``,
         ``waldt``, ``lr``, ``exact``/``cp``, ``midp``, ``bayes``/``jeffreys``,
-        ``agresti-coull``, ``boot``/``bootstrap``.
+        ``agresti-coull``, ``blaker``, ``boot``/``bootstrap`` -- or any of the
+        extended methods (``pratt``, ``witting``, ``cloglog``, ``probit``,
+        ``modified-wilson``, ``modified-jeffreys``, ``poisson``, ``freeman-tukey``,
+        ``soc``, ``hoeffding``, ``chernoff``, ``bernstein``, ``empirical-bernstein``,
+        ``cressie-read``, ``lr-star``, ``sterne``, ``bsc``, ``olc``, ``mixture``,
+        ``normal-mixture``, ``betting``); see :func:`binomcikit.list_methods`.
     h : float, optional
         Adjustment factor (pseudo-count); selects the *adjusted* variant.
     c : float, optional
@@ -90,8 +97,13 @@ def ci(
         Beta prior parameters for the Bayesian method (default ``1, 1``;
         ``jeffreys`` uses ``0.5, 0.5``).
     B, seed, kind : optional
-        Used only by ``method="boot"``: resample count, RNG seed, and
+        ``method="boot"``: resample count (default 2000), RNG seed, and
         ``"smooth"``/``"percentile"``/``"bca"`` — see :func:`binomcikit.ci.ciboot`.
+        ``B`` and ``seed`` also drive ``betting`` (permutation count) and ``witting``.
+    **params
+        Method-specific options of the extended methods, e.g. ``lam=`` for
+        ``cressie-read``, ``u=`` for ``witting``, ``theta=``/``trunc=`` for
+        ``betting``; an option the chosen method does not take raises ``ValueError``.
 
     Returns
     -------
@@ -108,9 +120,21 @@ def ci(
     if n is None:
         raise ValueError("'n' is required")
     key = str(method).lower().strip()
+    spec = _methods.lookup(key)
+    if spec is not None:
+        if h is not None or c is not None or e is not None:
+            raise ValueError(
+                f"method {method!r} has no adjusted (h), continuity (c) or exact (e) variant"
+            )
+        given = {k: v for k, v in (("a", a), ("b", b), ("B", B), ("seed", seed)) if v is not None}
+        given.update(params)
+        return spec.row(x, n, alpha, **given) if x is not None else spec.table(n, alpha, **given)
+    if params:
+        raise TypeError(f"unexpected option(s) {sorted(params)} for method {method!r}")
     code = _CODE.get(key)
     if code is None:
-        raise ValueError(f"unknown method {method!r}; choose from {sorted(set(_CODE))}")
+        known = sorted(set(_CODE) | set(_methods._ALIAS))
+        raise ValueError(f"unknown method {method!r}; choose from {known}")
     if h is not None and c is not None:
         raise ValueError("pass at most one of 'h' (adjusted) and 'c' (continuity)")
     if h is not None and code in _BASE_ONLY:
@@ -136,9 +160,10 @@ def ci(
         return _cimod.ciba(n, alpha, aa, bb)
 
     if code == "boot":
+        nboot = 2000 if B is None else B
         if x is not None:
-            return _cimod.cibootx(x, n, alpha, B=B, seed=seed, kind=kind)
-        return _cimod.ciboot(n, alpha, B=B, seed=seed, kind=kind)
+            return _cimod.cibootx(x, n, alpha, B=nboot, seed=seed, kind=kind)
+        return _cimod.ciboot(n, alpha, B=nboot, seed=seed, kind=kind)
 
     prefix = "cia" if h is not None else ("cic" if c is not None else "ci")
     suffix = "x" if x is not None else ""

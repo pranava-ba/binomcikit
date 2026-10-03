@@ -15,7 +15,8 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from ._accel import coverage_series
+from . import methods as _methods
+from ._accel import coverage_series, pmf_matrix
 from ._hpd import hpd_beta
 from .ci.bootstrap import _mue
 from .highlevel import ci as _ci
@@ -24,6 +25,10 @@ from .plotly_viz import _METHODS, _limits
 # Named conjugate priors for the Bayesian helpers.
 PRIORS: dict[str, tuple[float, float]] = {
     "jeffreys": (0.5, 0.5),
+    "kerman": (
+        1 / 3,
+        1 / 3,
+    ),  # Kerman (2011) "neutral" prior: posterior median ~ x/n-ish, no boundary pile-up
     "laplace": (1.0, 1.0),
     "uniform": (1.0, 1.0),
     "haldane": (0.0, 0.0),
@@ -153,8 +158,8 @@ def posterior(x: int, n: int, a: float = 1.0, b: float = 1.0, alpha: float = 0.0
 
 
 def prior(name: str) -> tuple[float, float]:
-    """Look up a named conjugate prior's ``(a, b)`` — ``jeffreys``, ``laplace``,
-    ``uniform`` or ``haldane``.
+    """Look up a named conjugate prior's ``(a, b)`` — ``jeffreys``, ``kerman`` (1/3, 1/3),
+    ``laplace``, ``uniform`` or ``haldane``.
 
     >>> prior("jeffreys")
     (0.5, 0.5)
@@ -191,9 +196,7 @@ def length_curve(
     lower, upper, _ = _limits(method, n, alpha)
     width = np.asarray(upper, dtype=float) - np.asarray(lower, dtype=float)
     theta = np.linspace(1e-4, 1 - 1e-4, points)
-    k = np.arange(n + 1)
-    pmf = stats.binom.pmf(k[:, None], n, theta[None, :])  # (n+1, points)
-    el = (width[:, None] * pmf).sum(axis=0)
+    el = pmf_matrix(n, theta) @ width  # (points, n+1) @ (n+1,)  ->  E[length | theta]
     return pd.DataFrame({"theta": theta, "expected_length": el})
 
 
@@ -377,7 +380,18 @@ def _width_at(method, n, alpha, p0):
     return float(row[hi_col].iloc[0]) - float(row[lo_col].iloc[0])
 
 
-def sample_size(width, alpha=0.05, p0=0.5, method="wilson", n_max=100_000):
+def sample_size(
+    width,
+    alpha=0.05,
+    p0=0.5,
+    method="wilson",
+    n_max=100_000,
+    *,
+    plug_in="nearest",
+    sides=2,
+    dropout=0.0,
+    details=False,
+):
     r"""Smallest ``n`` whose ``(1-alpha)`` CI (for ``method``) is no wider than ``width``.
 
     Not part of R ``proportion`` — sample-size determination is a *pre-data*
@@ -407,16 +421,37 @@ def sample_size(width, alpha=0.05, p0=0.5, method="wilson", n_max=100_000):
         Any method name :func:`binomcikit.ci` accepts, except the bootstrap
         family (a stochastic CI has no well-defined "width at n").
     n_max : int, default 100_000
-        Upper search bound; raises if not even ``n_max`` reaches ``width``.
+        Upper search bound; raises if not even ``n_max`` reaches ``width``. For the
+        computationally heavy extended methods (``bsc``, ``betting``, ...) it is capped at
+        the method's practical limit (see :func:`binomcikit.list_methods`).
+    plug_in : {"nearest", "continuous"}, default "nearest"
+        How the planned proportion enters the interval. ``"nearest"`` rounds ``x = p0 n``
+        to the closest integer (the original behaviour). ``"continuous"`` plugs the
+        real-valued sample proportion ``p-hat = p0`` straight into the interval formula --
+        **this is the PASS (NCSS) convention** and reproduces its published sample sizes
+        exactly. Available for ``wald``, ``wald-cc``, ``wilson``, ``wilson-cc``,
+        ``agresti-coull``, ``exact`` and ``jeffreys``.
+    sides : {2, "upper", "lower"}, default 2
+        Two-sided width ``U - L``, or a one-sided interval whose *distance* from
+        ``p-hat`` to the limit (``U - p-hat`` / ``p-hat - L``) is the target (PASS).
+        Implies the continuous/closed-form engine.
+    dropout : float, default 0
+        Anticipated dropout rate; with ``details=True`` the result also reports the
+        enrolment size ``ceil(n / (1 - dropout))``. Requires ``details=True``.
+    details : bool, default False
+        Return a dict (``n``, ``width``, ``lower``, ``upper``, and ``n_enroll`` when
+        ``dropout > 0``) instead of just ``n``.
 
     Returns
     -------
-    int
+    int or dict
 
     See Also
     --------
     power : The complementary pre-data question -- given n, how likely is
         the study to detect a real effect?
+    binomcikit.planning.prob_width : Probability a trial of ``n`` achieves the width.
+    binomcikit.planning.sample_size_assurance : ``n`` that *assures* the width.
 
     Examples
     --------
@@ -424,6 +459,8 @@ def sample_size(width, alpha=0.05, p0=0.5, method="wilson", n_max=100_000):
     381
     >>> sample_size(0.2, method="wilson")     # a looser target needs far fewer trials
     93
+    >>> sample_size(0.04, p0=0.1, method="exact", plug_in="continuous")  # PASS Chapter 115, Ex. 1
+    914
     """
     key = str(method).lower().strip()
     if key in _NO_PVALUE:
@@ -431,12 +468,27 @@ def sample_size(width, alpha=0.05, p0=0.5, method="wilson", n_max=100_000):
             f"sample_size() does not support method {method!r} (stochastic CI; "
             "width at a given n is not well-defined without pinning a seed)"
         )
+    if dropout and not details:
+        raise ValueError("'dropout' reports the enrolment size; pass details=True")
+    if plug_in != "nearest" or sides not in (2, "2") or details:
+        from .planning import inflate_for_dropout, sample_size_ci
+
+        n, w, lo, hi = sample_size_ci(width, alpha, p0, method, n_max, plug_in, sides)
+        if not details:
+            return n
+        out = {"n": n, "width": w, "lower": lo, "upper": hi}
+        if dropout:
+            out["n_enroll"] = inflate_for_dropout(n, dropout)
+        return out
     if key not in _METHODS:
         raise ValueError(f"unknown method {method!r}; choose from {sorted(set(_METHODS))}")
     if not 0 < width < 1:
         raise ValueError("'width' has to be between 0 and 1")
     if not 0 < p0 < 1:
         raise ValueError("'p0' has to be between 0 and 1")
+    spec = _methods.lookup(key)
+    if spec is not None and spec.max_n is not None:
+        n_max = min(n_max, spec.max_n)
 
     if _width_at(key, n_max, alpha, p0) > width:
         raise ValueError(f"target width {width} not reached by n_max={n_max}; raise n_max")
@@ -529,8 +581,7 @@ def recommend(
     """
     nominal = 1 - alpha
     theta = np.linspace(1e-4, 1 - 1e-4, points)
-    k = np.arange(n + 1)
-    pmf = stats.binom.pmf(k[:, None], n, theta[None, :])
+    pmf = pmf_matrix(n, theta).T  # (n+1, points)
     rows = []
     for m in _method_keys(methods):
         lower, upper, label = _limits(m, n, alpha)
