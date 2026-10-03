@@ -67,7 +67,8 @@ def dl(name):
 repos = {
     "DBCI": ("DeepPSP/DBCI", "diff-binom-confint"),
     "binomial_cis": ("TRI-ML/binomial_cis", "binomial-cis"),
-    "pynomial": ("Silver-Creek/pynomial", "pynomial"),
+    "pynomial (benchmarked: Dpananos, GitHub only)": ("Dpananos/pynomial", None),
+    "pynomial (PyPI name: unrelated Silver-Creek)": ("Silver-Creek/pynomial", "pynomial"),
     "binoculars": ("nolanbconaway/binoculars", "binoculars"),
     "confseq": ("gostevehoward/confseq", "confseq"),
     "statsmodels": ("statsmodels/statsmodels", "statsmodels"),

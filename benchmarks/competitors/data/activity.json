@@ -72,7 +72,29 @@
     "last_week": 87
    }
   },
-  "pynomial": {
+  "pynomial (benchmarked: Dpananos, GitHub only)": {
+   "repo": "Dpananos/pynomial",
+   "stars": 0,
+   "forks": 0,
+   "watchers": 0,
+   "open_issues_plus_prs": 0,
+   "license": null,
+   "created": "2025-08-27",
+   "pushed": "2025-08-29",
+   "archived": false,
+   "size_kb": 5527,
+   "default_branch": "main",
+   "commits_12m": 0,
+   "contributors": 1,
+   "tags": 0,
+   "gh_releases": 0,
+   "issues_open": 0,
+   "prs_open": 0,
+   "issues_closed": 0,
+   "prs_closed": 0,
+   "top_contrib_commits": 17
+  },
+  "pynomial (PyPI name: unrelated Silver-Creek)": {
    "repo": "Silver-Creek/pynomial",
    "stars": 0,
    "forks": 0,
@@ -230,8 +252,8 @@
    "gh_releases": 42,
    "issues_open": 1272,
    "prs_open": 152,
-   "issues_closed": 5571,
-   "prs_closed": 13482,
+   "issues_closed": null,
+   "prs_closed": null,
    "top_contrib_commits": 5548,
    "pypi": {
     "latest": "8.0.1",
@@ -250,7 +272,7 @@
   "scipy": {
    "repo": "scipy/scipy",
    "stars": 15072,
-   "forks": 5985,
+   "forks": 5986,
    "watchers": 346,
    "open_issues_plus_prs": 1862,
    "license": "BSD-3-Clause",
@@ -263,8 +285,8 @@
    "contributors": 1997,
    "tags": 188,
    "gh_releases": 113,
-   "issues_open": 1439,
-   "prs_open": 423,
+   "issues_open": null,
+   "prs_open": null,
    "issues_closed": null,
    "prs_closed": null,
    "top_contrib_commits": 4278,

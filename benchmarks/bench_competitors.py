@@ -1,4 +1,4 @@
-﻿"""Speed + parity benchmark: binomcikit against the other Python tools for binomial intervals.
+"""Speed + parity benchmark: binomcikit against the other Python tools for binomial intervals.
 
     python benchmarks/bench_competitors.py                 # full run -> benchmarks/results.json
     python benchmarks/bench_competitors.py --quick         # small sizes, seconds
@@ -137,12 +137,14 @@ def competitors_table(method, n):
         out["DBCI (loop)"] = f
     if pynomial and method in PY:
         fn = getattr(pynomial, PY[method])
+        # pynomial's wilson() is continuity-corrected by default; ask for the standard interval
+        pkw = {"correct_continuity": False} if method == "wilson" else {}
 
         def f():
             lo = np.empty(n + 1)
             hi = np.empty(n + 1)
             for i in range(n + 1):
-                c = fn(i, n)
+                c = fn(i, n, **pkw)
                 lo[i], hi[i] = float(c.lower), float(c.upper)
             return lo, hi
 
@@ -166,7 +168,8 @@ def parity(method, n, comp_fn):
     try:
         ours = _bk_limits(method, n)
         lo, hi = comp_fn()
-        lo, hi = np.asarray(lo, float), np.asarray(hi, float)
+        # astropy's/binoculars'/pynomial's Wald and Agresti-Coull limits are not clamped to [0, 1]; ours are
+        lo, hi = np.clip(np.asarray(lo, float), 0, 1), np.clip(np.asarray(hi, float), 0, 1)
         inner = slice(1, n)  # boundary rows follow each package's own documented convention
         return float(max(np.nanmax(np.abs(lo[inner] - ours[0][inner])), np.nanmax(np.abs(hi[inner] - ours[1][inner]))))
     except Exception as e:  # pragma: no cover
@@ -215,7 +218,8 @@ def task_single(n=1000):
             comp["DBCI"] = {"s": best_time(lambda: dbci.compute_confidence_interval(x, n, 1 - ALPHA, DB[method]))}
         if pynomial and method in PY:
             fn = getattr(pynomial, PY[method])
-            comp["pynomial"] = {"s": best_time(lambda: fn(x, n))}
+            pkw = {"correct_continuity": False} if method == "wilson" else {}
+            comp["pynomial"] = {"s": best_time(lambda: fn(x, n, **pkw))}
         entry["competitors"] = comp
         rows.append(entry)
         print(f"  single {method:10s} n={n}  ci(x=) {entry['binomcikit_s']*1e6:8.1f} us  interval() {entry['binomcikit_arrays_s']*1e6:7.1f} us  | "
