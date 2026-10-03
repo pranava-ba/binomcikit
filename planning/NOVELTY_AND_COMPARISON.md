@@ -1,5 +1,8 @@
 # binomcikit — Novelty, Codebase Comparison & Real-World Usage
 
+> **2026-10-03 update:** `DBCI`'s `main` branch lists 19 single-proportion methods and 17 two-proportion methods (PyPI 0.1.0 still has 16 and no two-proportion
+> count here); see `planning/COMPETITOR_REPOS.md` for the dated activity, footprint, accuracy and SWOT measurements.
+
 > ## ⚠️ Update 2026-10-01 — read this first; it supersedes parts of the report below
 >
 > A later pass (see [`MISSING_METHODS.md`](MISSING_METHODS.md), [`ADOPTION_PLAN.md`](ADOPTION_PLAN.md) and `docs/comparison.md`)

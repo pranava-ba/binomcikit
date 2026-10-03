@@ -1,6 +1,6 @@
 # TODO (not started): competitor-repo deep dive, and everything still open
 
-> Written 2026-10-01 at the user's request. **Nothing in section 1 has been done yet.** Section 2 collects every open item
+> Written 2026-10-01 at the user's request. **Section 1 was carried out on 2026-10-03: see `planning/COMPETITOR_REPOS.md` (not done: dependents/libraries.io/citations, R-only packages other than DescTools, commercial tools, large-n 10^5-10^6 speed runs, extra-language oracle checks).** Section 2 collects every open item
 > from the 2026-10-01 session so none is lost.
 
 ## 1. Competitor repository deep dive (planned)
@@ -70,9 +70,9 @@ Rules: verify every number against the raw source; don't implement from memory; 
 - [ ] McGrath–Burke
 
 ### Performance
-- [ ] Speed up Sterne (n=1000 ≈ 3.3 s, n=5000 ≈ 82 s) and Blyth–Still–Casella using `scipy.special` ufuncs / numba
-- [ ] Speed up the full-table hedged betting interval (n=1000 ≈ 80 s)
-- [ ] Vectorise the remaining adjusted logit / Wald-T / LR (`cialt`, `ciatw`, `cialr`) and continuity-corrected logit / Wald-T (`ciclt`, `cictw`)
+- [x] Speed up Sterne (n=1000 ≈ 3.3 s, n=5000 ≈ 82 s) and Blyth–Still–Casella using `scipy.special` ufuncs / numba
+- [x] Speed up the full-table hedged betting interval (n=1000 ≈ 80 s)
+- [x] Vectorise the remaining adjusted logit / Wald-T / LR (`cialt`, `ciatw`, `cialr`) and continuity-corrected logit / Wald-T (`ciclt`, `cictw`)
 - [ ] Reduce `bk.ci()` DataFrame overhead for closed-form methods (currently slower than statsmodels/astropy) and Jeffreys through `ci()` (about 7–8× slower than statsmodels)
 - [ ] Add a scheduled benchmark workflow that fails on a >2× regression
 
