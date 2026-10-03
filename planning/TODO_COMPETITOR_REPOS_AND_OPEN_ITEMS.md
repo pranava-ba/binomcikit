@@ -73,26 +73,26 @@ Rules: verify every number against the raw source; don't implement from memory; 
 - [x] Speed up Sterne (n=1000 ≈ 3.3 s, n=5000 ≈ 82 s) and Blyth–Still–Casella using `scipy.special` ufuncs / numba
 - [x] Speed up the full-table hedged betting interval (n=1000 ≈ 80 s)
 - [x] Vectorise the remaining adjusted logit / Wald-T / LR (`cialt`, `ciatw`, `cialr`) and continuity-corrected logit / Wald-T (`ciclt`, `cictw`)
-- [ ] Reduce `bk.ci()` DataFrame overhead for closed-form methods (currently slower than statsmodels/astropy) and Jeffreys through `ci()` (about 7–8× slower than statsmodels)
-- [ ] Add a scheduled benchmark workflow that fails on a >2× regression
+- [ ] Reduce `bk.ci()` DataFrame overhead for closed-form methods (currently slower than statsmodels/astropy) and Jeffreys through `ci()` (about 7–8× slower than statsmodels) — partly: flag columns by lookup (Wilson n=10,000 4 ms to 0.5 ms); the rest is pandas frame construction (2026-10-03)
+- [x] Add a scheduled benchmark workflow that fails on a >2× regression — done, untested on GitHub (`benchmarks/regression_check.py`, `.github/workflows/benchmark.yml`)
 
 ### Unverified items
-- [ ] Investigate why pynomial (4e-4 to 1e-2) and binoculars (~1e-6) differ from standard Wilson/Wald/AC; astropy Wald differs by ~1e-3
+- [x] Investigate why pynomial (4e-4 to 1e-2) and binoculars (~1e-6) differ from standard Wilson/Wald/AC; astropy Wald differs by ~1e-3 — done: harness mistakes and conventions, see `planning/COMPETITOR_REPOS.md` section 5
 - [ ] Commercial-tool rows still marked unverified: JMP, nQuery, Epi Info, StatXact
 - [ ] SAS documentation PDF could not be downloaded; planning parity relies on the sources already read, so re-verify against the PDF
 
 ### Docs / release / signals (see `planning/ADOPTION_PLAN.md`, all need the user's decision)
 - [ ] Release 3.1.0 to PyPI (bump version in `pyproject.toml`, `CITATION.cff`, `docs/conf.py`, `__init__`); Trusted Publishing
 - [ ] Zenodo DOI; conda-forge feedstock
-- [ ] Update `paper.md` (replace "first in Python"; add verification table, benchmark, Blaker finding); consider an arXiv stat.CO preprint
+- [ ] Update `paper.md` (replace "first in Python"; add verification table, benchmark, Blaker finding); consider an arXiv stat.CO preprint — draft rewritten 2026-10-03 for the authors to review; arXiv preprint not started
 - [ ] pyOpenSci review → JOSS
 - [ ] File upstream issues (DBCI, DescTools) after approval
-- [ ] Three notebooks/posts; Cross Validated / Stack Overflow answers; newsletter pitches
+- [ ] Three notebooks/posts; Cross Validated / Stack Overflow answers; newsletter pitches — partly: the A/B tutorial now uses `bk.diff_interval`; notebooks/posts not started
 - [ ] Niche integrations: LLM-eval snippet, A/B-testing notebook, zero-failure plan guide
 - [ ] Licence decision (GPL-3.0 inherited from the R package); Streamlit app decision
-- [ ] Engineering signals: coverage 65% → 80%, contribution scaffolding, Dependabot/pre-commit, SemVer policy, mypy, security review, docs search
+- [ ] Engineering signals: coverage 65% → 80%, contribution scaffolding, Dependabot/pre-commit, SemVer policy, mypy, security review, docs search — coverage 84.7% (floor 80), CONTRIBUTING/SECURITY/templates, Dependabot, mypy gate, proposed SemVer policy (`docs/versioning.md`); not done: security review, docs search
 
 ### Housekeeping
-- [ ] Commit the session's work (not yet committed; commit only when asked); never commit `previous-work/*.pdf`
+- [x] Commit the session's work (committed on `main`, not pushed). Still to respect: never commit `previous-work/*.pdf`
 - [ ] Re-run `paper-explorer/scripts/build_corpus.py` periodically; it needs `paper-explorer/.env` (never move the key into tracked files)
 - [ ] The scorer reads abstracts only; confirm "strong" papers in the full text before citing

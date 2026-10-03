@@ -172,7 +172,7 @@ the single-proportion tools in {doc}`../evaluating_intervals`.
 
 ### Verified against
 * **Published tables:** 88 intervals from Newcombe (1998), Table II (as recast in the SAS paper *Constructing Confidence Intervals for the
-  Differences of Binomial Proportions in SAS*) and SAS output, for twelve methods (all of those above) on eight tables including the boundary ones (0/10 vs 0/20, 10/10 vs 0/10), all within the four printed
+  Differences of Binomial Proportions in SAS*) and SAS output, for twelve methods (all of those above) on nine tables including the boundary ones (0/10 vs 0/20, 10/10 vs 0/10), all within the four printed
   decimals (`tests/test_twoprop.py::test_matches_published_tables`).
 * **Software manuals:** the SAS paper and the PASS manual print the same definitions (Mee: `λ = 1`; Miettinen–Nurminen: `λ = N/(N−1)`
   and the closed-form constrained estimate; Newcombe's methods 10 and 11).

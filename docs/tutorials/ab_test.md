@@ -20,15 +20,17 @@ Foundations, now with real money on it.
 
 ## Choosing a method
 
-`binomcikit` does **single-proportion** inference: it gives you an honest {term}`confidence interval` for
-*one* rate at a time. So the plan is to build an interval for each arm and see how they sit relative to
-each other. For a plain conversion rate with a few dozen successes, the {doc}`Wilson <../methods/wilson>`
-interval (the default) is the right first choice — well-behaved, never collapses, good {term}`coverage`.
+There are two questions here, and `binomcikit` has a tool for each. *How well do we know each arm's rate?*
+That is a single-proportion interval; for a plain conversion rate with a few dozen successes the
+{doc}`Wilson <../methods/wilson>` interval (the default) is the right first choice. *By how much does B beat A?*
+That is an interval for the **difference** B − A (the {term}`risk difference`), which `bk.diff_interval`
+gives you; its default, {doc}`Newcombe's hybrid score <../methods/two_proportions>`, is well behaved at small
+counts and never leaves [−1, 1].
 
 :::{important}
-A single-proportion tool cannot, by itself, give you a *p*-value for the **difference** B − A. Comparing
-the two intervals is a sound first look, but it is not a formal two-sample test — see "What could go
-wrong" below.
+Do not answer the second question by eyeballing whether the two single-arm intervals overlap. That is a
+rough first look, and it can mislead in both directions (see "What could go wrong"). Build the interval for
+the difference itself.
 :::
 
 ## Running it
@@ -55,9 +57,23 @@ Blo, Bhi = float(B.iloc[0, 1]), float(B.iloc[0, 2])
  "overlap?": Blo <= Ahi}
 ```
 
+Now the interval for the thing you actually care about, the difference B − A in conversion rate:
+
+```{code-cell} python
+lo, hi = bk.diff_interval(45, 500, 32, 500)        # B minus A, Newcombe hybrid score, 95%
+{"B - A": round(45 / 500 - 32 / 500, 4), "95% interval": (round(lo, 4), round(hi, 4)),
+ "includes 0?": lo <= 0 <= hi}
+```
+
+```{code-cell} python
+bk.diff_ci(45, 500, 32, 500)                        # the same, as a one-row table
+```
+
 ## Reading the result
 
-A's plausible range is about **4.6%–8.9%**; B's is about **6.8%–11.8%**. They **overlap** in the band
+The difference B − A is **+2.6 percentage points**, and its 95% interval runs from about **−0.7 to +6.0**
+points. It includes 0, so a true difference of zero is still compatible with these data: the experiment has
+**not** established that B is better. The single-arm intervals tell the same story. A's plausible range is about **4.6%–8.9%**; B's is about **6.8%–11.8%**. They **overlap** in the band
 6.8%–8.9%: there are true rates (say 8%) that are perfectly consistent with *both* arms' data. So although
 B's point estimate is higher, the experiment has **not** cleanly separated the two — the gap could still be
 sampling noise. The honest verdict is *promising but not conclusive at n = 500 per arm*.
@@ -74,15 +90,16 @@ by their individual intervals.
 ## How to report it
 
 > The variant converted 9.0% (45/500; 95% CI 6.8–11.8%) versus the control's 6.4% (32/500; 95% CI
-> 4.6–8.9%). The intervals overlap, so this experiment does not establish a difference; a larger sample or
-> a formal two-proportion test is needed before shipping.
+> 4.6–8.9%). The difference was +2.6 percentage points (95% CI −0.7 to +6.0, Newcombe's hybrid score), which
+> includes no difference, so this experiment does not establish that the variant is better; a larger sample
+> is needed before shipping.
 
 ## What could go wrong
 
 - **The overlap fallacy (both directions).** Overlapping 95% intervals do *not* prove "no difference,"
   and non-overlapping ones are a *stricter* bar than a proper test. Interval overlap is a rough visual, not
-  a decision rule. For an actual test of B − A, use a two-proportion method (e.g. a two-sample score test);
-  two-proportion inference is a **separate** tool, outside single-proportion `binomcikit`.
+  a decision rule; the interval for the difference (`bk.diff_interval`) is the right object. (Here the two agree;
+  they do not always.) Pooling the arms into a z-test gives a two-sided *p* of about 0.12, which fits.
 - **Peeking.** If you checked results every hour and stopped when B looked good, your error rate is far
   above 5%. Fix the sample size in advance.
 - **Different populations.** The method assumes each arm is a clean random sample from the same kind of
@@ -91,15 +108,17 @@ by their individual intervals.
 ## Try it yourself
 
 Suppose you rerun with **ten times** the traffic and see the same rates: A = 320/5000, B = 450/5000. Do
-the intervals still overlap?
+the intervals still overlap, and does the interval for the difference still include 0?
 
 :::{dropdown} Solution
 ```python
 import binomcikit as bk
 A = bk.ci(320, 5000); B = bk.ci(450, 5000)
 float(A.iloc[0, 2]), float(B.iloc[0, 1])      # A upper vs B lower
+bk.diff_interval(450, 5000, 320, 5000)        # B minus A
 ```
-A's interval is now ≈ 5.8–7.1% and B's ≈ 8.2–9.8% — they **no longer overlap**. With 10× the data the
+A's interval is now ≈ 5.8–7.1% and B's ≈ 8.2–9.8% — they **no longer overlap**, and the interval for B − A is
+about **+1.6 to +3.7 points**, which excludes 0. With 10× the data the
 same 2.6-point gap is resolved: {term}`sampling variability` shrank like 1/√n (Foundations page 3), so the
 intervals tightened enough to separate. Same effect size, very different conclusion — which is exactly why
 sample size matters.
@@ -110,8 +129,9 @@ sample size matters.
 :::{admonition} Terms used on this page
 :class: seealso
 {term}`confidence interval` · {term}`coverage` · {term}`sampling variability` · {term}`proportion` ·
-{term}`alpha`
+{term}`risk difference` · {term}`alpha`
 :::
 
 *See also: {doc}`Choosing a method <choosing_a_method>` · {doc}`the Wilson method <../methods/wilson>` ·
+{doc}`difference of two proportions <../methods/two_proportions>` ·
 {doc}`What a confidence interval means <../foundations/04_confidence_interval>`.*

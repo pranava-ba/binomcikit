@@ -13,8 +13,8 @@ concepts it uses.
 
 ## Worked tutorials
 
-1. **{doc}`A/B test: comparing two conversion rates <ab_test>`** — estimate each arm honestly, read the
-   overlap, and understand what a single-proportion tool can and cannot tell you about a *difference*.
+1. **{doc}`A/B test: comparing two conversion rates <ab_test>`** — estimate each arm honestly, then build
+   the interval for the *difference* with `bk.diff_interval` and see why overlapping intervals are only a rough look.
 2. **{doc}`Quality control: is the defect rate below 1%? <quality_control>`** — turn a pass/fail
    question into a posterior probability, and see why a confidence interval and a decision are not the
    same thing.

@@ -143,14 +143,23 @@ the Jeffreys credible interval nearly matches Wilson's frequentist coverage.
 
 ### Can I get a p-value or run a hypothesis test?
 
-Not as a dedicated function *yet* — a per-method p-value family is on the roadmap (§1.11). Two things
-work today:
+Yes. `bk.pvalue(x, n, theta0, method=...)` gives the p-value of the test that goes with any interval method (the smallest α at which
+`theta0` falls outside the interval), and `bk.reject(x, n, theta0, method=..., alpha=...)` says whether it is rejected; see
+{doc}`access_layer`. Two cross-checks you can do yourself:
 
-- **Confidence–test duality.** A two-sided test of $H_0: \theta = \theta_0$ at level α rejects exactly
-  when $\theta_0$ falls outside the $1-\alpha$ interval. So `bk.ci(x, n)` already answers "is
-  $\theta_0$ plausible?" — check whether it's inside.
+- **Confidence–test duality.** A two-sided test of $H_0: 	heta = 	heta_0$ at level α rejects exactly
+  when $	heta_0$ falls outside the $1-lpha$ interval, so `bk.ci(x, n)` already answers "is
+  $	heta_0$ plausible?" — check whether it's inside.
 - **SciPy for an exact p-value.** `scipy.stats.binomtest(x, n, theta0)` gives the exact binomial
-  {term}`tail probability` and matches Clopper–Pearson's interval by construction.
+  {term}`tail probability`. Its default two-sided p-value uses a different ("minlike") convention from
+  the equal-tailed `bk.pvalue(..., method="exact")` (which equals twice the smaller one-sided tail, up to its bisection tolerance), so the two can differ.
+
+### Can I compare two proportions (an A/B test)?
+
+Yes: `bk.diff_interval(x1, n1, x2, n2)` gives a confidence interval for the difference of two independent proportions
+(Newcombe's hybrid score by default; twelve methods in all), and `bk.diff_ci` returns it as a one-row table. See
+{doc}`methods/two_proportions` and the {doc}`A/B test tutorial <tutorials/ab_test>`. Paired data (the same subjects twice) and
+ratios or odds ratios are not covered.
 
 ---
 

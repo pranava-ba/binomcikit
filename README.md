@@ -150,6 +150,9 @@ coverage-adjusted Clopper–Pearson, and anytime-valid **betting** intervals. Ea
 example or independent reference code before it was added: `docs/methods/extended.md`. Not implemented because the primary text
 was unavailable: Andersson–Nerman, Schilling–Doi LCO, Wang, Guan, McGrath–Burke (`planning/MISSING_METHODS.md`).
 
+**Two groups** (`bk.diff_interval`, `bk.diff_ci`): twelve intervals for the difference of two independent proportions — Newcombe's hybrid score
+(default), Miettinen–Nurminen, Mee, Agresti–Caffo, Haldane, Brown–Li and more — reproducing 88 published values: `docs/methods/two_proportions.md`.
+
 **Planning** (`bk.sample_size`, `bk.prob_width`, `bk.power_test`, …) reproduces PASS Chapter 115 (15 of 15 published sample
 sizes) and SAS `PROC POWER` ONESAMPLEFREQ logic: `docs/planning.md`. **Benchmarks** against statsmodels, scipy, astropy, DBCI,
 pynomial, binoculars and confseq are in `docs/benchmarks.md`; the short version is that whole-table computation is orders of
