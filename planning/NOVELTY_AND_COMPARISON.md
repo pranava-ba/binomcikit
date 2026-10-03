@@ -1,5 +1,36 @@
 # binomcikit — Novelty, Codebase Comparison & Real-World Usage
 
+> ## ⚠️ Update 2026-10-01 — read this first; it supersedes parts of the report below
+>
+> A later pass (see [`MISSING_METHODS.md`](MISSING_METHODS.md), [`ADOPTION_PLAN.md`](ADOPTION_PLAN.md) and `docs/comparison.md`)
+> found and corrected the following. The report below is kept for the record, with the affected claims struck through inline.
+>
+> 1. **~~"In Python … none of this exists at all … a genuine first for the Python ecosystem"~~ is false.** The PyPI package
+>    **`DBCI`** (`diff-binom-confint`) ships **16 single-proportion intervals** — Wilson(±cc), Wald(±cc), Agresti–Coull, Jeffreys,
+>    Clopper–Pearson, ArcSine, Logit, **Pratt, Witting, Mid-P, Blaker**, likelihood, modified Wilson/Jeffreys — plus a Streamlit app, and
+>    was missed by the 2026-07 and 2026-09-20 scans. Also found: CRAN **`binomCI`** (Feb 2026, 12 methods), **`binomial_cis`**
+>    (randomised exact), `evalci`, `rilacs`. **The surviving claim** is the *three-layer bundle* — classical + exact + Bayesian + betting
+>    intervals, **an evaluation layer, PASS/SAS-parity planning, and a per-method verification record, in one tool.** None of the above has
+>    an evaluation layer (`binom` has coverage/length for its own 11 methods only).
+> 2. **Methods the report listed as "not yet built" now exist:** Pratt, Witting/Stevens, cloglog, probit, Sterne, Blyth–Still–Casella,
+>    modified Wilson/Jeffreys, and betting (hedged, mixture, PrPl-EB). The one named item still **not** built is the Andersson–Nerman
+>    interval (its primary text is inaccessible).
+> 3. **Commercial tools are no longer "unconfirmed":** SAS PROC FREQ (9 CI methods) and PROC POWER (CI precision, exact/z/TOST tests), NCSS PASS
+>    (5 CI methods, sample size & width), Stata `cii` (5), MATLAB `binofit` (Clopper–Pearson only), Minitab (normal + exact), GraphPad Prism (exact,
+>    Wilson, Wilson/Brown), SPSS `NPTESTS`, MedCalc, OpenEpi (6) — table in `docs/comparison.md`. Still unverified: JMP, nQuery, Epi Info, StatXact (indirectly
+>    referenced only).
+> 4. **Defects found in other packages** (each pinned by a test here): `DescTools::BinomCI` Pratt lower limit (off by up to 0.126 from exact CP at n=20) and
+>    Witting (α, not α/2, per tail ⇒ a 1−2α interval); `DBCI` modified-Wilson (upper limit missing `1 −`; at n=60, x=59 upper < lower), Pratt, Witting, and
+>    a Blaker that steps by 1e-5.
+> 5. **A real defect in binomcikit's own Blaker** (single-root `brentq` can return an interior crossing; 24 of ≈30 000 limits; min coverage 0.89932 vs nominal
+>    0.9000 at n=21, α=0.1) — **fixed**; see `MISSING_METHODS.md` §6 and `tests/test_blaker.py`.
+> 6. **`binomial_cis`'s intervals are randomised (UMA/UMAU), not "length-optimal"** as the earlier table implied; the deterministic Schilling–Doi LCO is a different
+>    procedure and is not implemented.
+> 7. **Betting/confidence-sequence CIs are no longer "not yet built"** — implemented and verified against `confseq` to 1e-16 (and are ~8–10× faster).
+
+---
+
+
 > Generated 2026-09-20. Answers three questions directly: (1) what is actually novel about
 > binomcikit, stated so it survives scrutiny; (2) method-by-method, is each piece of the
 > codebase already present in some *other* package (R or Python) — a large, verified table;
@@ -34,12 +65,12 @@ package with the Wilson interval," it would be redundant with `statsmodels` in o
    correcting an earlier draft of this table that missed `midPci`) but has no evaluation layer
    and no Bayesian toolbox beyond a two-sample Bayesian function. binomcikit is the only
    package — Python or R — that has *all three layers at once* for a single proportion.
-2. **In Python specifically, none of this exists at all.** `statsmodels`/`scipy`/`astropy` give
+2. ~~**In Python specifically, none of this exists at all.**~~ *(false — see the update above: `DBCI` ships 16 of these methods.)* `statsmodels`/`scipy`/`astropy` give
    you 3–6 common intervals and stop; there is no Python package with ArcSine, Wald-T, Mid-P,
    the generalized-*e* exact continuum, the *h*-adjustment framework, or any of the evaluation
    or Bayesian-toolbox functions (verified again 2026-09-20 — nothing new registered on PyPI
-   that changes this). binomcikit is a genuine first for the Python ecosystem, not an
-   incremental addition to it.
+   that changes this). ~~binomcikit is a genuine first for the Python ecosystem, not an
+   incremental addition to it.~~
 3. **The reference tool it revives is dead.** R `proportion` was archived from CRAN
    2022-04-27 for unresolved check failures and is not installable via `install.packages()`
    — confirmed still archived as of 2026-09-20 (source still on GitHub,

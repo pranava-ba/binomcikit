@@ -4,6 +4,22 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
 ## [Unreleased] — Phase 1 (in progress)
+### Added — extended methods, planning, benchmarks (2026-10-01)
+- `binomcikit.ext`: 34 registry methods (`methods.py`; hooked into `ci()`, Plotly and the access layer) — closed-form, bounds
+  (Hoeffding/Bernstein/Chernoff), likelihood (r\*, Cressie–Read), exact (Sterne, Blyth–Still–Casella, length-optimal),
+  Pires & Amado's set, coverage-adjusted CP (Thulin), randomised, and betting/mixture confidence sequences; `limits.py`
+  (limit-table API) and `planning.py` (PASS/SAS-style sample size, width probability, exact/z tests, TOST, success-run, Bayesian).
+- Docs: `methods/{extended,extended_approx,extended_exact,betting}.md`, `planning.md`, `use_cases_by_industry.md`, `benchmarks.md`;
+  `comparison.md` rewritten (the earlier "first in Python" claim is refuted by DBCI). Planning notes: `MISSING_METHODS.md`, `ADOPTION_PLAN.md`.
+- `benchmarks/bench_competitors.py` (+ `results.json`, `RESULTS.md`).
+### Fixed
+- **Blaker interval could return an inner crossing** (γ(x,θ) is non-unimodal, so single-root search under-covers): limits now scan
+  outward-in from the Clopper–Pearson bound and bisect the last sub-interval; the single-x path was changed the same way.
+  Regression tests in `tests/test_blaker.py`.
+### Changed
+- Vectorised the base/adjusted/continuity-corrected closed-form and Bayesian whole-table paths; exact limits use the
+  U(x)=1−L(n−x) symmetry; numba kernels are compiled lazily. 721 tests pass; `ruff`/`black` clean; docs build clean
+  (the only warning was an unreachable external intersphinx inventory).
 ### Research notes — real-world use case & positioning (2026-09-28)
 Findings from grounding "is any of this actually used/researched" against current (2026) sources,
 prompted by a request to assess the project's real-world relevance — recorded here since they inform

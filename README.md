@@ -144,6 +144,18 @@ Thirteen interval methods, each with a two-part documentation page (*Use it* / *
 Each also has adjusted (`h=`) and continuity-corrected (`c=`) variants where applicable, plus the four
 metric families and the Bayesian toolbox.
 
+**Extended catalogue (34 registry methods, `bk.list_methods()`)** — Sterne, Blyth–Still–Casella, length-optimal (Dümbgen/Garthwaite),
+Pires & Amado's twenty, higher-order likelihood r\*, Cressie–Read, Hoeffding/Bernstein/Chernoff bounds, randomised and
+coverage-adjusted Clopper–Pearson, and anytime-valid **betting** intervals. Each was checked against a published table, worked
+example or independent reference code before it was added: `docs/methods/extended.md`. Not implemented because the primary text
+was unavailable: Andersson–Nerman, Schilling–Doi LCO, Wang, Guan, McGrath–Burke (`planning/MISSING_METHODS.md`).
+
+**Planning** (`bk.sample_size`, `bk.prob_width`, `bk.power_test`, …) reproduces PASS Chapter 115 (15 of 15 published sample
+sizes) and SAS `PROC POWER` ONESAMPLEFREQ logic: `docs/planning.md`. **Benchmarks** against statsmodels, scipy, astropy, DBCI,
+pynomial, binoculars and confseq are in `docs/benchmarks.md`; the short version is that whole-table computation is orders of
+magnitude faster than loop-based packages, while `bk.ci()` itself is *slower* than statsmodels/astropy for closed-form methods
+(use `bk.limits()` / `bk.interval()` there). Industry use cases and the products used today: `docs/use_cases_by_industry.md`.
+
 ---
 
 ## Features

@@ -357,6 +357,124 @@ effect size
   How far the *true* proportion actually is from the value a {term}`hypothesis test` is checking
   against (θ₀). A bigger effect size is easier to detect — it takes fewer {term}`trial`s to reach
   good {term}`statistical power`.
+
+conservative
+  An interval whose {term}`coverage` is *above* the nominal {term}`confidence level` — it is wider
+  than it needs to be. A 95% interval that really covers 98% of the time is conservative: safe, but
+  you pay for the safety in length. {term}`Clopper–Pearson` is the classic example.
+
+exact interval
+  An interval whose {term}`coverage` is guaranteed to be *at least* 1 − {term}`alpha` for **every**
+  true {term}`theta` — not just on average — because it is built from the binomial distribution itself
+  rather than a normal approximation. Every exact interval is {term}`conservative` somewhere, because
+  the binomial is {term}`discreteness`-limited.
+
+randomised interval
+  An interval that uses an extra random number (a coin flip you control) to get *exactly* 1 − α
+  coverage at every θ — the one thing no non-random interval can do. The price: two analysts can get
+  different intervals from the same data. Witting's/Stevens' interval is the classic example; a
+  fixed `seed` makes yours reproducible.
+
+coverage cycle
+  The stretch of true θ between two consecutive interval endpoints. {term}`Coverage` jumps (a
+  "spike") each time θ crosses an endpoint and then drifts smoothly until the next one; the saw-tooth
+  between spikes is one cycle. The {term}`locally correct` criterion looks at the *average* over each cycle.
+
+locally correct
+  (Garthwaite, Moustafa & Elfadaly 2024.) An interval estimator is locally correct if, for each tail,
+  the {term}`coverage` averaged over every {term}`coverage cycle` is at least 1 − α/2. It is weaker
+  than "covers at least 1 − α everywhere" (so it can be shorter) but stricter than "roughly 95% on
+  average" (it has a precise pass/fail definition). Clopper–Pearson passes; Wilson does not.
+
+concentration inequality
+  A mathematical guarantee that a sample proportion rarely strays far from the truth, valid at *every*
+  sample size (no {term}`central limit theorem` needed): Hoeffding, Chernoff (KL) and Bernstein bounds.
+  Inverting one gives an interval with guaranteed {term}`coverage` — always {term}`conservative`, but
+  honest at tiny `n`.
+
+Kullback–Leibler divergence
+  (KL.) A measure of how different one coin is from another: KL(p ‖ q) is large when a coin with heads
+  rate q would rarely produce a sample that looks like heads rate p. Chernoff's bound says the chance of
+  seeing p̂ when the truth is q is at most exp(−n·KL(p̂ ‖ q)); inverting it gives the Chernoff–KL interval.
+
+power divergence
+  (Cressie–Read.) A one-parameter family of "distance between observed and expected counts"
+  statistics, indexed by λ. λ = 1 is Pearson's (the Wilson/score interval), λ = 0 is the
+  {term}`likelihood-ratio statistic`, λ = −½ is Freeman–Tukey, and λ = 2/3 is Cressie & Read's own
+  recommendation. Inverting the statistic gives one interval per λ.
+
+higher-order likelihood
+  Refinements of the {term}`likelihood-ratio statistic` whose normal approximation is accurate to
+  *third* order instead of first. Barndorff-Nielsen's r\* adds one correction term to the signed
+  likelihood-ratio root, giving intervals with almost exact {term}`coverage` and no discreteness repair.
+
+confidence sequence
+  A sequence of intervals, one per sample size t = 1, 2, 3, …, such that **all of them** contain the
+  truth simultaneously with probability at least 1 − α. Because they are {term}`anytime-valid`, you
+  may look after every observation and stop whenever you like.
+
+anytime-valid
+  Valid no matter *when* you look or stop. A fixed-n 95% interval is only 95% if you decided n in
+  advance; peek after every trial and stop when it looks good and its real error rate balloons. An
+  anytime-valid interval (a {term}`confidence sequence`) keeps its 1 − α guarantee under peeking and
+  optional stopping.
+
+martingale
+  A fair-game process: your expected wealth after the next bet equals your wealth now. A *test
+  martingale* is a nonnegative one that starts at 1 and is a fair game if a hypothesised
+  θ is true. {term}`Ville's inequality` says it rarely ever grows large.
+
+Ville's inequality
+  For a nonnegative {term}`martingale` starting at 1, the chance it **ever** reaches 1/α is at most α.
+  It is the whole reason betting works: if a hypothesised θ lets a gambler get rich, reject that θ; the
+  θ's the gambler cannot beat form a {term}`confidence sequence`.
+
+betting interval
+  (Waudby-Smith & Ramdas 2024.) A confidence interval from a game: for each candidate θ a gambler
+  bets on the data, and the interval is every θ that cannot be bankrupted. Variance-adaptive — much
+  shorter than Hoeffding when θ is near 0 or 1 — and the numerically tightest known interval for
+  bounded data. *Hedged* betting runs a bet "θ is above m" and one "below m" at once.
+
+mixture martingale
+  Average a family of {term}`martingale`s over a prior on the alternative. For a coin the average is
+  a closed-form ratio of {term}`Beta distribution` functions, so the resulting
+  {term}`confidence sequence` is exact in (x, n) — no simulation. Wider than a fixed-n interval; that is the price of
+  being {term}`anytime-valid`.
+
+derandomisation
+  Removing the dependence on an arbitrary random choice. A betting interval depends on the *order* of
+  the successes and failures; averaging its capital over many random orderings gives an interval that
+  depends on (x, n) only, and is still valid (by Markov's inequality).
+
+plug-in width
+  In sample-size planning: the interval width you would get *if* the sample proportion came out
+  exactly as you guessed. PASS plugs in a real-valued proportion (x = p·n need not be an integer);
+  rounding x to a whole number is a different, slightly noisier plan.
+
+assurance
+  The probability that your *realised* interval turns out narrower than your target. Planning at
+  a plug-in proportion ignores the scatter of real data; assurance (SAS's `PROBWIDTH`) is the
+  chance you actually get the width you wanted.
+
+equivalence test
+  A test that tries to *prove* θ is close to a target, rather than different from it. The standard
+  procedure (TOST — two one-sided tests) rejects only if both "θ is above the lower margin" and
+  "θ is below the upper margin" are rejected.
+
+success-run test
+  A zero-failure plan: test n items and accept only if none fail. The smallest n that proves the
+  defect rate is below p with confidence C is ln(1 − C) / ln(1 − p) — about 3/p at 95%
+  (the "rule of three").
+
+average length criterion
+  (ALC.) A Bayesian sample-size rule: the smallest n whose *expected* credible-interval length —
+  averaged over the data you might see — is at most a target. The *worst outcome criterion* (WOC)
+  asks that it hold for **every** possible outcome.
+
+analytic bootstrap
+  For a proportion the {term}`bootstrap` distribution of the number of successes is *exactly*
+  Binomial(n, x/n) — so the percentile interval is just a binomial quantile, with no resampling, no
+  random seed and no Monte-Carlo error.
 :::
 
 ---

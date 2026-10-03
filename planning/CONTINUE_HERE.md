@@ -6,7 +6,20 @@
 
 ---
 
-## 1. Current state — updated 2026-09-28
+## 1. Current state — updated 2026-10-01
+- **Backlog note:** `planning/TODO_COMPETITOR_REPOS_AND_OPEN_ITEMS.md` — planned (not started) GitHub competitor deep dive (activity, usage, SWOT, speed/memory/storage) plus every open item.
+- **Latest session (2026-10-01):** added 34 registry methods (`src/binomcikit/ext/`, `methods.py`), `limits.py`, `planning.py`;
+  fixed Blaker's inner-crossing bug; vectorised closed-form/adjusted/cc/Bayesian whole tables; wrote `docs/{benchmarks,planning,
+  use_cases_by_industry}.md`, `methods/{extended*,betting}.md`; `benchmarks/bench_competitors.py`. **721 tests pass**, ruff/black
+  clean, docs build clean. Updated the paper scraper (`paper-explorer/`, v1.4.0: 28 presets, domain tags, 877-paper corpus).
+  **Nothing committed or released.**
+- **Perf pass (2026-10-03):** Sterne n=1000 6.7 s -> 0.28 s (precomputed log-pmf + `bdtr/bdtrc`, same limits to ~1e-14);
+  betting n=1000 ~80 s -> ~16 s on 16 threads (numba `prange` over chunks of x; orderings still drawn serially, so the
+  table is bit-identical for a given seed; without numba it is unchanged); `cialr/ciatw/cialt/ciclt/cictw` vectorised
+  (`_fast.lr_limits_y`; verified against the old loops, h=0 undefined rows keep their old [0, 1] fallback). 721 tests pass.
+  Betting is still the slowest method (kernel-bound, O(B n^2)); `benchmarks/RESULTS.md` still shows the pre-pass numbers
+  until `bench_competitors.py` is re-run. Open: five missing methods need primary texts (`planning/MISSING_METHODS.md`); the
+  outward-facing items in `planning/ADOPTION_PLAN.md` (PyPI, Zenodo, upstream issues) are the user's call.
 - **Version:** 3.0.8 (pre first real PyPI release; PyPI still has an old 0.0.5).
 - **Tests:** **302 passing**; `ruff` + `black` clean; **Sphinx docs build clean with `-W`** (run it with
   `PYTHONPATH=../src` locally — see the T4/T5 build note below and `DOCS_CHECKLIST.md §1`).

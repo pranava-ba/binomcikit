@@ -24,13 +24,17 @@ binomial proportion, `binomcikit` is the most complete of the four — it is a f
 
 | | **scipy** | **statsmodels** | **R `proportion`** | **binomcikit** |
 |---|---|---|---|---|
-| Confidence-interval methods | 2–3 | 6 | 12 | **12** |
+| Confidence-interval methods | 3 | 6 | 12 | **47** ({doc}`methods/index`, {doc}`methods/extended`) |
 | Evaluate an interval (coverage, length, p-confidence, error) | — | — | ✅ | ✅ |
-| Exact **Blaker** interval | — | — | — | ✅ (new) |
+| Audit an interval against the *locally correct* criterion (2024) | — | — | — | ✅ |
+| Exact **Blaker / Sterne / Blyth–Still–Casella / OLC** | — | — | Blaker ✗ | ✅ |
+| Anytime-valid / betting confidence sequences | — | — | — | ✅ |
+| PASS / SAS-style sample size, width & power planning | — | partial | — | ✅ ({doc}`planning`) |
 | Bayesian toolbox (credible intervals, Bayes factor, prediction) | partial | — | partial | ✅ |
+| Lean `(lower, upper)` array / float API | ✅ | ✅ | — | ✅ (`bk.limits`, `bk.interval`) |
 | `from_data` / `compare` / `recommend` access layer | — | — | — | ✅ |
 | Interactive Plotly figures | — | — | — | ✅ |
-| Language | Python | Python | R | Python |
+| Language | Python | Python | R (archived 2022) | Python |
 
 `scipy.stats.binomtest(...).proportion_ci` offers Clopper–Pearson (`exact`) and Wilson; `statsmodels`'
 `proportion_confint` adds Wald, Agresti–Coull and Jeffreys. `binomcikit` covers all of those **and**
@@ -109,6 +113,57 @@ something you would otherwise have to simulate by hand.
 {term}`posterior predictive` checks (the {doc}`Bayesian toolbox <bayesian_toolbox>`), and a
 `from_data` / `compare` / `recommend` {doc}`access layer <access_layer>` that the R original and the
 other Python libraries lack.
+
+---
+
+## Every tool we could find — and what each does
+
+Verified 2026-10-01 against the linked documentation (✓) unless marked ○ (not re-checked). "CI methods" counts distinct
+intervals for **one binomial proportion**.
+
+### Python
+
+| Package | CI methods | Evaluation layer | Planning | Notes |
+|---|---|---|---|---|
+| **binomcikit** | **47** | ✅ coverage, length, p-conf/bias, error, locally-correct | ✅ PASS/SAS-style | all verified against independent oracles |
+| [`statsmodels`](https://www.statsmodels.org/dev/generated/statsmodels.stats.proportion.proportion_confint.html) ✓ | 6 (normal, Agresti–Coull, Clopper–Pearson, Wilson, Jeffreys, binom_test) | — | `samplesize_confint_proportion` (Wald) | the de-facto default |
+| [`scipy`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats._result_classes.BinomTestResult.proportion_ci.html) ✓ | 3 (exact, Wilson, Wilson-cc) | — | — | |
+| `astropy.stats.binom_conf_interval` ✓ | 4 (Wilson, Jeffreys, flat, Wald) | — | — | no exact interval |
+| [`DBCI`](https://github.com/DeepPSP/DBCI/) ✓ | 16 incl. Blaker, Pratt, Witting, Mid-P, modified-* | tests vs SAS/PASS/DescTools | — | Streamlit app; **defects found** ({doc}`methods/extended_approx`) |
+| [`binomial_cis`](https://github.com/TRI-ML/binomial_cis) ✓ | randomised UMA/UMAU exact | — | — | JOSS pre-review closed ("uncertain scope") |
+| `pynomial` (GitHub; *not* the PyPI package of that name) ✓ | 9 (port of R `binom`) | — | — | |
+| [`confseq`](https://pypi.org/project/confseq/) ✓ | betting / confidence sequences | — | — | C++ build; fails to build on Windows here |
+| `binoculars`, `evalci`, `ebcic` ✓ | 3–4 each | — | — | small utilities; `binoculars`' "wilson" is not Wilson's interval |
+
+### R
+
+| Package | CI methods | Evaluation | Planning |
+|---|---|---|---|
+| [`binom`](https://www.rdocumentation.org/packages/binom/versions/1.1-1.1/topics/binom.confint) ✓ | 11 | `binom.coverage`, `binom.length` | — |
+| [`DescTools::BinomCI`](https://search.r-project.org/CRAN/refmans/DescTools/html/BinomCI.html) ✓ | 16 | — | — |
+| `PropCIs`, `exactci`, `rbscCI` ✓ | Blaker/Mid-P/Add-4; Sterne/Blaker; Blyth–Still–Casella | — | — |
+| [`binGroup`](https://search.r-project.org/CRAN/refmans/binGroup/html/binCI.html) ✓ | 6 (CP, Blaker, AC, Score, Wald, SOC) | `binWidth` | `binDesign` |
+| [`binomCI`](https://cran.r-universe.dev/binomCI/doc/manual.html) ✓ (CRAN, 2026) | 12 | — | — |
+| `proportion` ✓ (archived 2022) | 12 | **full** | — |
+
+### Commercial and desktop
+
+| Product | CI methods for one proportion | Planning |
+|---|---|---|
+| [SAS `PROC FREQ`](https://documentation.sas.com/doc/en/procstat/9.4/procstat_freq_details37.htm) ✓ | 9 (Wald, exact, Agresti–Coull, Blaker, Jeffreys, mid-P, LR, logit, Wilson) | `PROC POWER ONESAMPLEFREQ`: CI precision (6 CIs, `HALFWIDTH`/`PROBWIDTH`), exact / z / adjusted-z tests, TOST equivalence |
+| [NCSS PASS](https://www.ncss.com/software/pass/one-proportion-in-pass/) ✓ | 5 (exact, score, score-cc, Wald, Wald-cc) | sample size & width, dropout |
+| [Stata `cii`](https://www.stata.com/manuals13/rci.pdf) ✓ | 5 (exact, Wald, Wilson, Agresti–Coull, Jeffreys) | `power oneproportion` ○ |
+| [MATLAB `binofit`](https://www.mathworks.com/matlabcentral/answers/47944-confidence-interval-using-binofit) ✓ | 1 (Clopper–Pearson) | — |
+| Minitab *1-Proportion* ✓ | 2 (normal, exact) | power & sample size ○ |
+| [GraphPad Prism](https://graphpad.com/guides/prism/latest/statistics/stat_three_methods_for_computing_th.htm) ✓ | 3 (exact, Wilson, Wilson/Brown) | — |
+| SPSS `NPTESTS` binomial ✓ | a limited set (Clopper–Pearson, Jeffreys, Wald-type) | — |
+| [MedCalc](https://www.medcalc.org/en/manual/diagnostic-test.php) ✓ | exact (sens/spec), logit (predictive values) | sample size for a CI ✓ |
+| [OpenEpi](https://en.wikipedia.org/wiki/OpenEpi) ✓ | 6 | — |
+| StatXact (Cytel) ○ | exact incl. Blyth–Still–Casella (referenced by `rbscCI`) | — |
+| JMP, nQuery, Epi Info ○ | not verified in this pass | |
+
+**What no tool in these tables does** is combine the interval zoo with a measured *evaluation* of each interval, the 2024 locally-correct
+criterion, anytime-valid intervals and PASS/SAS-parity planning in one place. That — not any single method — is the contribution.
 
 ---
 

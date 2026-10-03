@@ -110,6 +110,9 @@ method_selection
 evaluating_intervals
 bayesian_toolbox
 access_layer
+planning
+benchmarks
+use_cases_by_industry
 comparison
 faq
 gallery

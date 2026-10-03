@@ -22,6 +22,8 @@ see {doc}`../method_selection`.
 | {doc}`Jeffreys <bayes>` | `"jeffreys"` | Bayesian | Bayesian with the Beta(½, ½) prior; excellent coverage |
 | {doc}`Bootstrap <bootstrap>` ⭐ | `"boot"` | simulation | **new** — smooth resampling; fixes the naive bootstrap's collapse at x = 0, n |
 
+**34 more methods** — {doc}`extended` (the hub), {doc}`extended_approx`, {doc}`extended_exact` and {doc}`betting` — add Pratt, Sterne, Blyth–Still–Casella, the optimal locally correct interval, higher-order likelihood, coverage-adjusted Clopper–Pearson, the Pires & Amado family, concentration bounds and anytime-valid betting intervals, every one verified against an independent oracle.
+
 Agresti–Coull is available as `method="agresti-coull"` (adjusted Wald). The wider Bayesian toolbox
 (Bayes factors, empirical Bayes, posterior predictive) has its own page: {doc}`../bayesian_toolbox`.
 
@@ -39,4 +41,5 @@ exact
 bayes
 blaker
 bootstrap
+extended
 ```

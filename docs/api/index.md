@@ -27,6 +27,17 @@ Function names follow a strict scheme — see the {doc}`naming convention <../ge
 ../reference/binomcikit.ci.cc_n_x
 ```
 
+## Extended methods, planning and lean access
+
+```{toctree}
+:maxdepth: 1
+
+../reference/binomcikit.ext
+../reference/binomcikit.planning
+../reference/binomcikit.limits
+../reference/binomcikit.methods
+```
+
 ## Coverage probability (`covp`)
 
 ```{toctree}

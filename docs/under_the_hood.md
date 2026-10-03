@@ -150,6 +150,23 @@ down. There, an optional **numba** kernel (compiled to native code, skipping the
   + per-platform wheels), not lighter, and would lose the scientific-Python ecosystem. Full numbers
   and reproducible scripts are in `benchmarks/` in the repository.
 
+## Blaker's interval: a non-unimodal acceptability function
+
+Blaker's γ(x, θ) = P(Y ∈ more-extreme set) is **not unimodal in θ**, so a single-root search (`brentq` from one bracket, or a
+plain bisection) can stop at an *inner* crossing of α and return an interval that is too short and under-covers. A brute-force
+comparison showed 24/24 differing limits were wrong in the first vectorised attempt. The implementation now scans a grid of
+fractions between the Clopper–Pearson bound and the point estimate from the outside in, takes the outermost crossing, and bisects
+only that last sub-interval (this mirrors R's `blakerci`). Both the table and the single-x paths use it.
+
+## Whole-table speed: where it came from
+
+* closed-form methods compute all x at once (`ci/_fast.py`); exact limits compute x ≤ n/2 and mirror the rest;
+* Bayesian/exact quantiles use `scipy.special` ufuncs (`betaincinv`, `ndtri`) instead of the slower `scipy.stats` wrappers;
+* HPD intervals use an active-set safeguarded Newton; Blaker and Sterne use vectorised bisection;
+* numba kernels are `cache=True` and compiled **lazily**, so importing the package never pays the JIT cost.
+The DataFrame returned by `ci()` costs more than the arithmetic for cheap methods, which is why `bk.limits()` and `bk.interval()`
+exist. Measured numbers, including where we are slower: `docs/benchmarks.md`.
+
 ## Plotting — plotnine today, Plotly tomorrow
 
 Two plotting paths coexist during the migration:
