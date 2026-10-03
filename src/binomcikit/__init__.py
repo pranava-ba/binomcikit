@@ -62,6 +62,11 @@ from .planning import (  # noqa: E402  PASS/SAS-style sample-size, width and pow
     sample_size_upper_bound,
 )
 from .plotly_viz import plot_ci, plot_coverage  # noqa: E402  interactive plotly figures
+from .twoprop import (  # noqa: E402  two independent proportions
+    diff_ci,
+    diff_interval,
+    list_diff_methods,
+)
 
 __version__ = "3.0.8"
 
@@ -120,6 +125,9 @@ __all__ = sorted(
         "describe_method",
         "limits",
         "interval",
+        "diff_ci",
+        "diff_interval",
+        "list_diff_methods",
         *_ACCESS,
         *_ext_pkg.__all__,
         *_ci_pkg.__all__,

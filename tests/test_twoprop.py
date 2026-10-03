@@ -1,0 +1,204 @@
+"""Difference of two independent proportions: oracle, equation, property and coverage checks."""
+
+import math
+import warnings
+
+import numpy as np
+import pandas as pd
+import pytest
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
+from scipy import stats
+
+import binomcikit as bk
+from binomcikit import twoprop
+
+sm_prop = pytest.importorskip("statsmodels.stats.proportion")
+
+TABLES = [
+    (7, 10, 3, 12),
+    (56, 70, 48, 80),
+    (0, 10, 0, 10),
+    (10, 10, 0, 10),
+    (0, 20, 5, 20),
+    (1, 30, 29, 30),
+    (15, 15, 14, 15),
+    (2, 5, 0, 7),
+    (50, 100, 40, 100),
+    (200, 1000, 150, 1200),
+    (0, 1, 1, 1),
+    (3, 4, 2, 3),
+]
+ALL = list(twoprop.list_diff_methods()["method"])
+
+
+def _sm(method, t, alpha=0.05):
+    lo, hi = sm_prop.confint_proportions_2indep(
+        t[0], t[1], t[2], t[3], method=method, compare="diff", alpha=alpha
+    )
+    return max(lo, -1.0), min(hi, 1.0)
+
+
+@pytest.mark.parametrize(
+    "ours,theirs", [("wald", "wald"), ("agresti-caffo", "agresti-caffo"), ("newcombe", "newcomb")]
+)
+@pytest.mark.parametrize("alpha", [0.01, 0.05, 0.2])
+def test_matches_statsmodels(ours, theirs, alpha):
+    for t in TABLES:
+        a = bk.diff_interval(*t, alpha, ours)
+        b = _sm(theirs, t, alpha)
+        assert a == pytest.approx(b, abs=1e-12), (ours, t)
+
+
+def test_newcombe_cc_and_wald_cc_match_dbci():
+    dbci = pytest.importorskip("diff_binom_confint")
+    for method in ("wald-cc", "newcombe-cc"):
+        for t in TABLES:
+            r = dbci.compute_difference_confidence_interval(*t, 0.95, method)
+            exp = (max(r.lower_bound, -1.0), min(r.upper_bound, 1.0))
+            assert bk.diff_interval(*t, 0.05, method) == pytest.approx(exp, abs=1e-9), (method, t)
+
+
+@pytest.mark.parametrize("method,mn", [("mee", False), ("miettinen-nurminen", True)])
+def test_score_limits_solve_the_defining_equation(method, mn):
+    """The score statistic equals z^2 at each interior limit (to root-finder precision)."""
+    z = stats.norm.ppf(0.975)
+    for t in TABLES:
+        lo, hi = bk.diff_interval(*t, 0.05, method)
+        factor = (t[1] + t[3]) / (t[1] + t[3] - 1) if mn else 1.0
+        for lim in (lo, hi):
+            if abs(lim) >= 1.0:  # boundary: the equation need not be met
+                continue
+            stat = twoprop._score_stat2(*t, lim, factor)
+            assert stat == pytest.approx(z * z, abs=1e-8), (method, t, lim)
+
+
+def test_known_values_for_one_table():
+    """A regression anchor: five methods on 56/70 vs 48/80 (agree with statsmodels / DBCI)."""
+    t = (56, 70, 48, 80)
+    exp = {
+        "wald": (0.0575, 0.3425),
+        "newcombe": (0.0524, 0.3339),
+        "newcombe-cc": (0.0428, 0.3422),
+        "mee": (0.0533, 0.3377),
+        "miettinen-nurminen": (0.0528, 0.3382),
+    }
+    for m, e in exp.items():
+        assert bk.diff_interval(*t, 0.05, m) == pytest.approx(e, abs=5e-5), m
+
+
+def test_aliases_and_catalogue():
+    t = (7, 10, 3, 12)
+    assert bk.diff_interval(*t, 0.05, "mn") == bk.diff_interval(*t, 0.05, "miettinen-nurminen")
+    assert bk.diff_interval(*t, 0.05, "hybrid-score") == bk.diff_interval(*t, 0.05, "newcombe")
+    cat = bk.list_diff_methods()
+    assert isinstance(cat, pd.DataFrame) and {"wald", "newcombe", "mee"} <= set(ALL)
+    assert len(cat) == 7
+
+
+def test_diff_ci_table():
+    df = bk.diff_ci(7, 10, 3, 12, 0.05, "newcombe")
+    cols = ["method", "x1", "n1", "x2", "n2", "estimate", "lower", "upper", "width"]
+    assert list(df.columns) == cols
+    row = df.iloc[0]
+    assert row["estimate"] == pytest.approx(7 / 10 - 3 / 12)
+    assert row["width"] == pytest.approx(row["upper"] - row["lower"])
+
+
+def test_array_inputs_broadcast():
+    x1 = np.array([7, 56, 0])
+    n1 = np.array([10, 70, 10])
+    lo, hi = bk.diff_interval(x1, n1, 3, 12, 0.05, "newcombe")
+    for i in range(3):
+        s = bk.diff_interval(int(x1[i]), int(n1[i]), 3, 12, 0.05, "newcombe")
+        assert (lo[i], hi[i]) == pytest.approx(s)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        dict(x1=-1, n1=10, x2=3, n2=12),
+        dict(x1=11, n1=10, x2=3, n2=12),
+        dict(x1=1, n1=0, x2=3, n2=12),
+        dict(x1=1.5, n1=10, x2=3, n2=12),
+        dict(x1=1, n1=10, x2=3, n2=12, alpha=0.0),
+        dict(x1=1, n1=10, x2=3, n2=12, alpha=1.0),
+        dict(x1=1, n1=10, x2=3, n2=12, method="nope"),
+    ],
+)
+def test_input_errors(args):
+    with pytest.raises(ValueError):
+        bk.diff_interval(**args)
+
+
+SETTINGS = dict(max_examples=60, deadline=None, suppress_health_check=[HealthCheck.too_slow])
+
+
+@settings(**SETTINGS)
+@given(
+    n1=st.integers(1, 40),
+    n2=st.integers(1, 40),
+    alpha=st.sampled_from([0.01, 0.05, 0.2]),
+    method=st.sampled_from(ALL),
+    data=st.data(),
+)
+def test_interval_properties(n1, n2, alpha, method, data):
+    x1 = data.draw(st.integers(0, n1))
+    x2 = data.draw(st.integers(0, n2))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        lo, hi = bk.diff_interval(x1, n1, x2, n2, alpha, method)
+        slo, shi = bk.diff_interval(x2, n2, x1, n1, alpha, method)
+    assert -1.0 <= lo <= hi <= 1.0
+    # swapping the samples negates the difference, so it mirrors the interval
+    assert (slo, shi) == pytest.approx((-hi, -lo), abs=1e-9)
+    d = x1 / n1 - x2 / n2
+    if method not in ("wald", "wald-cc", "agresti-caffo"):  # these can exclude the estimate
+        assert lo - 1e-9 <= d <= hi + 1e-9
+
+
+@settings(**SETTINGS)
+@given(
+    n1=st.integers(2, 30),
+    n2=st.integers(2, 30),
+    method=st.sampled_from(ALL),
+    data=st.data(),
+)
+def test_narrower_at_lower_confidence(n1, n2, method, data):
+    x1 = data.draw(st.integers(0, n1))
+    x2 = data.draw(st.integers(0, n2))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        a = bk.diff_interval(x1, n1, x2, n2, 0.2, method)
+        b = bk.diff_interval(x1, n1, x2, n2, 0.01, method)
+    assert b[0] <= a[0] + 1e-9 and a[1] <= b[1] + 1e-9
+
+
+def _exact_coverage(method, n1, n2, p1, p2, alpha=0.05):
+    pm1 = stats.binom.pmf(np.arange(n1 + 1), n1, p1)
+    pm2 = stats.binom.pmf(np.arange(n2 + 1), n2, p2)
+    delta = p1 - p2
+    cov = 0.0
+    for x1 in range(n1 + 1):
+        for x2 in range(n2 + 1):
+            lo, hi = bk.diff_interval(x1, n1, x2, n2, alpha, method)
+            if lo - 1e-12 <= delta <= hi + 1e-12:
+                cov += pm1[x1] * pm2[x2]
+    return cov
+
+
+@pytest.mark.parametrize("method", ["newcombe", "miettinen-nurminen", "mee", "agresti-caffo"])
+def test_exact_coverage_is_near_nominal(method):
+    """Average exact coverage over a small grid of (p1, p2) at n1 = n2 = 15 stays close to 95%."""
+    grid = [(0.3, 0.2), (0.5, 0.5), (0.7, 0.4), (0.15, 0.1), (0.9, 0.8)]
+    covs = [_exact_coverage(method, 15, 15, a, b) for a, b in grid]
+    assert 0.92 <= float(np.mean(covs)) <= 0.99, (method, covs)
+    assert min(covs) >= 0.88, (method, covs)
+
+
+def test_wald_undercovers_more_than_newcombe():
+    grid = [(0.3, 0.2), (0.15, 0.1), (0.9, 0.8)]
+    wald = np.mean([_exact_coverage("wald", 15, 15, a, b) for a, b in grid])
+    newc = np.mean([_exact_coverage("newcombe", 15, 15, a, b) for a, b in grid])
+    assert newc > wald
+    assert math.isfinite(wald)

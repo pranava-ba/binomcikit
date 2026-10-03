@@ -475,6 +475,22 @@ analytic bootstrap
   For a proportion the {term}`bootstrap` distribution of the number of successes is *exactly*
   Binomial(n, x/n) — so the percentile interval is just a binomial quantile, with no resampling, no
   random seed and no Monte-Carlo error.
+
+risk difference
+  The difference between two groups' success rates, p₁ − p₂ (for example treatment minus control).
+  A confidence interval for it says how much better one group did, and whether "no difference"
+  (0) is plausible. See {doc}`methods/two_proportions`.
+
+score interval
+  The set of hypothesised values a {term}`score test` does not reject. For one proportion it is
+  the Wilson interval; for the {term}`risk difference` it is the Mee or Miettinen–Nurminen
+  interval, which has no closed form and is found by root-finding.
+
+restricted maximum likelihood estimate
+  The most likely values of the parameters *given that a constraint holds* — for the
+  {term}`risk difference`, the pair of success rates (p̃₁, p̃₂) that best fit the data while
+  satisfying p₁ − p₂ = δ. The score interval measures how far the data are from δ using the
+  variance computed at this estimate rather than at the raw proportions.
 :::
 
 ---

@@ -36,6 +36,7 @@ Function names follow a strict scheme — see the {doc}`naming convention <../ge
 ../reference/binomcikit.planning
 ../reference/binomcikit.limits
 ../reference/binomcikit.methods
+../reference/binomcikit.twoprop
 ```
 
 ## Coverage probability (`covp`)

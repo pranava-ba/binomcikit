@@ -4,6 +4,23 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
 ## [Unreleased] — Phase 1 (in progress)
+### Added — two proportions, performance gate, property tests (2026-10-03)
+- **Difference of two independent proportions** (`binomcikit.twoprop`: `diff_interval`, `diff_ci`, `list_diff_methods`): Wald, Wald-cc,
+  Agresti–Caffo, Newcombe hybrid score (±cc), Mee and Miettinen–Nurminen score intervals. Wald/Agresti–Caffo/Newcombe agree with
+  `statsmodels` to 1e-12, the `-cc` forms with DBCI to 1e-9, and both score methods solve their defining equation to ~1e-15
+  (DBCI's score limits satisfy it only to 1e-4–1e-5; `statsmodels`' `score` option raises on ordinary tables such as 7/10 vs 3/12).
+  Page `docs/methods/two_proportions.md`; 30 tests in `tests/test_twoprop.py` (oracles, equation residual, Hypothesis properties, exact coverage).
+- `benchmarks/regression_check.py`, `benchmarks/baseline.json` and a weekly `.github/workflows/benchmark.yml` that fails when a tracked
+  call is more than 2x slower than the baseline (timings are divided by an in-process calibration workload). `.pre-commit-config.yaml`.
+- Property tests `tests/test_limits_ci_property.py` (`limits` == `ci` table == `interval` row for random n/alpha/method) and
+  `tests/test_lazy_plotting.py`. `benchmarks/competitors/` (re-runnable competitor measurements; report in `planning/COMPETITOR_REPOS.md`).
+### Changed
+- **`import binomcikit` no longer imports plotnine**: the plotting functions resolve on first access (PEP 562; `_lazy.py`). A core install
+  without plotnine behaves as before (plot names absent from `__all__`).
+- The `LABB`/`UABB`/`ZWI` flag columns are built by lookup instead of `np.where(...).astype(object)`: `bk.ci(..., method="wilson")` at
+  n = 10,000 went from ~4 ms to ~0.5 ms (n = 100: ~250 to ~150 us).
+- Sterne (n = 1000: 6.7 s to 0.28 s), full-table betting (n = 1000: ~80 s to ~16 s, numba `prange`, bit-identical for a seed) and
+  `cialr`/`ciatw`/`cialt`/`ciclt`/`cictw` (vectorised, verified against the old loops).
 ### Added — extended methods, planning, benchmarks (2026-10-01)
 - `binomcikit.ext`: 34 registry methods (`methods.py`; hooked into `ci()`, Plotly and the access layer) — closed-form, bounds
   (Hoeffding/Bernstein/Chernoff), likelihood (r\*, Cressie–Read), exact (Sterne, Blyth–Still–Casella, length-optimal),

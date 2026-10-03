@@ -28,6 +28,7 @@ binomial proportion, `binomcikit` is the most complete of the four — it is a f
 | Evaluate an interval (coverage, length, p-confidence, error) | — | — | ✅ | ✅ |
 | Audit an interval against the *locally correct* criterion (2024) | — | — | — | ✅ |
 | Exact **Blaker / Sterne / Blyth–Still–Casella / OLC** | — | — | Blaker ✗ | ✅ |
+| Difference of two proportions | — | 4 methods (`confint_proportions_2indep`) | — | 7 methods ({doc}`methods/two_proportions`) |
 | Anytime-valid / betting confidence sequences | — | — | — | ✅ |
 | PASS / SAS-style sample size, width & power planning | — | partial | — | ✅ ({doc}`planning`) |
 | Bayesian toolbox (credible intervals, Bayes factor, prediction) | partial | — | partial | ✅ |
