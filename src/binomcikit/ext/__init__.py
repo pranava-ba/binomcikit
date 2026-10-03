@@ -55,6 +55,8 @@ from .bounds import (
     ciklx,
 )
 from .closed_form import (
+    ciarcsineshift,
+    ciarcsineshiftx,
     cicloglog,
     cicloglogx,
     cifreemantukey,

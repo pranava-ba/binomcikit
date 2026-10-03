@@ -8,9 +8,9 @@ kernelspec:
   name: python3
 ---
 
-# Extended methods — 34 more intervals
+# Extended methods — 35 more intervals
 
-The original port covers the twelve methods of R's `proportion`. These pages document **34 more**, every
+The original port covers the twelve methods of R's `proportion`. These pages document **35 more**, every
 one added from a primary source or a reference implementation and verified against an independent oracle —
 a published table, a worked example in the paper, an exact property, or another package. Each is available
 through the same call, `bk.ci(x, n, method="<name>")`, and — because every method just produces limits —

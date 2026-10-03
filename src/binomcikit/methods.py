@@ -89,6 +89,18 @@ _SPECS = [
         aliases=("c-log-log",),
     ),
     MethodSpec(
+        "arcsine-shifted",
+        "Arcsine, 3/8-shifted centre",
+        "transformed Wald",
+        "LASH",
+        "UASH",
+        closed_form.ciarcsineshift,
+        closed_form.ciarcsineshiftx,
+        "approximate",
+        "Anscombe 1948 shift; DescTools `BinomCI` / DBCI `arcsine`",
+        aliases=("arcsine-3/8", "arcsine-dbci"),
+    ),
+    MethodSpec(
         "probit",
         "Probit",
         "transformed Wald",

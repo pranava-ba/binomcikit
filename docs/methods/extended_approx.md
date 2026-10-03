@@ -27,6 +27,7 @@ bk.limits(20, 0.05, "lr-star")            # just the two arrays — the fast pat
 | `"cressie-read"` (`lam=`) | the {term}`power divergence` family; `lam=1` *is* Wilson, `lam=0` *is* the LR interval | you want a one-parameter dial between Wilson and LR | `lam > -1` |
 | `"score-cc"` | Wilson with continuity correction (Newcombe 4; PASS's "score-cc") | you need a *strictly conservative* approximation | the original `cicsc` port leaves x = 0, n uncorrected — this one does not |
 | `"arcsine-anscombe"` | arcsine with continuity **and** Anscombe's correction (Pires & Amado XVII) | strictly conservative, essentially Clopper–Pearson's length | `clamp=False` follows the printed formula literally |
+| `"arcsine-shifted"` | arcsine with an Anscombe 3/8-shifted centre, `(x + 3/8)/(n + 3/4)`, and width `z/(2√n)` | the arcsine used by DescTools and DBCI | not clamped at x = 0 / n, like the plain arcsine |
 | `"modified-wilson"`, `"modified-jeffreys"` | Brown–Cai–DasGupta's boundary repairs | Wilson/Jeffreys behave oddly at x = 1, 2, n−1, n−2 | follows R `DescTools` exactly |
 | `"pratt"` | Pratt's closed-form approximation to Clopper–Pearson | a CP-like interval with no beta quantiles | tracks exact CP to ≤ 1e-3 |
 | `"soc"` | Cai's second-order-corrected score | the most symmetric one-sided coverage among approximations | ported from `binGroup` |

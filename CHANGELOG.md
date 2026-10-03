@@ -6,15 +6,18 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
 ## [Unreleased] — Phase 1 (in progress)
 ### Added — two proportions, performance gate, property tests (2026-10-03)
 - **Difference of two independent proportions** (`binomcikit.twoprop`: `diff_interval`, `diff_ci`, `list_diff_methods`): Wald, Wald-cc,
-  Agresti–Caffo, Newcombe hybrid score (±cc), Mee and Miettinen–Nurminen score intervals. Wald/Agresti–Caffo/Newcombe agree with
+  Agresti–Caffo, Newcombe hybrid score (±cc), Mee and Miettinen–Nurminen score intervals, plus Haldane, Jeffreys–Perks, Hauck–Anderson,
+  Brown–Li and the Miettinen–Nurminen/Brown–Li blend (12 methods). Wald/Agresti–Caffo/Newcombe agree with
   `statsmodels` to 1e-12, the `-cc` forms with DBCI to 1e-9, and both score methods solve their defining equation to ~1e-15
   (DBCI's score limits satisfy it only to 1e-4–1e-5; `statsmodels`' `score` option raises on ordinary tables such as 7/10 vs 3/12).
-  Also reproduces 58 published intervals (Newcombe 1998 Table II as recast in the SAS paper, plus SAS output) to 4 decimals. Page `docs/methods/two_proportions.md`; ~90 tests in `tests/test_twoprop.py` (oracles, equation residual, Hypothesis properties, exact coverage).
+  Also reproduces 88 published intervals (Newcombe 1998 Table II as recast in the SAS paper, plus SAS output) to 4 decimals. Page `docs/methods/two_proportions.md`; ~90 tests in `tests/test_twoprop.py` (oracles, equation residual, Hypothesis properties, exact coverage).
 - `benchmarks/regression_check.py`, `benchmarks/baseline.json` and a weekly `.github/workflows/benchmark.yml` that fails when a tracked
   call is more than 2x slower than the baseline (timings are divided by an in-process calibration workload). `.pre-commit-config.yaml`.
 - Property tests `tests/test_limits_ci_property.py` (`limits` == `ci` table == `interval` row for random n/alpha/method) and
   `tests/test_lazy_plotting.py`. `benchmarks/competitors/` (re-runnable competitor measurements; report in `planning/COMPETITOR_REPOS.md`).
 ### Changed
+- New registry method `"arcsine-shifted"` (3/8-shifted-centre arcsine, the one DescTools and DBCI call `arcsine`): reproduces DescTools' recorded
+  84/101 limits to 1e-15 and DBCI's for every x.
 - **`import binomcikit` no longer imports plotnine**: the plotting functions resolve on first access (PEP 562; `_lazy.py`). A core install
   without plotnine behaves as before (plot names absent from `__all__`).
 - The `LABB`/`UABB`/`ZWI` flag columns are built by lookup instead of `np.where(...).astype(object)`: `bk.ci(..., method="wilson")` at

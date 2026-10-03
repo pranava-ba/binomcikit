@@ -3,15 +3,20 @@
 For ``X1 ~ Bin(n1, p1)`` and ``X2 ~ Bin(n2, p2)`` the interval is for ``delta = p1 - p2``. The
 methods are the ones recommended in Newcombe (1998) and Fagerland, Lydersen & Laake (2011):
 
-========================  ===============================================================
-``wald``                  ``d +- z * sqrt(p1 q1 / n1 + p2 q2 / n2)``
-``wald-cc``               Wald widened by the Fleiss continuity correction ``(1/n1 + 1/n2) / 2``
-``agresti-caffo``         Wald after adding one success and one failure to each sample
-``newcombe``              hybrid score: the two Wilson intervals combined (Newcombe's method 10)
-``newcombe-cc``           the same from continuity-corrected Wilson intervals (method 11)
-``mee``                   score interval, restricted MLE variance (Mee 1984)
-``miettinen-nurminen``    ``mee`` with the ``N / (N - 1)`` variance factor (Miettinen & Nurminen 1985)
-========================  ===============================================================
+=============================  ===========================================================
+``wald``                       ``d +- z * sqrt(p1 q1 / n1 + p2 q2 / n2)``
+``wald-cc``                    Wald widened by the Fleiss continuity correction ``(1/n1 + 1/n2) / 2``
+``agresti-caffo``              Wald after adding one success and one failure to each sample
+``newcombe``                   hybrid score: the two Wilson intervals combined (Newcombe's method 10)
+``newcombe-cc``                the same from continuity-corrected Wilson intervals (method 11)
+``mee``                        score interval, restricted MLE variance (Mee 1984)
+``miettinen-nurminen``         ``mee`` with the ``N / (N - 1)`` variance factor (Miettinen & Nurminen 1985)
+``haldane``                    Haldane's interval (Newcombe's method 3)
+``jeffreys-perks``             Haldane's form with Jeffreys-Perks shrunken proportions (method 4)
+``hauck-anderson``             Wald with ``n - 1`` variances and a ``1 / (2 min(n1, n2))`` correction
+``brown-li``                   Wald around the Jeffreys-shrunken proportions ``(x + 1/2) / (n + 1)``
+``miettinen-nurminen-brown-li``  ``2/3`` of the MN limits plus ``1/3`` of the Brown-Li limits
+=============================  ===========================================================
 
 Every method returns limits clipped to ``[-1, 1]`` (a difference of proportions cannot leave it).
 :func:`diff_interval` returns the two limits, :func:`diff_ci` a one-row table, and
@@ -88,6 +93,54 @@ def _newcombe(x1, n1, x2, n2, z, cc=False):
     )
 
 
+def _haldane(x1, n1, x2, n2, z, jeffreys_perks=False):
+    """Haldane's (and, with shrunken proportions, Jeffreys-Perks') interval: ``theta* +- w``."""
+    p1, p2 = x1 / n1, x2 / n2
+    if jeffreys_perks:
+        psi = 0.5 * ((x1 + 0.5) / (n1 + 1) + (x2 + 0.5) / (n2 + 1))
+    else:
+        psi = 0.5 * (p1 + p2)
+    d = p1 - p2
+    u = (1 / n1 + 1 / n2) / 4
+    v = (1 / n1 - 1 / n2) / 4
+    z2 = z * z
+    den = 1 + z2 * u
+    centre = (d + z2 * v * (1 - 2 * psi)) / den
+    inside = (
+        u * (4 * psi * (1 - psi) - d * d)
+        + 2 * v * (1 - 2 * psi) * d
+        + 4 * z2 * u * u * (1 - psi) * psi
+        + z2 * v * v * (1 - 2 * psi) ** 2
+    )
+    half = z / den * math.sqrt(max(inside, 0.0))
+    return centre - half, centre + half
+
+
+def _hauck_anderson(x1, n1, x2, n2, z):
+    if n1 < 2 or n2 < 2:
+        raise ValueError("'hauck-anderson' needs at least 2 trials in each sample")
+    p1, p2 = x1 / n1, x2 / n2
+    se = math.sqrt(p1 * (1 - p1) / (n1 - 1) + p2 * (1 - p2) / (n2 - 1))
+    half = 1 / (2 * min(n1, n2)) + z * se
+    d = p1 - p2
+    return d - half, d + half
+
+
+def _brown_li(x1, n1, x2, n2, z):
+    """Brown & Li's Jeffreys interval: Wald around the Jeffreys-shrunken proportions."""
+    p1, p2 = (x1 + 0.5) / (n1 + 1), (x2 + 0.5) / (n2 + 1)
+    se = math.sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2)
+    d = p1 - p2
+    return d - z * se, d + z * se
+
+
+def _mn_brown_li(x1, n1, x2, n2, z, k=2.0 / 3.0):
+    """Laud & Dane's weighted average ``k * MN + (1 - k) * Brown-Li`` of the two limits."""
+    lo_mn, hi_mn = _score_limits(x1, n1, x2, n2, z, True)
+    lo_bl, hi_bl = _brown_li(x1, n1, x2, n2, z)
+    return k * lo_mn + (1 - k) * lo_bl, k * hi_mn + (1 - k) * hi_bl
+
+
 # ------------------------------------------------------------------------------ score methods
 def _restricted_mle(x1, n1, x2, n2, delta):
     """MLE of ``(p1, p2)`` under ``p1 - p2 = delta``: the log-likelihood is concave in ``p1``."""
@@ -152,6 +205,11 @@ def _kernels(z):
         "newcombe-cc": lambda a, b, c, d: _newcombe(a, b, c, d, z, cc=True),
         "mee": lambda a, b, c, d: _score_limits(a, b, c, d, z, False),
         "miettinen-nurminen": lambda a, b, c, d: _score_limits(a, b, c, d, z, True),
+        "haldane": lambda a, b, c, d: _haldane(a, b, c, d, z),
+        "jeffreys-perks": lambda a, b, c, d: _haldane(a, b, c, d, z, jeffreys_perks=True),
+        "hauck-anderson": lambda a, b, c, d: _hauck_anderson(a, b, c, d, z),
+        "brown-li": lambda a, b, c, d: _brown_li(a, b, c, d, z),
+        "miettinen-nurminen-brown-li": lambda a, b, c, d: _mn_brown_li(a, b, c, d, z),
     }
 
 
@@ -187,6 +245,21 @@ _CATALOGUE = [
         "Miettinen-Nurminen score",
         "root-finding",
         "Miettinen & Nurminen 1985, Stat. Med. 4",
+    ),
+    ("haldane", "Haldane", "closed-form", "Newcombe 1998, Stat. Med. 17 (method 3)"),
+    ("jeffreys-perks", "Jeffreys-Perks", "closed-form", "Newcombe 1998, Stat. Med. 17 (method 4)"),
+    ("hauck-anderson", "Hauck-Anderson", "closed-form", "Hauck & Anderson 1986, Am. Stat. 40"),
+    (
+        "brown-li",
+        "Brown-Li (Jeffreys)",
+        "closed-form",
+        "Brown & Li 2005, J. Stat. Plan. Inference 130",
+    ),
+    (
+        "miettinen-nurminen-brown-li",
+        "Miettinen-Nurminen / Brown-Li blend",
+        "root-finding",
+        "Laud & Dane 2014 (k = 2/3 weighting of the two limits)",
     ),
 ]
 

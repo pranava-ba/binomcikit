@@ -22,7 +22,7 @@ see {doc}`../method_selection`.
 | {doc}`Jeffreys <bayes>` | `"jeffreys"` | Bayesian | Bayesian with the Beta(½, ½) prior; excellent coverage |
 | {doc}`Bootstrap <bootstrap>` ⭐ | `"boot"` | simulation | **new** — smooth resampling; fixes the naive bootstrap's collapse at x = 0, n |
 
-**34 more methods** — {doc}`extended` (the hub), {doc}`extended_approx`, {doc}`extended_exact` and {doc}`betting` — add Pratt, Sterne, Blyth–Still–Casella, the optimal locally correct interval, higher-order likelihood, coverage-adjusted Clopper–Pearson, the Pires & Amado family, concentration bounds and anytime-valid betting intervals, every one verified against an independent oracle.
+**35 more methods** — {doc}`extended` (the hub), {doc}`extended_approx`, {doc}`extended_exact` and {doc}`betting` — add Pratt, Sterne, Blyth–Still–Casella, the optimal locally correct interval, higher-order likelihood, coverage-adjusted Clopper–Pearson, the Pires & Amado family, concentration bounds and anytime-valid betting intervals, every one verified against an independent oracle.
 
 **Two groups instead of one?** {doc}`two_proportions` gives intervals for the difference of two independent proportions (Newcombe, Miettinen–Nurminen, Mee, Agresti–Caffo, Wald).
 

@@ -144,7 +144,7 @@ Thirteen interval methods, each with a two-part documentation page (*Use it* / *
 Each also has adjusted (`h=`) and continuity-corrected (`c=`) variants where applicable, plus the four
 metric families and the Bayesian toolbox.
 
-**Extended catalogue (34 registry methods, `bk.list_methods()`)** — Sterne, Blyth–Still–Casella, length-optimal (Dümbgen/Garthwaite),
+**Extended catalogue (35 registry methods, `bk.list_methods()`)** — Sterne, Blyth–Still–Casella, length-optimal (Dümbgen/Garthwaite),
 Pires & Amado's twenty, higher-order likelihood r\*, Cressie–Read, Hoeffding/Bernstein/Chernoff bounds, randomised and
 coverage-adjusted Clopper–Pearson, and anytime-valid **betting** intervals. Each was checked against a published table, worked
 example or independent reference code before it was added: `docs/methods/extended.md`. Not implemented because the primary text

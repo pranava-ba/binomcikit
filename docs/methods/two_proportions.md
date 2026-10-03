@@ -59,6 +59,11 @@ broadcast together are accepted.
 | `"agresti-caffo"` | add one success and one failure to each group, then Wald | a very simple, well-behaved closed form |
 | `"wald"` | the textbook normal-approximation interval | teaching baseline only |
 | `"wald-cc"` | Wald plus the Fleiss {term}`continuity correction` | a conservative Wald |
+| `"haldane"` | Haldane's closed form (Newcombe's method 3) | a good closed form that handles zero cells |
+| `"jeffreys-perks"` | Haldane's form with Jeffreys–Perks shrunken proportions (method 4) | as above, slightly more conservative at the edges |
+| `"hauck-anderson"` | Wald with `n − 1` variances and a `1/(2·min(n1, n2))` correction | needs at least 2 trials per group |
+| `"brown-li"` | Wald around the Jeffreys-shrunken proportions `(x + ½)/(n + 1)` | simple and well behaved at the boundaries |
+| `"miettinen-nurminen-brown-li"` | two-thirds of the Miettinen–Nurminen limits plus one-third of the Brown–Li limits (Laud & Dane) | a blend that trades their errors against each other |
 
 ### What you get back
 `diff_interval` returns `(lower, upper)`. `diff_ci` returns a one-row `DataFrame` with `method`,
@@ -166,9 +171,8 @@ coverage **table** rather than a figure; for a figure of one method's whole cove
 the single-proportion tools in {doc}`../evaluating_intervals`.
 
 ### Verified against
-* **Published tables:** 58 intervals from Newcombe (1998), Table II (as recast in the SAS paper *Constructing Confidence Intervals for the
-  Differences of Binomial Proportions in SAS*) and SAS output, for Wald, Wald-cc, Agresti–Caffo, Newcombe (±cc), Mee and
-  Miettinen–Nurminen on eight tables including the boundary ones (0/10 vs 0/20, 10/10 vs 0/10), all within the four printed
+* **Published tables:** 88 intervals from Newcombe (1998), Table II (as recast in the SAS paper *Constructing Confidence Intervals for the
+  Differences of Binomial Proportions in SAS*) and SAS output, for twelve methods (all of those above) on eight tables including the boundary ones (0/10 vs 0/20, 10/10 vs 0/10), all within the four printed
   decimals (`tests/test_twoprop.py::test_matches_published_tables`).
 * **Software manuals:** the SAS paper and the PASS manual print the same definitions (Mee: `λ = 1`; Miettinen–Nurminen: `λ = N/(N−1)`
   and the closed-form constrained estimate; Newcombe's methods 10 and 11).

@@ -365,3 +365,44 @@ def test_soc_formula_and_contains_phat():
     assert df.LSOC[x] == pytest.approx(min(mid - half, p))
     assert df.USOC[x] == pytest.approx(max(mid + half, p))
     assert np.all(df.LSOC <= np.arange(n + 1) / n + 1e-12)
+
+
+def test_arcsine_shifted_matches_desctools_and_dbci():
+    """DescTools ``BinomCI(84, 101, method="arcsine")`` (recorded in DBCI's test data, R output) and the DBCI package."""
+    lo, hi = b.interval(84, 101, 0.05, "arcsine-shifted", clamp=False)
+    assert lo == pytest.approx(0.750073773401545, abs=1e-12)
+    assert hi == pytest.approx(0.895920193052064, abs=1e-12)
+    dbci = pytest.importorskip("diff_binom_confint")
+    for n in (20, 101):
+        lows, highs = b.limits(n, 0.05, "arcsine-shifted", clamp=False)
+        for x in range(n + 1):
+            r = dbci.compute_confidence_interval(x, n, 0.95, "arcsine")
+            if not np.isnan(r.lower_bound):
+                assert lows[x] == pytest.approx(r.lower_bound, abs=1e-12)
+            if not np.isnan(r.upper_bound):
+                assert highs[x] == pytest.approx(r.upper_bound, abs=1e-12)
+
+
+# DescTools::BinomCI(84, 101, method = m) at 95% (R output, as stored in DBCI's test data): an independent oracle
+DESCTOOLS_84_101 = {
+    "wilson": (0.746887910813618, 0.892172254445884),
+    "wald": (0.758715556204123, 0.90465078042954),
+    "agresti-coull": (0.745915064553858, 0.893145100705643),
+    "jeffreys": (0.749873617953982, 0.894811373510988),
+    "modified-wilson": (0.746887910813618, 0.892172254445884),
+    "modified-jeffreys": (0.749873617953982, 0.894811373510988),
+    "exact": (0.744242147979102, 0.898781606243792),
+    "logit": (0.745803605584389, 0.892722014912055),
+    "midp": (0.749191662254284, 0.895391744074331),
+    "lr": (0.750858699977225, 0.895899772033449),
+    "blaker": (0.744842147979099, 0.894571606243811),
+}
+
+
+@pytest.mark.parametrize("method", sorted(DESCTOOLS_84_101))
+def test_matches_desctools_binomci_at_84_of_101(method):
+    lo, hi = b.interval(84, 101, 0.05, method)
+    # R's uniroot default tolerance is ~1.2e-4, so the root-found methods agree to that, the rest to 1e-6
+    tol = 1e-4 if method in ("midp", "blaker", "lr") else 1e-6
+    assert lo == pytest.approx(DESCTOOLS_84_101[method][0], abs=tol), method
+    assert hi == pytest.approx(DESCTOOLS_84_101[method][1], abs=tol), method

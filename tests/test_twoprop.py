@@ -6,7 +6,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import pytest
-from hypothesis import HealthCheck, given, settings
+from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
 from scipy import stats
 
@@ -93,7 +93,7 @@ def test_aliases_and_catalogue():
     assert bk.diff_interval(*t, 0.05, "hybrid-score") == bk.diff_interval(*t, 0.05, "newcombe")
     cat = bk.list_diff_methods()
     assert isinstance(cat, pd.DataFrame) and {"wald", "newcombe", "mee"} <= set(ALL)
-    assert len(cat) == 7
+    assert len(cat) == 12
 
 
 def test_diff_ci_table():
@@ -145,6 +145,7 @@ SETTINGS = dict(max_examples=60, deadline=None, suppress_health_check=[HealthChe
 def test_interval_properties(n1, n2, alpha, method, data):
     x1 = data.draw(st.integers(0, n1))
     x2 = data.draw(st.integers(0, n2))
+    assume(not (method == "hauck-anderson" and min(n1, n2) < 2))
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         lo, hi = bk.diff_interval(x1, n1, x2, n2, alpha, method)
@@ -153,7 +154,15 @@ def test_interval_properties(n1, n2, alpha, method, data):
     # swapping the samples negates the difference, so it mirrors the interval
     assert (slo, shi) == pytest.approx((-hi, -lo), abs=1e-9)
     d = x1 / n1 - x2 / n2
-    if method not in ("wald", "wald-cc", "agresti-caffo"):  # these can exclude the estimate
+    # the Wald-type and shrunken-centre intervals can exclude the raw estimate
+    if method not in (
+        "wald",
+        "wald-cc",
+        "agresti-caffo",
+        "hauck-anderson",
+        "brown-li",
+        "miettinen-nurminen-brown-li",
+    ):
         assert lo - 1e-9 <= d <= hi + 1e-9
 
 
@@ -234,24 +243,32 @@ def test_extreme_tables_at_large_n_do_not_fail():
 # the DBCI package (MIT licence). They are independent of every implementation compared in this repository. A blank
 # entry in the source (a limit beyond +-1) is recorded here as the clipped bound.
 PUBLISHED = [
+    ((0, 10, 0, 10), "haldane", 0.0, 0.0),
+    ((0, 10, 0, 10), "jeffreys-perks", -0.1672, 0.1672),
     ((0, 10, 0, 10), "mee", -0.2775, 0.2775),
     ((0, 10, 0, 10), "miettinen-nurminen", -0.2879, 0.2879),
     ((0, 10, 0, 10), "newcombe", -0.2775, 0.2775),
     ((0, 10, 0, 10), "newcombe-cc", -0.3445, 0.3445),
     ((0, 10, 0, 10), "wald", 0.0, 0.0),
     ((0, 10, 0, 10), "wald-cc", -0.1, 0.1),
+    ((0, 10, 0, 20), "haldane", 0.0, 0.0839),
+    ((0, 10, 0, 20), "jeffreys-perks", -0.0965, 0.1746),
     ((0, 10, 0, 20), "mee", -0.1611, 0.2775),
     ((0, 10, 0, 20), "miettinen-nurminen", -0.1658, 0.2844),
     ((0, 10, 0, 20), "newcombe", -0.1611, 0.2775),
     ((0, 10, 0, 20), "newcombe-cc", -0.2005, 0.3445),
     ((0, 10, 0, 20), "wald", 0.0, 0.0),
     ((0, 10, 0, 20), "wald-cc", -0.075, 0.075),
+    ((5, 56, 0, 29), "haldane", -0.0039, 0.1463),
+    ((5, 56, 0, 29), "jeffreys-perks", -0.0165, 0.1595),
     ((5, 56, 0, 29), "mee", -0.0313, 0.1926),
     ((5, 56, 0, 29), "miettinen-nurminen", -0.0326, 0.1933),
     ((5, 56, 0, 29), "newcombe", -0.0381, 0.1926),
     ((5, 56, 0, 29), "newcombe-cc", -0.0667, 0.2037),
     ((5, 56, 0, 29), "wald", 0.0146, 0.164),
     ((5, 56, 0, 29), "wald-cc", -0.0116, 0.1901),
+    ((6, 7, 2, 7), "haldane", 0.0537, 0.843),
+    ((6, 7, 2, 7), "jeffreys-perks", 0.0524, 0.8443),
     ((6, 7, 2, 7), "mee", 0.0544, 0.8478),
     ((6, 7, 2, 7), "miettinen-nurminen", 0.0342, 0.8534),
     ((6, 7, 2, 7), "newcombe", 0.0582, 0.8062),
@@ -259,12 +276,19 @@ PUBLISHED = [
     ((6, 7, 2, 7), "wald", 0.1481, 0.9947),
     ((6, 7, 2, 7), "wald-cc", 0.0053, 1.0),
     ((9, 10, 3, 10), "agresti-caffo", 0.16, 0.84),
+    ((9, 10, 3, 10), "brown-li", 0.1869, 0.904),
+    ((9, 10, 3, 10), "haldane", 0.1777, 0.8289),
+    ((9, 10, 3, 10), "hauck-anderson", 0.1922, 1.0),
+    ((9, 10, 3, 10), "jeffreys-perks", 0.176, 0.8306),
     ((9, 10, 3, 10), "mee", 0.1821, 0.837),
     ((9, 10, 3, 10), "miettinen-nurminen", 0.17, 0.8406),
+    ((9, 10, 3, 10), "miettinen-nurminen-brown-li", 0.1756, 0.8618),
     ((9, 10, 3, 10), "newcombe", 0.1705, 0.809),
     ((9, 10, 3, 10), "newcombe-cc", 0.1013, 0.8387),
     ((9, 10, 3, 10), "wald", 0.2605, 0.9395),
     ((9, 10, 3, 10), "wald-cc", 0.1605, 1.0),
+    ((10, 10, 0, 10), "haldane", 0.6777, 1.0),
+    ((10, 10, 0, 10), "jeffreys-perks", 0.6777, 1.0),
     ((10, 10, 0, 10), "mee", 0.6777, 1.0),
     ((10, 10, 0, 10), "miettinen-nurminen", 0.6636, 1.0),
     ((10, 10, 0, 10), "newcombe", 0.6075, 1.0),
@@ -272,22 +296,37 @@ PUBLISHED = [
     ((10, 10, 0, 10), "wald", 1.0, 1.0),
     ((10, 10, 0, 10), "wald-cc", 0.9, 1.0),
     ((10, 10, 0, 20), "agresti-caffo", 0.6922, 1.0),
+    ((10, 10, 0, 20), "brown-li", 0.7854, 1.0),
+    ((10, 10, 0, 20), "haldane", 0.7482, 1.0),
+    ((10, 10, 0, 20), "hauck-anderson", 0.95, 1.0),
+    ((10, 10, 0, 20), "jeffreys-perks", 0.7431, 1.0),
     ((10, 10, 0, 20), "mee", 0.7225, 1.0),
     ((10, 10, 0, 20), "miettinen-nurminen", 0.7156, 1.0),
+    ((10, 10, 0, 20), "miettinen-nurminen-brown-li", 0.7389, 1.0),
     ((10, 10, 0, 20), "newcombe", 0.6791, 1.0),
     ((10, 10, 0, 20), "newcombe-cc", 0.6014, 1.0),
     ((10, 10, 0, 20), "wald", 1.0, 1.0),
     ((10, 10, 0, 20), "wald-cc", 0.925, 1.0),
     ((56, 70, 48, 80), "agresti-caffo", 0.0525, 0.3358),
+    ((56, 70, 48, 80), "brown-li", 0.054, 0.34),
+    ((56, 70, 48, 80), "haldane", 0.0535, 0.3351),
+    ((56, 70, 48, 80), "hauck-anderson", 0.0494, 0.3506),
+    ((56, 70, 48, 80), "jeffreys-perks", 0.0531, 0.3355),
     ((56, 70, 48, 80), "mee", 0.0533, 0.3377),
     ((56, 70, 48, 80), "miettinen-nurminen", 0.0528, 0.3382),
+    ((56, 70, 48, 80), "miettinen-nurminen-brown-li", 0.0532, 0.3388),
     ((56, 70, 48, 80), "newcombe", 0.0524, 0.3339),
     ((56, 70, 48, 80), "newcombe-cc", 0.0428, 0.3422),
     ((56, 70, 48, 80), "wald", 0.0575, 0.3425),
     ((56, 70, 48, 80), "wald-cc", 0.0441, 0.3559),
     ((84, 101, 89, 105), "agresti-caffo", -0.1168, 0.085),
+    ((84, 101, 89, 105), "brown-li", -0.117, 0.0852),
+    ((84, 101, 89, 105), "haldane", -0.1152, 0.0834),
+    ((84, 101, 89, 105), "hauck-anderson", -0.1216, 0.0898),
+    ((84, 101, 89, 105), "jeffreys-perks", -0.116, 0.0843),
     ((84, 101, 89, 105), "mee", -0.1188, 0.0857),
     ((84, 101, 89, 105), "miettinen-nurminen", -0.1191, 0.086),
+    ((84, 101, 89, 105), "miettinen-nurminen-brown-li", -0.1184, 0.0857),
     ((84, 101, 89, 105), "newcombe", -0.1177, 0.0851),
     ((84, 101, 89, 105), "newcombe-cc", -0.1245, 0.0918),
     ((84, 101, 89, 105), "wald", -0.1162, 0.0843),

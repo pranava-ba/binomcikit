@@ -178,6 +178,50 @@ def ciprobitx(x, n, alp):
     return single(ciprobit(n, alp), check_x(x, n), "PRB")
 
 
+def ciarcsineshift(n, alp, clamp=True):
+    r"""Arcsine interval with a 3/8-shifted centre, for every ``x``.
+
+    :math:`\sin^2\!\big(\arcsin\sqrt{\tilde p} \pm z/(2\sqrt n)\big)` with
+    :math:`\tilde p = (x + 3/8)/(n + 3/4)` (the variance-stabilising shift of Anscombe 1948), and
+    the plain :math:`1/(2\sqrt n)` width. This is the "arcsine" of DescTools' ``BinomCI`` and of the
+    DBCI package, whose recorded output at 84/101 it reproduces; it differs from the plain
+    ``"arcsine"`` interval of R ``proportion`` (centre :math:`\hat p`) and from Pires & Amado's
+    ``"arcsine-anscombe"`` (continuity correction, different width). Like those, the angle is not
+    clamped, so the ``x = 0`` and ``x = n`` rows are not exact one-sided limits.
+
+    Parameters
+    ----------
+    n, alp : see :func:`binomcikit.cisc`.
+    clamp : bool, default True
+        Pin the shifted angle into ``[0, pi/2]``, so the limits stay inside ``[0, 1]`` and the interval
+        contains ``x / n`` (the lower limit is 0 at ``x = 0``, the upper 1 at ``x = n``). ``clamp=False``
+        is the formula as printed and as DescTools and DBCI compute it, where ``sin^2`` folds back near the
+        boundaries (lower limit 0.032 at ``n = 5, x = 0``).
+
+    Returns
+    -------
+    pandas.DataFrame
+        ``x``, ``LASH``, ``UASH`` and the flags ``LABB``, ``UABB``, ``ZWI``.
+    """
+    n = validate(n, alp)
+    z = _z(alp)
+    x = np.arange(n + 1)
+    centre = np.arcsin(np.sqrt((x + 0.375) / (n + 0.75)))
+    half = z / (2.0 * np.sqrt(n))
+    if clamp:
+        lower = np.sin(np.clip(centre - half, 0.0, np.pi / 2)) ** 2
+        upper = np.sin(np.clip(centre + half, 0.0, np.pi / 2)) ** 2
+    else:
+        lower, upper = np.sin(centre - half) ** 2, np.sin(centre + half) ** 2
+    return table("ASH", lower, upper)
+
+
+def ciarcsineshiftx(x, n, alp, clamp=True):
+    """Shifted-centre arcsine interval for a single observed ``x``."""
+    n = validate(n, alp)
+    return single(ciarcsineshift(n, alp, clamp=clamp), check_x(x, n), "ASH")
+
+
 # ------------------------------------------------- Brown-Cai-DasGupta modifications
 def cimodwilson(n, alp):
     r"""Modified Wilson interval (Brown, Cai & DasGupta 2001), for every ``x``.

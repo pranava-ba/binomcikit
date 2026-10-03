@@ -16,7 +16,7 @@
    distinct two-proportion methods** (20 names; `wilson`, `wilson-cc`, `score`, `score-cc` and `brown-li-jeffrey` are aliases), the
    same in PyPI 0.1.0 and in `main` (commit `39b0fdb`, 2026-09-02; last push 2026-09-28). The earlier note of "16" was right; the
    difference-of-proportions half had not been recorded. binomcikit had **no two-proportion inference**; as of this pass it has
-   seven (section 7, item 1).
+   twelve (section 7, item 1).
 2. **Everyone we compared against is accurate to ~1e-16 on Wilson and Clopper–Pearson, except `binoculars`** (about 1e-6 to 8e-6
    because its default `z` is the hard-coded 1.96; and its Clopper–Pearson lower limit is NaN at `x = 0`). Accuracy is not where we
    differ; scope, evaluation tooling and speed are.
@@ -187,7 +187,7 @@ likelihood-ratio agree to ≤ 5e-13 (interior x). `PyPI 0.1.0` and `main` gave i
   takes ~260 ms vs 2–3 ms for us); the defects above; 17 dependencies incl. `openpyxl`, `jinja2`; slower import (1.51 s vs 1.22 s).
 * **Opportunities (for us):** it has no evaluation layer (coverage, p-confidence, aberrations), no planning, no betting, no Bayesian
   toolbox, no exact Sterne/BSC/OLC.
-* **Threats:** it covers the difference-of-proportions problem more broadly (15 distinct methods vs our 7).
+* **Threats:** it covers the difference-of-proportions problem more broadly (15 distinct methods vs our 12).
 * **Where it beats us:** more two-proportion methods (incl. Wang's exact interval, Haldane, Brown–Li, Carlin–Louis); note its `score` is an alias of Newcombe's hybrid, while ours (like statsmodels') is Miettinen–Nurminen; MIT licence;
   active release tooling; its arcsine variant.
 
@@ -249,7 +249,7 @@ likelihood-ratio agree to ≤ 5e-13 (interior x). `PyPI 0.1.0` and `main` gave i
 
 | # | Item | Status (2026-10-03) |
 |--:|---|---|
-| 1 | **Two-proportion intervals** | **Done:** `bk.diff_interval` / `diff_ci` / `list_diff_methods` — Wald, Wald-cc, Agresti–Caffo, Newcombe (±cc), Mee, Miettinen–Nurminen; 30 tests; matches statsmodels (1e-12) and DBCI (1e-9, score methods exact where DBCI is not). Still missing vs DBCI: Haldane, Jeffreys–Perks, Brown–Li (and its Miettinen–Nurminen variant), Carlin–Louis, Hauck–Anderson, true-profile, Wang's exact interval (8 of DBCI's 15 distinct methods) |
+| 1 | **Two-proportion intervals** | **Done:** `bk.diff_interval` / `diff_ci` / `list_diff_methods`: Wald, Wald-cc, Agresti–Caffo, Newcombe (±cc), Mee, Miettinen–Nurminen, Haldane, Jeffreys–Perks, Hauck–Anderson, Brown–Li, Miettinen–Nurminen/Brown–Li blend (12). 88 published values (Newcombe Table II as recast in the SAS paper, plus SAS output) reproduced to 4 decimals; matches statsmodels (1e-12) and DBCI (1e-9). Still missing vs DBCI (3 distinct): the exact-test-based Santner–Snell, Chan–Zhang and Agresti–Min, Wang's exact interval, and the profile-likelihood `true-profile`/`exact`/`mid-p` forms (Newcombe methods 7–9) |
 | 2 | Lazy-import plotnine to cut import time | **Done:** 1.88 → 1.54 s (paired min); now at the pandas + scipy.stats floor (~1.2 s). Going lower needs dropping pandas/`scipy.stats` from the import path (25 modules import it) |
 | 3 | Cut `bk.ci()` DataFrame overhead | **Partly done:** flag columns by lookup (Wilson n = 10,000: ~4 ms → 0.5 ms; n = 100: ~250 → ~150–170 µs). The remaining gap to statsmodels at small n is pandas frame construction (~75% of `ci()`); `bk.limits()` is the fast path |
 | 4 | Release a real PyPI version (3.1.0) | **Not done — needs your decision** (PyPI 0.0.5 is 20 months old; 13 downloads/month vs DBCI 74) |
