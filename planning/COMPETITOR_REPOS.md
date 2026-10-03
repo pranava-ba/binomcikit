@@ -164,8 +164,15 @@ compared numerically.
 | binoculars 0.1.3 | `binomial_confidence(0, n, method="clopper-pearson")` returns a NaN lower limit (should be 0); `z` defaults to the hard-coded 1.96 | reproduced; ~1e-6–8e-6 off the exact 95% limits |
 | statsmodels 0.14.5 / 0.15.0 | two-proportion `score`: wrong constrained MLE (`count0` for `nobs0`) | **already fixed on `main`** (issue #10269); not for us to report |
 
-Carried over from earlier sessions and **not re-derived today**, so not drafted: DBCI `pratt` (differs from ours by 5.3e-2 at n = 60),
-DBCI `witting` (randomised, so run-to-run differences are expected), DescTools Pratt/Witting.
+**Resolved later on 2026-10-03** (the two items that had been carried over from earlier sessions):
+
+| Package | Defect | Evidence |
+|---|---|---|
+| DBCI (0.1.0 and `main`) | `pratt` lower limit is far from the exact limit | max abs error vs exact Clopper–Pearson: lower **1.3e-1** (n = 20), **3.3e-2** (n = 101), **7.0e-3** (n = 500), while the upper limit of the same method is 8.6e-4 / 1.7e-4 / 3.5e-5. At 84/101: 0.7617 vs exact 0.7442. Changing `n_negative - 1` to `n_negative + 1` in `a`, `b`, `c` restores the upper-limit accuracy. DescTools' own output for 84/101 (stored in DBCI's test data) shows the same 0.7617, so DescTools has the same formula |
+| DBCI (0.1.0 and `main`) | `witting` covers about 90% at nominal 95% (looks like α per tail instead of α/2); `x = 0` can raise `ValueError` | simulation, n = 30, 4000 draws per θ: coverage 0.901 / 0.900 / 0.899 at θ = 0.1 / 0.3 / 0.5; binomcikit's own Witting: 0.949 / 0.949 / 0.952 |
+
+Not yet confirmed from the primary texts (Pratt 1968, Witting 1985): the verdicts rest on the exact limits and on coverage, which do not
+depend on how either paper writes the formula. DescTools' Witting was not tested (R unavailable). See `planning/PAPERS_TO_DOWNLOAD.md`.
 
 **DBCI tests:** 19 tests pass in 12 m 52 s on Windows (740 s of it two randomised tests). `test_specials.py` needs `rpy2` and an R
 install (not run). DBCI vs binomcikit, 28 method/size checks: Wilson, Wald, Agresti–Coull, Jeffreys, Clopper–Pearson, logit, Mid-P and

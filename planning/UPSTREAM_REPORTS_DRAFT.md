@@ -1,6 +1,6 @@
 # Upstream reports: DRAFTS (nothing has been filed)
 
-> Drafted 2026-10-03 from `planning/COMPETITOR_REPOS.md`. **Every item below was reproduced on 2026-10-03 and none has been sent anywhere.**
+> Drafted 2026-10-03 from `planning/COMPETITOR_REPOS.md`. **Every item below except #8 was reproduced on 2026-10-03 and none has been sent anywhere.**
 > Filing is outward-facing (it publishes text under your GitHub account), so each draft waits for your approval, and you may want to
 > edit tone and wording first. Runnable repros: `planning/upstream_repro/dbci_repros.py` (DBCI; identical on PyPI 0.1.0 and `main`
 > at `39b0fdb`). Duplicate check done against each repo's issue list on 2026-10-03: no existing issue covers any of these.
@@ -14,6 +14,9 @@ Environment used for every repro: Windows 11 (10.0.26200), Python 3.13.5, numpy 
 | 3 | DeepPSP/DBCI | `mee` / `miettinen-nurminen` / `blaker` limits are only accurate to ~1e-5 | low (enhancement) | numeric repro; cause hedged |
 | 4 | nolanbconaway/binoculars | `binomial_confidence(0, n, method="clopper-pearson")` returns a NaN lower limit | medium | numeric repro |
 | 5 | nolanbconaway/binoculars | enhancement: `z` is hard-coded to 1.96 | very low | numeric |
+| 6 | DeepPSP/DBCI | `pratt`: lower limit is off by up to 0.13 from the exact limit its own upper formula tracks to <1e-3 | high (wrong answer, no error) | numeric; one offset (`n-x-1` for `n-x+1`) restores the accuracy |
+| 7 | DeepPSP/DBCI | `witting`: nominal 95% interval covers only ~90%, and `x = 0` can raise `ValueError` | high | simulation (coverage is the defining property) |
+| 8 | AndriSignorell/DescTools | `BinomCI(method="pratt")` lower limit (same formula as #6) | high | DescTools' own output as captured in DBCI's test data; **R not run here** |
 | — | statsmodels | *no report needed* | — | see the last section |
 
 **Repo health, so you can judge the odds of a reply:** DBCI is active (69 commits in the last 12 months, bug template, a maintainer who
@@ -155,15 +158,113 @@ mirror case (`x = n`, upper limit) is intended to be 1 and should be checked too
 
 ---
 
+## 6. DBCI — `pratt` lower limit does not approximate the exact limit
+
+Target: same template · Labels: bug
+
+**Title:** `[BUG]` `pratt`: lower limit differs from the Clopper–Pearson limit by up to 0.13 (the upper limit is accurate to < 1e-3)
+
+**Describe the bug**
+
+Pratt's method is a closed-form *normal approximation to the exact (Clopper–Pearson) limits*. In `compute_confidence_interval(..., "pratt")`
+the upper limit does track the exact limit (max error 8.6e-4 at n = 20, 1.7e-4 at n = 101, 3.5e-5 at n = 500, interior x), but the
+lower limit does not:
+
+| n | max abs error of the upper limit | max abs error of the lower limit |
+|--:|--:|--:|
+| 20 | 8.6e-4 | **1.3e-1** |
+| 101 | 1.7e-4 | **3.3e-2** |
+| 500 | 3.5e-5 | **7.0e-3** |
+
+```python
+from scipy import stats
+from diff_binom_confint import compute_confidence_interval
+
+r = compute_confidence_interval(84, 101, 0.95, "pratt")
+print(r.lower_bound, stats.beta.ppf(0.025, 84, 101 - 84 + 1))   # 0.7617  vs  0.7442 (exact)
+```
+
+The two limits are also not mirror images (`L(x) != 1 - U(n - x)`, max difference 2.9e-2 at n = 101), although the binomial problem is
+symmetric.
+
+**Where it comes from** (`_binom_confint.py`, the final `else` of the `"pratt"` branch):
+
+```python
+a = (n_positive / (n_negative - 1)) ** 2
+b = 81 * n_positive * (n_negative - 1) - 9 * n_total - 8
+c = 3 * zeta * np.sqrt(9 * n_positive * (n_negative - 1) * (9 * n_total + 5 - zeta**2) + n_total + 1)
+d = 81 * n_positive**2 - 9 * n_positive * (2 + zeta**2) + 1
+lower = 1 / (1 + a * ((b + c) / d) ** 3)
+```
+
+Replacing `(n_negative - 1)` by `(n_negative + 1)` in `a`, `b` and `c` (leaving `d` as is) brings the maximum error against the exact lower limit to
+8.6e-4 (n = 20) and 1.7e-4 (n = 101), i.e. the same accuracy as the upper limit. I arrived at that by testing variants against the exact limit, not
+from Pratt's paper, so please check it against Pratt (1968, JASA 63, 1457) before applying it. (Mirroring the upper limit, `L(x) = 1 - U(n - x)`, gives
+the same accuracy.)
+
+**Package Version:** 0.1.0 (PyPI) and `master` at `39b0fdb` — same result. Repro: `planning/upstream_repro/dbci_repros.py`, section 5.
+
+---
+
+## 7. DBCI — `witting` interval covers only about 90% at nominal 95%
+
+Target: same template · Labels: bug
+
+**Title:** `[BUG]` `witting`: the nominal 95% interval has about 90% coverage (looks like α instead of α/2 per tail); `x = 0` can raise `ValueError`
+
+**Describe the bug**
+
+Witting's randomised interval is meant to have *exactly* the nominal coverage at every θ. Simulating the DBCI implementation
+(`n = 30`, 4000 binomial draws per θ, a fresh random call per draw):
+
+| θ | observed coverage of the "95%" interval |
+|--:|--:|
+| 0.1 | 0.901 |
+| 0.3 | 0.900 |
+| 0.5 | 0.899 |
+
+That is the coverage of a **90%** interval, which is what you get if each tail is given probability `1 - conf_level` instead of
+`(1 - conf_level) / 2` (in the code: `_qbinom_abscont(1 - _conf_level, ...)`). An independent implementation of the randomised
+interval gives 0.949–0.952 at the same θ and n.
+
+Separately, some draws at `x = 0` raise `ValueError: f(a) and f(b) must have different signs` from `uniroot` inside `_qbinom_abscont`
+(2 of 4000 calls at θ = 0.1; this is the same family as the closed issue #5, `compute_confidence_interval(2, 2, conf_level=0.975, method="witting")`).
+
+**Package Version:** 0.1.0 (PyPI) and `master` at `39b0fdb` · Repro: `planning/upstream_repro/dbci_repros.py`, section 6 (about a minute).
+
+**Caveat:** I compared against my own randomised implementation, not against Witting's text; the coverage figures do not depend on it, because
+coverage is what a "95% interval" promises.
+
+---
+
+## 8. DescTools — `BinomCI(method = "pratt")` lower limit (same formula as DBCI #6)
+
+Target: https://github.com/AndriSignorell/DescTools/issues/new · **I could not run R here**, so this rests on DescTools' output as stored in
+DBCI's test data (`test/test-data/example-84-101.csv`, generated by `DescTools::BinomCI(84, 101, method = m)` according to DBCI's README).
+
+**Title:** `BinomCI(x, n, method = "pratt")`: lower limit is far from the exact limit (0.7617 vs 0.7442 for 84/101)
+
+```r
+library(DescTools)
+BinomCI(84, 101, method = "pratt")     # lwr.ci recorded as 0.7617 in DBCI's test data
+BinomCI(84, 101, method = "clopper-pearson")   # lwr.ci 0.7442 (same file)
+```
+
+The recorded `pratt` upper limit is 0.8988, equal to the Clopper–Pearson upper limit to four digits, while the lower limit differs by 0.017.
+The DBCI formula in #6 reproduces the recorded DescTools numbers exactly, so the same offset (`n - x - 1` where `n - x + 1` is needed) is the
+likely cause. Please run the R lines above before filing; I have not.
+
+(DescTools' `witting` is the source DBCI ported; whether it has the same 90% coverage is **not tested** — R unavailable.)
+
+---
+
 ## Not reported, and why
 
 * **statsmodels** — `confint_proportions_2indep(..., method="score")` (compare="diff") is wrong in 0.14.5 and 0.15.0 (the
   Miettinen–Nurminen constrained-MLE cubic uses `count0 * diff` instead of `nobs0 * diff`), but `main` already contains the fix and
   the issue is closed upstream (statsmodels #10269). I confirmed independently that the corrected cubic equals a brute-force
   likelihood maximisation to six digits. Nothing for us to file.
-* **DBCI `pratt`, `witting`, and DescTools Pratt/Witting** — earlier sessions recorded discrepancies against binomcikit. I did not
-  re-derive in this pass which side matches the primary sources, so they are not drafted. Re-derive first (primary text for Pratt
-  1968 and Witting 1985) before filing anything.
+* **DescTools `witting`** — not tested (needs R); DBCI's version is reported in #7 on the strength of a simulation.
 * **pynomial, astropy, DBCI `arcsine`/`logit` boundary** — investigated; the deviations are conventions or a different
   published variant, not defects (`planning/COMPETITOR_REPOS.md`, section 5).
 * **A request for a DBCI release** — PyPI 0.1.0 is from 2025-08-15 and `main` has merged fixes since (the Wang plateau logic,

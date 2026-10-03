@@ -166,11 +166,19 @@ coverage **table** rather than a figure; for a figure of one method's whole cove
 the single-proportion tools in {doc}`../evaluating_intervals`.
 
 ### Verified against
-`"wald"`, `"agresti-caffo"` and `"newcombe"` agree with `statsmodels.stats.proportion.
-confint_proportions_2indep` to 1e-12; `"wald-cc"` and `"newcombe-cc"` agree with the `DBCI`
-package to 1e-9; the two score methods solve the defining equation `Z²(δ) = z²` to ~1e-15 at every
-interior limit (the test suite checks this directly, since `statsmodels` and `DBCI` do not solve the
-same equation to that precision — see `planning/COMPETITOR_REPOS.md`).
+* **Published tables:** 58 intervals from Newcombe (1998), Table II (as recast in the SAS paper *Constructing Confidence Intervals for the
+  Differences of Binomial Proportions in SAS*) and SAS output, for Wald, Wald-cc, Agresti–Caffo, Newcombe (±cc), Mee and
+  Miettinen–Nurminen on eight tables including the boundary ones (0/10 vs 0/20, 10/10 vs 0/10), all within the four printed
+  decimals (`tests/test_twoprop.py::test_matches_published_tables`).
+* **Software manuals:** the SAS paper and the PASS manual print the same definitions (Mee: `λ = 1`; Miettinen–Nurminen: `λ = N/(N−1)`
+  and the closed-form constrained estimate; Newcombe's methods 10 and 11).
+* **Other implementations:** `"wald"`, `"agresti-caffo"` and `"newcombe"` agree with `statsmodels.stats.proportion.
+  confint_proportions_2indep` to 1e-12, and `"wald-cc"` / `"newcombe-cc"` agree with the `DBCI` package to 1e-9. The two score methods
+  solve the defining equation `Z²(δ) = z²` to ~1e-15 at every interior limit (checked directly in the tests, because `DBCI`'s score
+  limits are only accurate to ~1e-5 and the released `statsmodels` `score` option used the wrong constrained estimate, fixed on its
+  `main`; see `planning/COMPETITOR_REPOS.md`).
+* **Not yet:** a first-hand read of Newcombe (1998), Miettinen & Nurminen (1985) and Mee (1984) themselves; they are paywalled
+  (`planning/PAPERS_TO_DOWNLOAD.md`). The Mee citation here (Biometrics 40) is from memory and should be confirmed.
 
 ### References
 Newcombe (1998), *Statistics in Medicine* 17, 873–890 · Miettinen & Nurminen (1985), *Statistics

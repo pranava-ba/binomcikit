@@ -9,7 +9,7 @@ All notable changes to **binomcikit** are recorded here. Format loosely follows
   Agresti–Caffo, Newcombe hybrid score (±cc), Mee and Miettinen–Nurminen score intervals. Wald/Agresti–Caffo/Newcombe agree with
   `statsmodels` to 1e-12, the `-cc` forms with DBCI to 1e-9, and both score methods solve their defining equation to ~1e-15
   (DBCI's score limits satisfy it only to 1e-4–1e-5; `statsmodels`' `score` option raises on ordinary tables such as 7/10 vs 3/12).
-  Page `docs/methods/two_proportions.md`; 30 tests in `tests/test_twoprop.py` (oracles, equation residual, Hypothesis properties, exact coverage).
+  Also reproduces 58 published intervals (Newcombe 1998 Table II as recast in the SAS paper, plus SAS output) to 4 decimals. Page `docs/methods/two_proportions.md`; ~90 tests in `tests/test_twoprop.py` (oracles, equation residual, Hypothesis properties, exact coverage).
 - `benchmarks/regression_check.py`, `benchmarks/baseline.json` and a weekly `.github/workflows/benchmark.yml` that fails when a tracked
   call is more than 2x slower than the baseline (timings are divided by an in-process calibration workload). `.pre-commit-config.yaml`.
 - Property tests `tests/test_limits_ci_property.py` (`limits` == `ci` table == `interval` row for random n/alpha/method) and

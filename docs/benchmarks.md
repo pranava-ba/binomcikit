@@ -70,8 +70,9 @@ The two rows with a non-trivial parity are *disagreements about the answer*, so 
   differences; our value is the exact root.
 * **Modified Wilson:** the upper limit in DBCI's code is the *lower*-tail expression without `1 -`, so for `x` near `n` the upper
   limit falls below the lower one (59 of 60: lower 0.9114, upper 0.0004). Verified against both PyPI 0.1.0 and `main`.
-* **Pratt:** DBCI's limits differ from ours by 5.3e-2; we have not re-derived which side follows Pratt's (1968) formula in this
-  pass, so no claim is made. Our versions are covered by `tests/test_ext_*`; nothing has been filed upstream.
+* **Pratt:** DBCI's *lower* limit is the problem: against the exact Clopper–Pearson limit it is off by up to 0.13 (n = 20), while
+  its upper limit and ours are within 1e-3. The lower-limit expression has `n - x - 1` where `n - x + 1` is needed; DescTools'
+  recorded output has the same value. Nothing has been filed upstream (the drafts are in `planning/UPSTREAM_REPORTS_DRAFT.md`).
 
 ## D. Coverage-probability curve (2000 θ points)
 

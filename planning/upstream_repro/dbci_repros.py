@@ -7,10 +7,9 @@ Run against DBCI 0.1.0 (PyPI) and against `main` (commit 39b0fdb): the behaviour
 
 import math
 
+import diff_binom_confint as d
 import numpy as np
 from scipy import optimize
-
-import diff_binom_confint as d
 
 print("diff_binom_confint from", d.__file__)
 
@@ -85,4 +84,38 @@ print("\n4) make_risk_report writes LaTeX with Path.write_text(...) and no encod
 print("   on Windows (cp1252) that raises UnicodeEncodeError unless PYTHONUTF8=1 is set.")
 print("   Reproduce: python -m pytest test/test_applications.py::test_make_risk_report")
 print("   Location: diff_binom_confint/_applications.py, line 341.")
-print(np.__version__ and "done")
+
+# --------------------------------------------------------------------- report 5: Pratt lower limit
+print("\n5) Pratt lower limit vs the exact Clopper-Pearson limit (alpha = 0.05)")
+from scipy import stats  # noqa: E402
+
+for n in (20, 101, 500):
+    worst_lo = worst_hi = 0.0
+    for x in range(2, n - 1):
+        r = d.compute_confidence_interval(x, n, 0.95, "pratt")
+        worst_lo = max(worst_lo, abs(r.lower_bound - stats.beta.ppf(0.025, x, n - x + 1)))
+        worst_hi = max(worst_hi, abs(r.upper_bound - stats.beta.ppf(0.975, x + 1, n - x)))
+    print(f"   n={n:3d}: max |Pratt - exact|  lower {worst_lo:.1e}   upper {worst_hi:.1e}")
+r = d.compute_confidence_interval(84, 101, 0.95, "pratt")
+print(
+    f"   84/101: DBCI lower {r.lower_bound:.4f}; exact Clopper-Pearson lower {stats.beta.ppf(0.025, 84, 18):.4f}"
+)
+print("   (DescTools::BinomCI(84, 101, method='pratt') is recorded in DBCI's test-data file")
+print("    example-84-101.csv with the same lower limit, 0.7617.)")
+
+# ---------------------------------------------------------------------- report 6: Witting coverage
+print("\n6) Witting: coverage of the nominal 95% interval (n = 30; 4000 draws per theta)")
+rng = np.random.default_rng(1)
+n = 30
+for theta in (0.1, 0.3, 0.5):
+    cov = ok = 0
+    errs = set()
+    for x in rng.binomial(n, theta, 4000):
+        try:
+            r = d.compute_confidence_interval(int(x), n, 0.95, "witting")
+            cov += r.lower_bound <= theta <= r.upper_bound
+            ok += 1
+        except ValueError:
+            errs.add(int(x))
+    print(f"   theta={theta}: coverage {cov / ok:.3f}   (ValueError for x in {sorted(errs)})")
+print("   expected about 0.95; about 0.90 means each tail uses alpha rather than alpha / 2.")

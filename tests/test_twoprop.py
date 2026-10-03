@@ -228,3 +228,75 @@ def test_extreme_tables_at_large_n_do_not_fail():
         for m in ALL:
             lo, hi = bk.diff_interval(*t, 0.05, m)
             assert -1.0 <= lo <= hi <= 1.0, (m, t)
+
+
+# Published values (4 decimals): Newcombe (1998) Table II and SAS PROC FREQ output, as transcribed in the test data of
+# the DBCI package (MIT licence). They are independent of every implementation compared in this repository. A blank
+# entry in the source (a limit beyond +-1) is recorded here as the clipped bound.
+PUBLISHED = [
+    ((0, 10, 0, 10), "mee", -0.2775, 0.2775),
+    ((0, 10, 0, 10), "miettinen-nurminen", -0.2879, 0.2879),
+    ((0, 10, 0, 10), "newcombe", -0.2775, 0.2775),
+    ((0, 10, 0, 10), "newcombe-cc", -0.3445, 0.3445),
+    ((0, 10, 0, 10), "wald", 0.0, 0.0),
+    ((0, 10, 0, 10), "wald-cc", -0.1, 0.1),
+    ((0, 10, 0, 20), "mee", -0.1611, 0.2775),
+    ((0, 10, 0, 20), "miettinen-nurminen", -0.1658, 0.2844),
+    ((0, 10, 0, 20), "newcombe", -0.1611, 0.2775),
+    ((0, 10, 0, 20), "newcombe-cc", -0.2005, 0.3445),
+    ((0, 10, 0, 20), "wald", 0.0, 0.0),
+    ((0, 10, 0, 20), "wald-cc", -0.075, 0.075),
+    ((5, 56, 0, 29), "mee", -0.0313, 0.1926),
+    ((5, 56, 0, 29), "miettinen-nurminen", -0.0326, 0.1933),
+    ((5, 56, 0, 29), "newcombe", -0.0381, 0.1926),
+    ((5, 56, 0, 29), "newcombe-cc", -0.0667, 0.2037),
+    ((5, 56, 0, 29), "wald", 0.0146, 0.164),
+    ((5, 56, 0, 29), "wald-cc", -0.0116, 0.1901),
+    ((6, 7, 2, 7), "mee", 0.0544, 0.8478),
+    ((6, 7, 2, 7), "miettinen-nurminen", 0.0342, 0.8534),
+    ((6, 7, 2, 7), "newcombe", 0.0582, 0.8062),
+    ((6, 7, 2, 7), "newcombe-cc", -0.029, 0.8423),
+    ((6, 7, 2, 7), "wald", 0.1481, 0.9947),
+    ((6, 7, 2, 7), "wald-cc", 0.0053, 1.0),
+    ((9, 10, 3, 10), "agresti-caffo", 0.16, 0.84),
+    ((9, 10, 3, 10), "mee", 0.1821, 0.837),
+    ((9, 10, 3, 10), "miettinen-nurminen", 0.17, 0.8406),
+    ((9, 10, 3, 10), "newcombe", 0.1705, 0.809),
+    ((9, 10, 3, 10), "newcombe-cc", 0.1013, 0.8387),
+    ((9, 10, 3, 10), "wald", 0.2605, 0.9395),
+    ((9, 10, 3, 10), "wald-cc", 0.1605, 1.0),
+    ((10, 10, 0, 10), "mee", 0.6777, 1.0),
+    ((10, 10, 0, 10), "miettinen-nurminen", 0.6636, 1.0),
+    ((10, 10, 0, 10), "newcombe", 0.6075, 1.0),
+    ((10, 10, 0, 10), "newcombe-cc", 0.5128, 1.0),
+    ((10, 10, 0, 10), "wald", 1.0, 1.0),
+    ((10, 10, 0, 10), "wald-cc", 0.9, 1.0),
+    ((10, 10, 0, 20), "agresti-caffo", 0.6922, 1.0),
+    ((10, 10, 0, 20), "mee", 0.7225, 1.0),
+    ((10, 10, 0, 20), "miettinen-nurminen", 0.7156, 1.0),
+    ((10, 10, 0, 20), "newcombe", 0.6791, 1.0),
+    ((10, 10, 0, 20), "newcombe-cc", 0.6014, 1.0),
+    ((10, 10, 0, 20), "wald", 1.0, 1.0),
+    ((10, 10, 0, 20), "wald-cc", 0.925, 1.0),
+    ((56, 70, 48, 80), "agresti-caffo", 0.0525, 0.3358),
+    ((56, 70, 48, 80), "mee", 0.0533, 0.3377),
+    ((56, 70, 48, 80), "miettinen-nurminen", 0.0528, 0.3382),
+    ((56, 70, 48, 80), "newcombe", 0.0524, 0.3339),
+    ((56, 70, 48, 80), "newcombe-cc", 0.0428, 0.3422),
+    ((56, 70, 48, 80), "wald", 0.0575, 0.3425),
+    ((56, 70, 48, 80), "wald-cc", 0.0441, 0.3559),
+    ((84, 101, 89, 105), "agresti-caffo", -0.1168, 0.085),
+    ((84, 101, 89, 105), "mee", -0.1188, 0.0857),
+    ((84, 101, 89, 105), "miettinen-nurminen", -0.1191, 0.086),
+    ((84, 101, 89, 105), "newcombe", -0.1177, 0.0851),
+    ((84, 101, 89, 105), "newcombe-cc", -0.1245, 0.0918),
+    ((84, 101, 89, 105), "wald", -0.1162, 0.0843),
+    ((84, 101, 89, 105), "wald-cc", -0.1259, 0.094),
+]
+
+
+@pytest.mark.parametrize("table,method,lo,hi", PUBLISHED)
+def test_matches_published_tables(table, method, lo, hi):
+    a, b = bk.diff_interval(*table, 0.05, method)
+    assert a == pytest.approx(lo, abs=5.5e-5), (table, method)
+    assert b == pytest.approx(hi, abs=5.5e-5), (table, method)
