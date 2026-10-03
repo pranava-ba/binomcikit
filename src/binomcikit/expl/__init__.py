@@ -42,59 +42,68 @@ from .cc_all import (
 )
 from .general import lengthgen, lengthsim
 
-try:
-    from .plots import (
-        plotexplaall,
-        plotexplaas,
-        plotexplall,
-        plotexplalr,
-        plotexplalt,
-        plotexplas,
-        plotexplasc,
-        plotexplatw,
-        plotexplawd,
-        plotexplba,
-        plotexplcall,
-        plotexplcas,
-        plotexplclt,
-        plotexplcsc,
-        plotexplctw,
-        plotexplcwd,
-        plotexplex,
-        plotexplgen,
-        plotexpllr,
-        plotexpllt,
-        plotexplsc,
-        plotexplsim,
-        plotexpltw,
-        plotexplwd,
-        plotlengthaall,
-        plotlengthaas,
-        plotlengthall,
-        plotlengthalr,
-        plotlengthalt,
-        plotlengthas,
-        plotlengthasc,
-        plotlengthatw,
-        plotlengthawd,
-        plotlengthba,
-        plotlengthcall,
-        plotlengthcas,
-        plotlengthclt,
-        plotlengthcsc,
-        plotlengthctw,
-        plotlengthcwd,
-        plotlengthex,
-        plotlengthgen,
-        plotlengthlr,
-        plotlengthlt,
-        plotlengthsc,
-        plotlengthsim,
-        plotlengthtw,
-        plotlengthwd,
-    )
-except ImportError:  # plotnine is optional; plotting needs the [plots] extra
-    pass
+# Plotting counterparts need plotnine (the [plots] extra); they are imported on first use so that
+# numeric-only users do not pay for plotnine at ``import binomcikit``.
+_LAZY_PLOTS = {
+    "plotexplaall": ".plots",
+    "plotexplaas": ".plots",
+    "plotexplall": ".plots",
+    "plotexplalr": ".plots",
+    "plotexplalt": ".plots",
+    "plotexplas": ".plots",
+    "plotexplasc": ".plots",
+    "plotexplatw": ".plots",
+    "plotexplawd": ".plots",
+    "plotexplba": ".plots",
+    "plotexplcall": ".plots",
+    "plotexplcas": ".plots",
+    "plotexplclt": ".plots",
+    "plotexplcsc": ".plots",
+    "plotexplctw": ".plots",
+    "plotexplcwd": ".plots",
+    "plotexplex": ".plots",
+    "plotexplgen": ".plots",
+    "plotexpllr": ".plots",
+    "plotexpllt": ".plots",
+    "plotexplsc": ".plots",
+    "plotexplsim": ".plots",
+    "plotexpltw": ".plots",
+    "plotexplwd": ".plots",
+    "plotlengthaall": ".plots",
+    "plotlengthaas": ".plots",
+    "plotlengthall": ".plots",
+    "plotlengthalr": ".plots",
+    "plotlengthalt": ".plots",
+    "plotlengthas": ".plots",
+    "plotlengthasc": ".plots",
+    "plotlengthatw": ".plots",
+    "plotlengthawd": ".plots",
+    "plotlengthba": ".plots",
+    "plotlengthcall": ".plots",
+    "plotlengthcas": ".plots",
+    "plotlengthclt": ".plots",
+    "plotlengthcsc": ".plots",
+    "plotlengthctw": ".plots",
+    "plotlengthcwd": ".plots",
+    "plotlengthex": ".plots",
+    "plotlengthgen": ".plots",
+    "plotlengthlr": ".plots",
+    "plotlengthlt": ".plots",
+    "plotlengthsc": ".plots",
+    "plotlengthsim": ".plots",
+    "plotlengthtw": ".plots",
+    "plotlengthwd": ".plots",
+}
 
-# Public API = every function bound above (submodules excluded).
+# Public API = every function bound above (submodules excluded); plotting names resolve lazily.
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))
+
+
+def __getattr__(name):
+    from .._lazy import resolve
+
+    return resolve(__name__, _LAZY_PLOTS, name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_PLOTS))

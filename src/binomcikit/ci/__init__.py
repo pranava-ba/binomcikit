@@ -40,49 +40,52 @@ from .cc_n_x import (
     cicwdx,
 )
 
-# Plotting counterparts are optional: they require plotnine (the [plots] extra).
-try:
-    from .adj_n_graph import (
-        plotciaas,
-        plotcialr,
-        plotcialt,
-        plotciasc,
-        plotciatw,
-        plotciawd,
-    )
-    from .all_graph import (
-        plotciaall,
-        plotciaallg,
-        plotciaallx,
-        plotciaallxg,
-        plotciall,
-        plotciallg,
-        plotciba,
-        plotcicall,
-        plotcicallg,
-        plotcicallx,
-        plotcicallxg,
-    )
-    from .base_n_graph import (
-        plotcias,
-        plotciex,
-        plotcilr,
-        plotcilt,
-        plotcisc,
-        plotcitw,
-        plotciwd,
-    )
-    from .base_n_x_graph import plotciallx, plotciallxg, plotciexx
-    from .cc_n_graph import (
-        plotcicas,
-        plotciclt,
-        plotcicsc,
-        plotcictw,
-        plotcicwd,
-    )
-except ImportError:  # plotnine is optional; plotting needs the [plots] extra
-    pass
+# Plotting counterparts need plotnine (the [plots] extra); they are imported on first use so that
+# numeric-only users do not pay for plotnine at ``import binomcikit``.
+_LAZY_PLOTS = {
+    "plotciaall": ".all_graph",
+    "plotciaallg": ".all_graph",
+    "plotciaallx": ".all_graph",
+    "plotciaallxg": ".all_graph",
+    "plotciaas": ".adj_n_graph",
+    "plotciall": ".all_graph",
+    "plotciallg": ".all_graph",
+    "plotciallx": ".base_n_x_graph",
+    "plotciallxg": ".base_n_x_graph",
+    "plotcialr": ".adj_n_graph",
+    "plotcialt": ".adj_n_graph",
+    "plotcias": ".base_n_graph",
+    "plotciasc": ".adj_n_graph",
+    "plotciatw": ".adj_n_graph",
+    "plotciawd": ".adj_n_graph",
+    "plotciba": ".all_graph",
+    "plotcicall": ".all_graph",
+    "plotcicallg": ".all_graph",
+    "plotcicallx": ".all_graph",
+    "plotcicallxg": ".all_graph",
+    "plotcicas": ".cc_n_graph",
+    "plotciclt": ".cc_n_graph",
+    "plotcicsc": ".cc_n_graph",
+    "plotcictw": ".cc_n_graph",
+    "plotcicwd": ".cc_n_graph",
+    "plotciex": ".base_n_graph",
+    "plotciexx": ".base_n_x_graph",
+    "plotcilr": ".base_n_graph",
+    "plotcilt": ".base_n_graph",
+    "plotcisc": ".base_n_graph",
+    "plotcitw": ".base_n_graph",
+    "plotciwd": ".base_n_graph",
+}
 
-# Public API = every function bound above (excludes submodules and internal
-# helpers, which stay reachable via their defining module).
+# Public API = every function bound above (submodules excluded); plotting names resolve lazily.
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))
+
+
+def __getattr__(name):
+    from .._lazy import resolve
+
+    return resolve(__name__, _LAZY_PLOTS, name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_PLOTS))

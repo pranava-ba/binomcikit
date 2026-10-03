@@ -11,6 +11,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from ..ci._fast import yes_no
+
 
 def validate(n, alp):
     """Same input contract as the original ``ci*`` functions."""
@@ -42,12 +44,12 @@ def table(code, lower, upper, clamp=True):
     """
     lower = np.asarray(lower, dtype=float)
     upper = np.asarray(upper, dtype=float)
-    labb = np.where(lower < 0, "YES", "NO").astype(object)
-    uabb = np.where(upper > 1, "YES", "NO").astype(object)
+    labb = yes_no(lower < 0)
+    uabb = yes_no(upper > 1)
     if clamp:
         lower = np.maximum(lower, 0.0)
         upper = np.minimum(upper, 1.0)
-    zwi = np.where(upper - lower == 0, "YES", "NO").astype(object)
+    zwi = yes_no(upper - lower == 0)
     return pd.DataFrame(
         {
             "x": np.arange(lower.shape[0]),

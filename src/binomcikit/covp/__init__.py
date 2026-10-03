@@ -35,35 +35,44 @@ from .cc_all import (
 from .exact_bayes import covpba, covpex
 from .general import covpgen, covpsim
 
-try:
-    from .plots import (
-        plotcovpaall,
-        plotcovpaas,
-        plotcovpall,
-        plotcovpalr,
-        plotcovpalt,
-        plotcovpas,
-        plotcovpasc,
-        plotcovpatw,
-        plotcovpawd,
-        plotcovpba,
-        plotcovpcall,
-        plotcovpcas,
-        plotcovpclt,
-        plotcovpcsc,
-        plotcovpctw,
-        plotcovpcwd,
-        plotcovpex,
-        plotcovpgen,
-        plotcovplr,
-        plotcovplt,
-        plotcovpsc,
-        plotcovpsim,
-        plotcovptw,
-        plotcovpwd,
-    )
-except ImportError:  # plotnine is optional; plotting needs the [plots] extra
-    pass
+# Plotting counterparts need plotnine (the [plots] extra); they are imported on first use so that
+# numeric-only users do not pay for plotnine at ``import binomcikit``.
+_LAZY_PLOTS = {
+    "plotcovpaall": ".plots",
+    "plotcovpaas": ".plots",
+    "plotcovpall": ".plots",
+    "plotcovpalr": ".plots",
+    "plotcovpalt": ".plots",
+    "plotcovpas": ".plots",
+    "plotcovpasc": ".plots",
+    "plotcovpatw": ".plots",
+    "plotcovpawd": ".plots",
+    "plotcovpba": ".plots",
+    "plotcovpcall": ".plots",
+    "plotcovpcas": ".plots",
+    "plotcovpclt": ".plots",
+    "plotcovpcsc": ".plots",
+    "plotcovpctw": ".plots",
+    "plotcovpcwd": ".plots",
+    "plotcovpex": ".plots",
+    "plotcovpgen": ".plots",
+    "plotcovplr": ".plots",
+    "plotcovplt": ".plots",
+    "plotcovpsc": ".plots",
+    "plotcovpsim": ".plots",
+    "plotcovptw": ".plots",
+    "plotcovpwd": ".plots",
+}
 
-# Public API = every function bound above (submodules excluded).
+# Public API = every function bound above (submodules excluded); plotting names resolve lazily.
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))
+
+
+def __getattr__(name):
+    from .._lazy import resolve
+
+    return resolve(__name__, _LAZY_PLOTS, name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_PLOTS))

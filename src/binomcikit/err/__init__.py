@@ -40,34 +40,43 @@ from .cc_all import (
 )
 from .general import errgen
 
-try:
-    from .plots import (
-        ploterraall,
-        ploterraas,
-        ploterrall,
-        ploterralr,
-        ploterralt,
-        ploterras,
-        ploterrasc,
-        ploterratw,
-        ploterrawd,
-        ploterrba,
-        ploterrcall,
-        ploterrcas,
-        ploterrclt,
-        ploterrcsc,
-        ploterrctw,
-        ploterrcwd,
-        ploterrex,
-        ploterrgen,
-        ploterrlr,
-        ploterrlt,
-        ploterrsc,
-        ploterrtw,
-        ploterrwd,
-    )
-except ImportError:  # plotnine is optional; plotting needs the [plots] extra
-    pass
+# Plotting counterparts need plotnine (the [plots] extra); they are imported on first use so that
+# numeric-only users do not pay for plotnine at ``import binomcikit``.
+_LAZY_PLOTS = {
+    "ploterraall": ".plots",
+    "ploterraas": ".plots",
+    "ploterrall": ".plots",
+    "ploterralr": ".plots",
+    "ploterralt": ".plots",
+    "ploterras": ".plots",
+    "ploterrasc": ".plots",
+    "ploterratw": ".plots",
+    "ploterrawd": ".plots",
+    "ploterrba": ".plots",
+    "ploterrcall": ".plots",
+    "ploterrcas": ".plots",
+    "ploterrclt": ".plots",
+    "ploterrcsc": ".plots",
+    "ploterrctw": ".plots",
+    "ploterrcwd": ".plots",
+    "ploterrex": ".plots",
+    "ploterrgen": ".plots",
+    "ploterrlr": ".plots",
+    "ploterrlt": ".plots",
+    "ploterrsc": ".plots",
+    "ploterrtw": ".plots",
+    "ploterrwd": ".plots",
+}
 
-# Public API = every function bound above (submodules excluded).
+# Public API = every function bound above (submodules excluded); plotting names resolve lazily.
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))
+
+
+def __getattr__(name):
+    from .._lazy import resolve
+
+    return resolve(__name__, _LAZY_PLOTS, name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_PLOTS))

@@ -19,7 +19,7 @@ importable via ``import binomcikit.ci``. Third-party names used internally
 (numpy, pandas, plotnine, …) are not re-exported.
 """
 
-from . import bayes, covp, err, expl, pconf
+from . import _lazy, bayes, covp, err, expl, pconf
 from . import ci as _ci_pkg  # kept private so the name ``ci`` is the dispatcher
 from . import ext as _ext_pkg  # extended methods (limit-producers beyond the R port)
 from .access import (  # noqa: E402  usability layer (data input, estimates, curves, compare)
@@ -65,6 +65,25 @@ from .plotly_viz import plot_ci, plot_coverage  # noqa: E402  interactive plotly
 
 __version__ = "3.0.8"
 
+# The plotnine-based plotting functions (``plotciall``, ``plotcovpall``, ...) are resolved on first
+# access, so ``import binomcikit`` does not import plotnine.
+_PLOT_FAMILIES = (_ci_pkg, covp, err, expl, pconf)
+_PLOT_NAMES = sorted({_n for _f in _PLOT_FAMILIES for _n in _f._LAZY_PLOTS})
+
+
+def __getattr__(name):
+    for family in _PLOT_FAMILIES:
+        if name in family._LAZY_PLOTS:
+            value = getattr(family, name)
+            globals()[name] = value
+            return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_PLOT_NAMES))
+
+
 _ACCESS = [
     "from_counts",
     "from_data",
@@ -109,5 +128,6 @@ __all__ = sorted(
         *pconf.__all__,
         *err.__all__,
         *bayes.__all__,
+        *(_PLOT_NAMES if _lazy.plotting_available() else ()),
     }
 )

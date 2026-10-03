@@ -40,34 +40,43 @@ from .cc_all import (
 )
 from .general import pcopbigen
 
-try:
-    from .plots import (
-        plotpcopbiaall,
-        plotpcopbiaas,
-        plotpcopbiall,
-        plotpcopbialr,
-        plotpcopbialt,
-        plotpcopbias,
-        plotpcopbiasc,
-        plotpcopbiatw,
-        plotpcopbiawd,
-        plotpcopbiba,
-        plotpcopbicall,
-        plotpcopbicas,
-        plotpcopbiclt,
-        plotpcopbicsc,
-        plotpcopbictw,
-        plotpcopbicwd,
-        plotpcopbiex,
-        plotpcopbigen,
-        plotpcopbilr,
-        plotpcopbilt,
-        plotpcopbisc,
-        plotpcopbitw,
-        plotpcopbiwd,
-    )
-except ImportError:  # plotnine is optional; plotting needs the [plots] extra
-    pass
+# Plotting counterparts need plotnine (the [plots] extra); they are imported on first use so that
+# numeric-only users do not pay for plotnine at ``import binomcikit``.
+_LAZY_PLOTS = {
+    "plotpcopbiaall": ".plots",
+    "plotpcopbiaas": ".plots",
+    "plotpcopbiall": ".plots",
+    "plotpcopbialr": ".plots",
+    "plotpcopbialt": ".plots",
+    "plotpcopbias": ".plots",
+    "plotpcopbiasc": ".plots",
+    "plotpcopbiatw": ".plots",
+    "plotpcopbiawd": ".plots",
+    "plotpcopbiba": ".plots",
+    "plotpcopbicall": ".plots",
+    "plotpcopbicas": ".plots",
+    "plotpcopbiclt": ".plots",
+    "plotpcopbicsc": ".plots",
+    "plotpcopbictw": ".plots",
+    "plotpcopbicwd": ".plots",
+    "plotpcopbiex": ".plots",
+    "plotpcopbigen": ".plots",
+    "plotpcopbilr": ".plots",
+    "plotpcopbilt": ".plots",
+    "plotpcopbisc": ".plots",
+    "plotpcopbitw": ".plots",
+    "plotpcopbiwd": ".plots",
+}
 
-# Public API = every function bound above (submodules excluded).
+# Public API = every function bound above (submodules excluded); plotting names resolve lazily.
 __all__ = sorted(_n for _n in dir() if not _n.startswith("_") and callable(globals()[_n]))
+
+
+def __getattr__(name):
+    from .._lazy import resolve
+
+    return resolve(__name__, _LAZY_PLOTS, name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_PLOTS))

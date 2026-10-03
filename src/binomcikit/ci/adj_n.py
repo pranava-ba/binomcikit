@@ -134,9 +134,9 @@ def cialr(n, alp, h):
     # the deviance is used instead of the raw likelihood, which underflows for large n (see
     # docs/under_the_hood.md).
     LALR, UALR = _fast.lr_limits_y(y1, n1, alp)
-    LABB = np.where(LALR < 0, "YES", "NO").astype(object)
-    UABB = np.where(UALR > 1, "YES", "NO").astype(object)
-    ZWI = np.where(UALR - LALR == 0, "YES", "NO").astype(object)
+    LABB = _fast.yes_no(LALR < 0)
+    UABB = _fast.yes_no(UALR > 1)
+    ZWI = _fast.yes_no(UALR - LALR == 0)
 
     return pd.DataFrame(
         {"x": x, "LALR": LALR, "UALR": UALR, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -187,7 +187,7 @@ def ciatw(n, alp, h):
     LATW, UATW, LABB, UABB, ZWI = _fast.flags(pATW - seATW, pATW + seATW)
     # undefined rows (h = 0 at x = 0 / n: 0/0 degrees of freedom) fall back to [0, 1]
     LATW, UATW = np.nan_to_num(LATW, nan=0.0), np.nan_to_num(UATW, nan=1.0)
-    ZWI = np.where(UATW - LATW == 0, "YES", "NO").astype(object)
+    ZWI = _fast.yes_no(UATW - LATW == 0)
 
     return pd.DataFrame(
         {"x": x, "LATW": LATW, "UATW": UATW, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}
@@ -225,7 +225,7 @@ def cialt(n, alp, h):
     )
     # undefined rows (h = 0 at x = 0 / n: logit of 0 or 1) fall back to [0, 1]
     LALT, UALT = np.nan_to_num(LALT, nan=0.0), np.nan_to_num(UALT, nan=1.0)
-    ZWI = np.where(UALT - LALT == 0, "YES", "NO").astype(object)
+    ZWI = _fast.yes_no(UALT - LALT == 0)
 
     return pd.DataFrame(
         {"x": x, "LALT": LALT, "UALT": UALT, "LABB": LABB, "UABB": UABB, "ZWI": ZWI}

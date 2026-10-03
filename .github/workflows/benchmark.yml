@@ -1,0 +1,42 @@
+name: Benchmark regression gate
+
+# Weekly check that no tracked call has become more than 2x slower than benchmarks/baseline.json.
+# Timings are divided by a calibration workload run in the same process, so runner speed cancels out
+# (see benchmarks/regression_check.py). Run it by hand with "update" ticked to record a new baseline
+# for this runner type; the file is uploaded as an artifact (commit it yourself if you accept it).
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      update:
+        description: "Record a new baseline instead of comparing"
+        type: boolean
+        default: false
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package with the numba accelerator
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[fast]"
+      - name: Compare with the committed baseline
+        if: ${{ !inputs.update }}
+        run: python benchmarks/regression_check.py --factor 2
+      - name: Record a new baseline
+        if: ${{ inputs.update }}
+        run: python benchmarks/regression_check.py --update
+      - name: Upload the recorded baseline
+        if: ${{ inputs.update }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline
+          path: benchmarks/baseline.json
