@@ -130,7 +130,7 @@ intervals for **one binomial proportion**.
 | [`statsmodels`](https://www.statsmodels.org/dev/generated/statsmodels.stats.proportion.proportion_confint.html) ✓ | 6 (normal, Agresti–Coull, Clopper–Pearson, Wilson, Jeffreys, binom_test) | — | `samplesize_confint_proportion` (Wald) | the de-facto default |
 | [`scipy`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats._result_classes.BinomTestResult.proportion_ci.html) ✓ | 3 (exact, Wilson, Wilson-cc) | — | — | |
 | `astropy.stats.binom_conf_interval` ✓ | 4 (Wilson, Jeffreys, flat, Wald) | — | — | no exact interval |
-| [`DBCI`](https://github.com/DeepPSP/DBCI/) ✓ | 16 on PyPI 0.1.0 (19 on `main`) incl. Blaker, Pratt, Witting, Mid-P, modified-\*; **plus 17 two-proportion methods** (binomcikit has none) | tests vs SAS/PASS/DescTools | — | Streamlit app; **defects found** ({doc}`methods/extended_approx`) |
+| [`DBCI`](https://github.com/DeepPSP/DBCI/) ✓ | 16 incl. Blaker, Pratt, Witting, Mid-P, modified-\*; **plus 15 two-proportion methods** (binomcikit has 7) | tests vs SAS/PASS/DescTools | — | Streamlit app; **defects found** ({doc}`methods/extended_approx`) |
 | [`binomial_cis`](https://github.com/TRI-ML/binomial_cis) ✓ | randomised UMA/UMAU exact | — | — | JOSS pre-review closed ("uncertain scope") |
 | `pynomial` (GitHub; *not* the PyPI package of that name) ✓ | 9 (port of R `binom`) | — | — | |
 | [`confseq`](https://pypi.org/project/confseq/) ✓ | betting / confidence sequences | — | — | C++ build; fails to build on Windows here |

@@ -20,31 +20,31 @@
    "task": "table",
    "method": "wilson",
    "n": 100,
-   "binomcikit_s": 0.00029488115915623695,
-   "binomcikit_arrays_s": 3.088577079914304e-05,
+   "binomcikit_s": 0.00016801530609325487,
+   "binomcikit_arrays_s": 1.917135218529896e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00015415304299929867,
+     "s": 9.684470578042023e-05,
      "parity": 2.220446049250313e-16
     },
     "astropy": {
-     "s": 4.958143440087008e-05,
+     "s": 2.9388051095867734e-05,
      "parity": 2.220446049250313e-16
     },
     "scipy (loop)": {
-     "s": 0.08787869999650866,
+     "s": 0.057996800052933395,
      "parity": 2.220446049250313e-16
     },
     "DBCI (loop)": {
-     "s": 0.01280339997416983,
+     "s": 0.008815960003994405,
      "parity": 2.220446049250313e-16
     },
     "pynomial (loop)": {
-     "s": 0.01626326667610556,
-     "parity": 0.007925784426888627
+     "s": 0.010865124990232289,
+     "parity": 2.220446049250313e-16
     },
     "binoculars (loop)": {
-     "s": 0.0004822447917831596,
+     "s": 0.00033925673742745576,
      "parity": 1.8379946529756275e-06
     }
    }
@@ -53,31 +53,31 @@
    "task": "table",
    "method": "wilson",
    "n": 1000,
-   "binomcikit_s": 0.0006573098031438741,
-   "binomcikit_arrays_s": 4.4060804729867624e-05,
+   "binomcikit_s": 0.00023673461535229134,
+   "binomcikit_arrays_s": 2.7746583201449388e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00015971240273481883,
+     "s": 0.00010250000036094429,
      "parity": 2.220446049250313e-16
     },
     "astropy": {
-     "s": 5.9912334005410235e-05,
+     "s": 4.2295685276710595e-05,
      "parity": 2.220446049250313e-16
     },
     "scipy (loop)": {
-     "s": 1.194616200053133,
+     "s": 0.7813655999489129,
      "parity": 2.220446049250313e-16
     },
     "DBCI (loop)": {
-     "s": 0.1543567000189796,
+     "s": 0.08854409994091839,
      "parity": 1.1102230246251565e-16
     },
     "pynomial (loop)": {
-     "s": 0.19888639997225255,
-     "parity": 0.000826226448867544
+     "s": 0.11063579993788153,
+     "parity": 2.220446049250313e-16
     },
     "binoculars (loop)": {
-     "s": 0.005168599994956619,
+     "s": 0.0031567600012446444,
      "parity": 5.705556355706243e-07
     }
    }
@@ -86,15 +86,15 @@
    "task": "table",
    "method": "wilson",
    "n": 10000,
-   "binomcikit_s": 0.004355012497399002,
-   "binomcikit_arrays_s": 0.00011171129723098986,
+   "binomcikit_s": 0.0005280846156753027,
+   "binomcikit_arrays_s": 7.33158965603674e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00022672611955942503,
+     "s": 0.0001532304348707523,
      "parity": 2.220446049250313e-16
     },
     "astropy": {
-     "s": 0.00014844977139542092,
+     "s": 9.206917825831126e-05,
      "parity": 2.220446049250313e-16
     }
    }
@@ -103,27 +103,27 @@
    "task": "table",
    "method": "exact",
    "n": 100,
-   "binomcikit_s": 0.001052482756143757,
-   "binomcikit_arrays_s": 0.0002015187097112498,
+   "binomcikit_s": 0.0006498031252704095,
+   "binomcikit_arrays_s": 0.00014986750915216195,
    "competitors": {
     "statsmodels": {
-     "s": 0.0007452204091740507,
+     "s": 0.0004993446810329531,
      "parity": 5.551115123125783e-17
     },
     "scipy (loop)": {
-     "s": 0.4050436000106856,
+     "s": 0.2728901000227779,
      "parity": 4.5047299224165727e-13
     },
     "DBCI (loop)": {
-     "s": 0.03896590007934719,
+     "s": 0.02428640000289306,
      "parity": 2.220446049250313e-16
     },
     "pynomial (loop)": {
-     "s": 0.027676499914377928,
+     "s": 0.018560500000603497,
      "parity": 2.220446049250313e-16
     },
     "binoculars (loop)": {
-     "s": 0.05720159993506968,
+     "s": 0.02792410005349666,
      "parity": 1.8058683344257531e-06
     }
    }
@@ -132,27 +132,27 @@
    "task": "table",
    "method": "exact",
    "n": 1000,
-   "binomcikit_s": 0.003989262506365776,
-   "binomcikit_arrays_s": 0.002646545450922779,
+   "binomcikit_s": 0.0021996714307793547,
+   "binomcikit_arrays_s": 0.001361796872515697,
    "competitors": {
     "statsmodels": {
-     "s": 0.004865028579453272,
+     "s": 0.0029909928562119603,
      "parity": 5.551115123125783e-17
     },
     "scipy (loop)": {
-     "s": 4.17598800000269,
+     "s": 3.2395475999219343,
      "parity": 4.989342272665453e-13
     },
     "DBCI (loop)": {
-     "s": 0.3699353000847623,
+     "s": 0.2624242000747472,
      "parity": 6.661338147750939e-16
     },
     "pynomial (loop)": {
-     "s": 0.28485259995795786,
+     "s": 0.2037525000050664,
      "parity": 6.661338147750939e-16
     },
     "binoculars (loop)": {
-     "s": 0.5185583999846131,
+     "s": 0.2998733000131324,
      "parity": 5.696160729762312e-07
     }
    }
@@ -161,11 +161,11 @@
    "task": "table",
    "method": "exact",
    "n": 10000,
-   "binomcikit_s": 0.030360299977473915,
-   "binomcikit_arrays_s": 0.022661600029096007,
+   "binomcikit_s": 0.01903485000366345,
+   "binomcikit_arrays_s": 0.016137166686045628,
    "competitors": {
     "statsmodels": {
-     "s": 0.047036100062541664,
+     "s": 0.032557600061409175,
      "parity": 5.551115123125783e-17
     }
    }
@@ -174,23 +174,23 @@
    "task": "table",
    "method": "jeffreys",
    "n": 100,
-   "binomcikit_s": 0.008955859998241066,
-   "binomcikit_arrays_s": 0.00035043076998116367,
+   "binomcikit_s": 0.0065812500154909985,
+   "binomcikit_arrays_s": 0.0002293451429743852,
    "competitors": {
     "statsmodels": {
-     "s": 0.0010596266637245813,
+     "s": 0.0007544568621133472,
      "parity": 2.220446049250313e-16
     },
     "astropy": {
-     "s": 0.0007535566022303307,
+     "s": 0.0005089066030879347,
      "parity": 2.220446049250313e-16
     },
     "DBCI (loop)": {
-     "s": 0.05905709997750819,
+     "s": 0.03460270003415644,
      "parity": 2.220446049250313e-16
     },
     "binoculars (loop)": {
-     "s": 0.0623438999755308,
+     "s": 0.036990399938076735,
      "parity": 1.8059514490520456e-06
     }
    }
@@ -199,23 +199,23 @@
    "task": "table",
    "method": "jeffreys",
    "n": 1000,
-   "binomcikit_s": 0.044515600078739226,
-   "binomcikit_arrays_s": 0.002573170589611811,
+   "binomcikit_s": 0.028426700038835406,
+   "binomcikit_arrays_s": 0.0016670448280035935,
    "competitors": {
     "statsmodels": {
-     "s": 0.005542885728313455,
+     "s": 0.003782976929170008,
      "parity": 6.661338147750939e-16
     },
     "astropy": {
-     "s": 0.004774499995013078,
+     "s": 0.003299219999462366,
      "parity": 6.661338147750939e-16
     },
     "DBCI (loop)": {
-     "s": 0.4223026001127437,
+     "s": 0.2930029999697581,
      "parity": 6.661338147750939e-16
     },
     "binoculars (loop)": {
-     "s": 0.44732280005700886,
+     "s": 0.31661399989388883,
      "parity": 5.696160065848943e-07
     }
    }
@@ -224,15 +224,15 @@
    "task": "table",
    "method": "jeffreys",
    "n": 10000,
-   "binomcikit_s": 0.32488629990257323,
-   "binomcikit_arrays_s": 0.023616349964868277,
+   "binomcikit_s": 0.2255615999456495,
+   "binomcikit_arrays_s": 0.016081599984318018,
    "competitors": {
     "statsmodels": {
-     "s": 0.05185719998553395,
+     "s": 0.030189399956725538,
      "parity": 1.9984014443252818e-15
     },
     "astropy": {
-     "s": 0.04896799998823553,
+     "s": 0.03114049998112023,
      "parity": 1.9984014443252818e-15
     }
    }
@@ -241,20 +241,20 @@
    "task": "table",
    "method": "agresti-coull",
    "n": 100,
-   "binomcikit_s": 0.0004950880003161728,
-   "binomcikit_arrays_s": 2.4847695947311442e-05,
+   "binomcikit_s": 0.0003590681801804087,
+   "binomcikit_arrays_s": 2.2641260328610715e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00016356226417042736,
+     "s": 0.00013818082237003804,
      "parity": 1.1102230246251565e-16
     },
     "DBCI (loop)": {
-     "s": 0.012926049996167421,
+     "s": 0.013420833352332314,
      "parity": 0.0
     },
     "pynomial (loop)": {
-     "s": 0.016629199963063,
-     "parity": 0.003673233639004403
+     "s": 0.016338849964085966,
+     "parity": 0.0
     }
    }
   },
@@ -262,20 +262,20 @@
    "task": "table",
    "method": "agresti-coull",
    "n": 1000,
-   "binomcikit_s": 0.0008007644442841411,
-   "binomcikit_arrays_s": 3.1235076490628096e-05,
+   "binomcikit_s": 0.0004901656247966457,
+   "binomcikit_arrays_s": 3.114136770125395e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00017133219189916367,
+     "s": 0.0001569061221706928,
      "parity": 1.1102230246251565e-16
     },
     "DBCI (loop)": {
-     "s": 0.1542885999660939,
+     "s": 0.12527919991407543,
      "parity": 0.0
     },
     "pynomial (loop)": {
-     "s": 0.16804069990757853,
-     "parity": 0.0004223777747448614
+     "s": 0.13339119998272508,
+     "parity": 0.0
     }
    }
   },
@@ -283,11 +283,11 @@
    "task": "table",
    "method": "agresti-coull",
    "n": 10000,
-   "binomcikit_s": 0.004110749997198582,
-   "binomcikit_arrays_s": 0.00010802011485960891,
+   "binomcikit_s": 0.0008811724115291547,
+   "binomcikit_arrays_s": 7.212380939102792e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.0002575395679061147,
+     "s": 0.00020104504467265025,
      "parity": 1.1102230246251565e-16
     }
    }
@@ -296,28 +296,28 @@
    "task": "table",
    "method": "wald",
    "n": 100,
-   "binomcikit_s": 0.00035180891103267964,
-   "binomcikit_arrays_s": 2.3745243366502752e-05,
+   "binomcikit_s": 0.0002053161536773237,
+   "binomcikit_arrays_s": 1.788869052515587e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00018706172848419276,
+     "s": 0.00013650253800401077,
      "parity": 1.1102230246251565e-16
     },
     "astropy": {
-     "s": 4.732454997379144e-05,
-     "parity": 0.00950139541798789
+     "s": 2.8375242220235845e-05,
+     "parity": 1.1102230246251565e-16
     },
     "DBCI (loop)": {
-     "s": 0.013922833333102366,
+     "s": 0.011418900025698045,
      "parity": 0.0
     },
     "pynomial (loop)": {
-     "s": 0.02174549998017028,
-     "parity": 0.00950139541798789
+     "s": 0.012201266673703989,
+     "parity": 0.0
     },
     "binoculars (loop)": {
-     "s": 0.00044098272707990624,
-     "parity": 0.009501753767289749
+     "s": 0.00034314264741945355,
+     "parity": 1.8007729972735476e-06
     }
    }
   },
@@ -325,28 +325,28 @@
    "task": "table",
    "method": "wald",
    "n": 1000,
-   "binomcikit_s": 0.0008533901638030761,
-   "binomcikit_arrays_s": 4.9627689698898285e-05,
+   "binomcikit_s": 0.0002681164178691471,
+   "binomcikit_arrays_s": 2.7228004986921135e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.0001588938462261397,
+     "s": 0.00012734466998218583,
      "parity": 1.1102230246251565e-16
     },
     "astropy": {
-     "s": 5.026076294162009e-05,
-     "parity": 0.0009589837574297544
+     "s": 3.207189539216118e-05,
+     "parity": 1.1102230246251565e-16
     },
     "DBCI (loop)": {
-     "s": 0.16495350003242493,
+     "s": 0.11837709997780621,
      "parity": 0.0
     },
     "pynomial (loop)": {
-     "s": 0.1731172000290826,
-     "parity": 0.0009589837574297544
+     "s": 0.142201800015755,
+     "parity": 0.0
     },
     "binoculars (loop)": {
-     "s": 0.0042891222336846925,
-     "parity": 0.0009590197548774437
+     "s": 0.003760266668784122,
+     "parity": 5.694544220613551e-07
     }
    }
   },
@@ -354,16 +354,16 @@
    "task": "table",
    "method": "wald",
    "n": 10000,
-   "binomcikit_s": 0.0039428249971630676,
-   "binomcikit_arrays_s": 9.657984101695234e-05,
+   "binomcikit_s": 0.0007311461541133049,
+   "binomcikit_arrays_s": 7.363242595133805e-05,
    "competitors": {
     "statsmodels": {
-     "s": 0.00023088555576072798,
+     "s": 0.00020200629923932664,
      "parity": 1.1102230246251565e-16
     },
     "astropy": {
-     "s": 0.00011714098337640772,
-     "parity": 9.59865983891639e-05
+     "s": 9.353010207224561e-05,
+     "parity": 1.1102230246251565e-16
     }
    }
   },
@@ -371,23 +371,23 @@
    "task": "single",
    "method": "wilson",
    "n": 1000,
-   "binomcikit_s": 0.0002598872178941405,
-   "binomcikit_arrays_s": 3.6012764174071417e-06,
+   "binomcikit_s": 0.00019067244922590194,
+   "binomcikit_arrays_s": 2.195445329576791e-06,
    "competitors": {
     "statsmodels": {
-     "s": 0.0001311427671989461
+     "s": 0.000116439130447427
     },
     "scipy": {
-     "s": 0.0012161279981955887
+     "s": 0.0010627849062658705
     },
     "astropy": {
-     "s": 3.82159685433223e-05
+     "s": 3.369731536360095e-05
     },
     "DBCI": {
-     "s": 0.00012696135265005814
+     "s": 0.00010780510641238157
     },
     "pynomial": {
-     "s": 0.00016613040271218552
+     "s": 0.000142852367812503
     }
    }
   },
@@ -395,20 +395,20 @@
    "task": "single",
    "method": "exact",
    "n": 1000,
-   "binomcikit_s": 0.00041813174602649516,
-   "binomcikit_arrays_s": 1.0313800012227147e-05,
+   "binomcikit_s": 0.0003749983326997608,
+   "binomcikit_arrays_s": 8.804940945687919e-06,
    "competitors": {
     "statsmodels": {
-     "s": 0.00025008117697913857
+     "s": 0.00022303465278911412
     },
     "scipy": {
-     "s": 0.004627572721801698
+     "s": 0.004023145450363782
     },
     "DBCI": {
-     "s": 0.0003632092311118658
+     "s": 0.00029773883480868006
     },
     "pynomial": {
-     "s": 0.0002863053685591725
+     "s": 0.00021750851062040592
     }
    }
   },
@@ -416,17 +416,17 @@
    "task": "single",
    "method": "jeffreys",
    "n": 1000,
-   "binomcikit_s": 0.000643436365168203,
-   "binomcikit_arrays_s": 1.1220997202032235e-05,
+   "binomcikit_s": 0.0005674440471921116,
+   "binomcikit_arrays_s": 7.46875000864025e-06,
    "competitors": {
     "statsmodels": {
-     "s": 0.0002875200007110834
+     "s": 0.00021350515535888598
     },
     "astropy": {
-     "s": 4.53346848345219e-05
+     "s": 3.032127989128986e-05
     },
     "DBCI": {
-     "s": 0.00043528969039583637
+     "s": 0.0002988056816816838
     }
    }
   },
@@ -434,20 +434,20 @@
    "task": "single",
    "method": "wald",
    "n": 1000,
-   "binomcikit_s": 0.00030001215027453744,
-   "binomcikit_arrays_s": 3.1674059458298257e-06,
+   "binomcikit_s": 0.0002123254896872038,
+   "binomcikit_arrays_s": 2.151601830629517e-06,
    "competitors": {
     "statsmodels": {
-     "s": 0.00016055000014603138
+     "s": 0.00012114383551381426
     },
     "astropy": {
-     "s": 2.7108736899926474e-05
+     "s": 2.4932033044393957e-05
     },
     "DBCI": {
-     "s": 0.00012454140596673824
+     "s": 0.00011707357507334163
     },
     "pynomial": {
-     "s": 0.0001628712177056668
+     "s": 0.0001408484616639236
     }
    }
   },
@@ -455,10 +455,10 @@
    "task": "exotic",
    "method": "blaker",
    "n": 60,
-   "binomcikit_s": 0.007751099998131394,
+   "binomcikit_s": 0.007264033347989122,
    "competitors": {
     "DBCI (loop)": {
-     "s": 27.259297200012952,
+     "s": 18.884492699988186,
      "parity": 9.867663373297475e-06
     }
    }
@@ -467,10 +467,10 @@
    "task": "exotic",
    "method": "midp",
    "n": 60,
-   "binomcikit_s": 0.007064633343058328,
+   "binomcikit_s": 0.0050235899980179965,
    "competitors": {
     "DBCI (loop)": {
-     "s": 0.3036673000315204,
+     "s": 0.2019707999425009,
      "parity": 4.988232049640828e-13
     }
    }
@@ -479,10 +479,10 @@
    "task": "exotic",
    "method": "pratt",
    "n": 60,
-   "binomcikit_s": 0.0005504365365665692,
+   "binomcikit_s": 0.0003524171050613452,
    "competitors": {
     "DBCI (loop)": {
-     "s": 0.008127620001323521,
+     "s": 0.005717283328219007,
      "parity": 0.05310308467541658
     }
    }
@@ -491,10 +491,10 @@
    "task": "exotic",
    "method": "lr",
    "n": 60,
-   "binomcikit_s": 0.0034115750022465363,
+   "binomcikit_s": 0.002103739129581853,
    "competitors": {
     "DBCI (loop)": {
-     "s": 0.23963470000308007,
+     "s": 0.22034809994511306,
      "parity": 3.705646900442616e-13
     }
    }
@@ -503,10 +503,10 @@
    "task": "exotic",
    "method": "modified-wilson",
    "n": 60,
-   "binomcikit_s": 0.001052789286144876,
+   "binomcikit_s": 0.0007286274499789465,
    "competitors": {
     "DBCI (loop)": {
-     "s": 0.010077500017359853,
+     "s": 0.006888949991359065,
      "parity": 0.9987231482938026
     }
    }
@@ -515,10 +515,10 @@
    "task": "exotic",
    "method": "modified-jeffreys",
    "n": 60,
-   "binomcikit_s": 0.0011268175003351644,
+   "binomcikit_s": 0.0007540499985528489,
    "competitors": {
     "DBCI (loop)": {
-     "s": 0.02108715003123507,
+     "s": 0.01637760002631694,
      "parity": 4.440892098500626e-16
     }
    }
@@ -528,10 +528,10 @@
    "method": "wilson coverage curve",
    "n": 100,
    "points": 2000,
-   "binomcikit_s": 0.034178399946540594,
+   "binomcikit_s": 0.021784399985335767,
    "competitors": {
     "numpy/scipy reference": {
-     "s": 0.053894200013019145,
+     "s": 0.03504640003666282,
      "parity": 3.952393967665557e-14
     }
    }
@@ -541,10 +541,10 @@
    "method": "wilson coverage curve",
    "n": 1000,
    "points": 2000,
-   "binomcikit_s": 0.009919900097884238,
+   "binomcikit_s": 0.00578409997979179,
    "competitors": {
     "numpy/scipy reference": {
-     "s": 0.727180999936536,
+     "s": 0.4826546999393031,
      "parity": 7.801537194040975e-13
     }
    }
@@ -554,10 +554,10 @@
    "method": "wilson coverage curve",
    "n": 10000,
    "points": 2000,
-   "binomcikit_s": 0.0382178999716416,
+   "binomcikit_s": 0.022404100047424436,
    "competitors": {
     "numpy/scipy reference": {
-     "s": 9.946148000075482,
+     "s": 6.442549700033851,
      "parity": 9.11160036309866e-12
     }
    }
@@ -566,10 +566,10 @@
    "task": "sequence",
    "method": "hedged betting CS (breaks=100)",
    "n": 1000,
-   "binomcikit_s": 0.007098599996728201,
+   "binomcikit_s": 0.0046054699923843145,
    "competitors": {
     "confseq": {
-     "s": 0.05196300009265542,
+     "s": 0.04024160001426935,
      "parity": 1.1102230246251565e-16
     }
    }
@@ -578,10 +578,10 @@
    "task": "sequence",
    "method": "hedged betting CS (breaks=1000)",
    "n": 1000,
-   "binomcikit_s": 0.06526689999736845,
+   "binomcikit_s": 0.04951389995403588,
    "competitors": {
     "confseq": {
-     "s": 0.5036518999841064,
+     "s": 0.3181957999477163,
      "parity": 1.1102230246251565e-16
     }
    }
@@ -590,266 +590,266 @@
    "task": "new",
    "method": "sterne",
    "n": 50,
-   "binomcikit_s": 0.008567599987145513,
+   "binomcikit_s": 0.0059787714188652375,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "sterne",
    "n": 200,
-   "binomcikit_s": 0.05083529988769442,
+   "binomcikit_s": 0.030138999922201037,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "sterne",
    "n": 1000,
-   "binomcikit_s": 0.5483788999263197,
+   "binomcikit_s": 0.40311780001502484,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "sterne",
    "n": 5000,
-   "binomcikit_s": 12.497166000073776,
+   "binomcikit_s": 7.787368200020865,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "bsc",
    "n": 50,
-   "binomcikit_s": 0.03784650005400181,
+   "binomcikit_s": 0.02491769997868687,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "bsc",
    "n": 200,
-   "binomcikit_s": 0.1313289999961853,
+   "binomcikit_s": 0.09572119999211282,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "bsc",
    "n": 1000,
-   "binomcikit_s": 0.7179524999810383,
+   "binomcikit_s": 0.43383500003255904,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "olc",
    "n": 50,
-   "binomcikit_s": 0.0036166749972229204,
+   "binomcikit_s": 0.002281444438267499,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "olc",
    "n": 200,
-   "binomcikit_s": 0.013888333303232988,
+   "binomcikit_s": 0.008496900011474887,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "olc",
    "n": 1000,
-   "binomcikit_s": 0.08667190000414848,
+   "binomcikit_s": 0.05969210003968328,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "olc",
    "n": 5000,
-   "binomcikit_s": 0.41321309993509203,
+   "binomcikit_s": 0.29051580000668764,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "lr-star",
    "n": 50,
-   "binomcikit_s": 0.007241016680685182,
+   "binomcikit_s": 0.007520057144574821,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "lr-star",
    "n": 200,
-   "binomcikit_s": 0.009322479995898903,
+   "binomcikit_s": 0.008635180001147092,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "lr-star",
    "n": 1000,
-   "binomcikit_s": 0.016078533333105344,
+   "binomcikit_s": 0.011958533354724446,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "lr-star",
    "n": 5000,
-   "binomcikit_s": 0.04917599994223565,
+   "binomcikit_s": 0.03359869995620102,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "cressie-read",
    "n": 50,
-   "binomcikit_s": 0.007772016668847452,
+   "binomcikit_s": 0.005788733329003056,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "cressie-read",
    "n": 200,
-   "binomcikit_s": 0.008516060002148152,
+   "binomcikit_s": 0.005820683339455475,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "cressie-read",
    "n": 1000,
-   "binomcikit_s": 0.015422400009507934,
+   "binomcikit_s": 0.010237849986879155,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "cressie-read",
    "n": 5000,
-   "binomcikit_s": 0.046893800026737154,
+   "binomcikit_s": 0.031037200009450316,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "mixture",
    "n": 50,
-   "binomcikit_s": 0.003015015390701592,
+   "binomcikit_s": 0.0019801319995895027,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "mixture",
    "n": 200,
-   "binomcikit_s": 0.004055783327203244,
+   "binomcikit_s": 0.002233237501059193,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "mixture",
    "n": 1000,
-   "binomcikit_s": 0.007390066670874755,
+   "binomcikit_s": 0.00408124443816228,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "mixture",
    "n": 5000,
-   "binomcikit_s": 0.023755849979352206,
+   "binomcikit_s": 0.013293966689767936,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "betting",
    "n": 50,
-   "binomcikit_s": 0.053950499976053834,
+   "binomcikit_s": 0.04207429999951273,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "betting",
    "n": 200,
-   "binomcikit_s": 0.7419372999574989,
+   "binomcikit_s": 0.5759220999898389,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "betting",
    "n": 1000,
-   "binomcikit_s": 15.525936499936506,
+   "binomcikit_s": 14.738199900020845,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "pratt",
    "n": 50,
-   "binomcikit_s": 0.0007104276595240894,
+   "binomcikit_s": 0.000537823077936012,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "pratt",
    "n": 200,
-   "binomcikit_s": 0.0006103055568894854,
+   "binomcikit_s": 0.0004861072908776502,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "pratt",
    "n": 1000,
-   "binomcikit_s": 0.0009735874991747551,
+   "binomcikit_s": 0.0006268999993783206,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "pratt",
    "n": 5000,
-   "binomcikit_s": 0.002688613332187136,
+   "binomcikit_s": 0.0011062878042050616,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "hoeffding",
    "n": 50,
-   "binomcikit_s": 0.000300803418772725,
+   "binomcikit_s": 0.0002545020202024266,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "hoeffding",
    "n": 200,
-   "binomcikit_s": 0.00036413103426357024,
+   "binomcikit_s": 0.0002780829957848498,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "hoeffding",
    "n": 1000,
-   "binomcikit_s": 0.0006538450711367416,
+   "binomcikit_s": 0.00030874137943289403,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "hoeffding",
    "n": 5000,
-   "binomcikit_s": 0.0021444318170489914,
+   "binomcikit_s": 0.0005070038968334337,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "chernoff",
    "n": 50,
-   "binomcikit_s": 0.004220572723583741,
+   "binomcikit_s": 0.003931364285693105,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "chernoff",
    "n": 200,
-   "binomcikit_s": 0.007501666666939855,
+   "binomcikit_s": 0.0062287714265819106,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "chernoff",
    "n": 1000,
-   "binomcikit_s": 0.025404949963558465,
+   "binomcikit_s": 0.017535999999381602,
    "competitors": {}
   },
   {
    "task": "new",
    "method": "chernoff",
    "n": 5000,
-   "binomcikit_s": 0.11242670007050037,
+   "binomcikit_s": 0.07469360006507486,
    "competitors": {}
   }
  ]

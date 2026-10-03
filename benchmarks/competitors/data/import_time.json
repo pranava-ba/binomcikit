@@ -1,0 +1,27 @@
+{
+ "python": "3.13.5",
+ "repeats": 9,
+ "baseline_interpreter_s": 0.10415070003364235,
+ "min_s": {
+  "binomcikit": 1.2199146999046206,
+  "DBCI": 1.5138096999144182,
+  "binomial_cis": 2.336213600006886,
+  "pynomial (Dpananos)": 0.8548637999920174,
+  "binoculars": 0.8726286999881268,
+  "statsmodels (proportion)": 1.286284999921918,
+  "astropy.stats": 0.29258859995752573,
+  "scipy.stats": 0.8518783999606967,
+  "pandas + scipy.stats (floor for binomcikit)": 1.2033887000288814
+ },
+ "median_s": {
+  "binomcikit": 1.562802299973555,
+  "DBCI": 1.896919499966316,
+  "binomial_cis": 2.8643794999225065,
+  "pynomial (Dpananos)": 1.1264724999200553,
+  "binoculars": 1.0382925999583676,
+  "statsmodels (proportion)": 1.5246025999076664,
+  "astropy.stats": 0.4200027999468148,
+  "scipy.stats": 1.0291967999655753,
+  "pandas + scipy.stats (floor for binomcikit)": 1.3505646999692544
+ }
+}

@@ -87,6 +87,8 @@ print(bk.diff_interval(0, 10, 0, 10, 0.05, "newcombe"))
   design, which needs a different interval).
 - **Wald** returns a zero-width interval when both groups have 0 (or all) successes, and its
   {term}`coverage` is the least reliable of the set.
+- **Naming differs between packages.** Here (and in `statsmodels`) `"score"` means the Miettinen–Nurminen interval; in
+  the `DBCI` package `"score"` is an alias of Newcombe's hybrid score.
 - Swapping the groups negates the interval: `diff_interval(x2, n2, x1, n1)` returns
   `(−upper, −lower)`.
 

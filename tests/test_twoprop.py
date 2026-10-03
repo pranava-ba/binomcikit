@@ -202,3 +202,29 @@ def test_wald_undercovers_more_than_newcombe():
     newc = np.mean([_exact_coverage("newcombe", 15, 15, a, b) for a, b in grid])
     assert newc > wald
     assert math.isfinite(wald)
+
+
+@pytest.mark.parametrize("method,mn", [("mee", False), ("miettinen-nurminen", True)])
+def test_score_methods_are_stable_at_large_n(method, mn):
+    """No cliff at large n (the failure mode of the old likelihood-ratio code): the width shrinks like
+    1/sqrt(n) and the limits still solve the defining equation."""
+    z = stats.norm.ppf(0.975)
+    widths = []
+    for n in (1_000, 26_000, 1_000_000, 10_000_000):
+        t = (int(0.3 * n), n, int(0.2 * n), n)
+        lo, hi = bk.diff_interval(*t, 0.05, method)
+        widths.append(hi - lo)
+        factor = 2 * n / (2 * n - 1) if mn else 1.0
+        for lim in (lo, hi):
+            assert twoprop._score_stat2(*t, lim, factor) == pytest.approx(z * z, abs=1e-8)
+    assert all(a > b for a, b in zip(widths, widths[1:]))
+    # 1/sqrt(n): a 26x increase in n should shrink the width by about sqrt(26)
+    assert widths[0] / widths[1] == pytest.approx(math.sqrt(26), rel=0.05)
+
+
+def test_extreme_tables_at_large_n_do_not_fail():
+    n = 1_000_000
+    for t in [(0, n, 0, n), (n, n, 0, n), (0, n, n, n), (1, n, 0, n), (n, n, n - 1, n)]:
+        for m in ALL:
+            lo, hi = bk.diff_interval(*t, 0.05, m)
+            assert -1.0 <= lo <= hi <= 1.0, (m, t)

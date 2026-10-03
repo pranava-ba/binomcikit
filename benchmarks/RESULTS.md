@@ -25,147 +25,147 @@
 
 | method | n | `bk.ci()` (DataFrame) | `bk.limits()` (arrays) | competitor | time | vs `ci()` | vs lean path | parity |
 |---|---:|---:|---:|---|---:|---:|---:|---:|
-| wilson | 100 | 295 µs | 31 µs | statsmodels | 154 µs | **0.5×** | **5.0×** | 2.2e-16 |
-|  | 100 |  |  | astropy | 50 µs | **0.2×** | **1.6×** | 2.2e-16 |
-|  | 100 |  |  | scipy (loop) | 87.9 ms | **298.0×** | **2845.3×** | 2.2e-16 |
-|  | 100 |  |  | DBCI (loop) | 12.8 ms | **43.4×** | **414.5×** | 2.2e-16 |
-|  | 100 |  |  | pynomial (loop) | 16.3 ms | **55.2×** | **526.6×** | 7.9e-03 |
-|  | 100 |  |  | binoculars (loop) | 482 µs | **1.6×** | **15.6×** | 1.8e-06 |
-| wilson | 1,000 | 657 µs | 44 µs | statsmodels | 160 µs | **0.2×** | **3.6×** | 2.2e-16 |
-|  | 1,000 |  |  | astropy | 60 µs | **0.1×** | **1.4×** | 2.2e-16 |
-|  | 1,000 |  |  | scipy (loop) | 1.19 s | **1817.4×** | **27112.9×** | 2.2e-16 |
-|  | 1,000 |  |  | DBCI (loop) | 154.4 ms | **234.8×** | **3503.3×** | 1.1e-16 |
-|  | 1,000 |  |  | pynomial (loop) | 198.9 ms | **302.6×** | **4513.9×** | 8.3e-04 |
-|  | 1,000 |  |  | binoculars (loop) | 5.2 ms | **7.9×** | **117.3×** | 5.7e-07 |
-| wilson | 10,000 | 4.4 ms | 112 µs | statsmodels | 227 µs | **0.1×** | **2.0×** | 2.2e-16 |
-|  | 10,000 |  |  | astropy | 148 µs | **0.0×** | **1.3×** | 2.2e-16 |
-| exact | 100 | 1.1 ms | 202 µs | statsmodels | 745 µs | **0.7×** | **3.7×** | 5.6e-17 |
-|  | 100 |  |  | scipy (loop) | 405.0 ms | **384.8×** | **2010.0×** | 4.5e-13 |
-|  | 100 |  |  | DBCI (loop) | 39.0 ms | **37.0×** | **193.4×** | 2.2e-16 |
-|  | 100 |  |  | pynomial (loop) | 27.7 ms | **26.3×** | **137.3×** | 2.2e-16 |
-|  | 100 |  |  | binoculars (loop) | 57.2 ms | **54.3×** | **283.9×** | 1.8e-06 |
-| exact | 1,000 | 4.0 ms | 2.6 ms | statsmodels | 4.9 ms | **1.2×** | **1.8×** | 5.6e-17 |
-|  | 1,000 |  |  | scipy (loop) | 4.18 s | **1046.8×** | **1577.9×** | 5.0e-13 |
-|  | 1,000 |  |  | DBCI (loop) | 369.9 ms | **92.7×** | **139.8×** | 6.7e-16 |
-|  | 1,000 |  |  | pynomial (loop) | 284.9 ms | **71.4×** | **107.6×** | 6.7e-16 |
-|  | 1,000 |  |  | binoculars (loop) | 518.6 ms | **130.0×** | **195.9×** | 5.7e-07 |
-| exact | 10,000 | 30.4 ms | 22.7 ms | statsmodels | 47.0 ms | **1.5×** | **2.1×** | 5.6e-17 |
-| jeffreys | 100 | 9.0 ms | 350 µs | statsmodels | 1.1 ms | **0.1×** | **3.0×** | 2.2e-16 |
-|  | 100 |  |  | astropy | 754 µs | **0.1×** | **2.2×** | 2.2e-16 |
-|  | 100 |  |  | DBCI (loop) | 59.1 ms | **6.6×** | **168.5×** | 2.2e-16 |
-|  | 100 |  |  | binoculars (loop) | 62.3 ms | **7.0×** | **177.9×** | 1.8e-06 |
-| jeffreys | 1,000 | 44.5 ms | 2.6 ms | statsmodels | 5.5 ms | **0.1×** | **2.2×** | 6.7e-16 |
-|  | 1,000 |  |  | astropy | 4.8 ms | **0.1×** | **1.9×** | 6.7e-16 |
-|  | 1,000 |  |  | DBCI (loop) | 422.3 ms | **9.5×** | **164.1×** | 6.7e-16 |
-|  | 1,000 |  |  | binoculars (loop) | 447.3 ms | **10.0×** | **173.8×** | 5.7e-07 |
-| jeffreys | 10,000 | 324.9 ms | 23.6 ms | statsmodels | 51.9 ms | **0.2×** | **2.2×** | 2.0e-15 |
-|  | 10,000 |  |  | astropy | 49.0 ms | **0.2×** | **2.1×** | 2.0e-15 |
-| agresti-coull | 100 | 495 µs | 25 µs | statsmodels | 164 µs | **0.3×** | **6.6×** | 1.1e-16 |
-|  | 100 |  |  | DBCI (loop) | 12.9 ms | **26.1×** | **520.2×** | 0.0e+00 |
-|  | 100 |  |  | pynomial (loop) | 16.6 ms | **33.6×** | **669.2×** | 3.7e-03 |
-| agresti-coull | 1,000 | 801 µs | 31 µs | statsmodels | 171 µs | **0.2×** | **5.5×** | 1.1e-16 |
-|  | 1,000 |  |  | DBCI (loop) | 154.3 ms | **192.7×** | **4939.6×** | 0.0e+00 |
-|  | 1,000 |  |  | pynomial (loop) | 168.0 ms | **209.9×** | **5379.9×** | 4.2e-04 |
-| agresti-coull | 10,000 | 4.1 ms | 108 µs | statsmodels | 258 µs | **0.1×** | **2.4×** | 1.1e-16 |
-| wald | 100 | 352 µs | 24 µs | statsmodels | 187 µs | **0.5×** | **7.9×** | 1.1e-16 |
-|  | 100 |  |  | astropy | 47 µs | **0.1×** | **2.0×** | 9.5e-03 |
-|  | 100 |  |  | DBCI (loop) | 13.9 ms | **39.6×** | **586.3×** | 0.0e+00 |
-|  | 100 |  |  | pynomial (loop) | 21.7 ms | **61.8×** | **915.8×** | 9.5e-03 |
-|  | 100 |  |  | binoculars (loop) | 441 µs | **1.3×** | **18.6×** | 9.5e-03 |
-| wald | 1,000 | 853 µs | 50 µs | statsmodels | 159 µs | **0.2×** | **3.2×** | 1.1e-16 |
-|  | 1,000 |  |  | astropy | 50 µs | **0.1×** | **1.0×** | 9.6e-04 |
-|  | 1,000 |  |  | DBCI (loop) | 165.0 ms | **193.3×** | **3323.8×** | 0.0e+00 |
-|  | 1,000 |  |  | pynomial (loop) | 173.1 ms | **202.9×** | **3488.3×** | 9.6e-04 |
-|  | 1,000 |  |  | binoculars (loop) | 4.3 ms | **5.0×** | **86.4×** | 9.6e-04 |
-| wald | 10,000 | 3.9 ms | 97 µs | statsmodels | 231 µs | **0.1×** | **2.4×** | 1.1e-16 |
-|  | 10,000 |  |  | astropy | 117 µs | **0.0×** | **1.2×** | 9.6e-05 |
+| wilson | 100 | 168 µs | 19 µs | statsmodels | 97 µs | **0.6×** | **5.1×** | 2.2e-16 |
+|  | 100 |  |  | astropy | 29 µs | **0.2×** | **1.5×** | 2.2e-16 |
+|  | 100 |  |  | scipy (loop) | 58.0 ms | **345.2×** | **3025.2×** | 2.2e-16 |
+|  | 100 |  |  | DBCI (loop) | 8.8 ms | **52.5×** | **459.9×** | 2.2e-16 |
+|  | 100 |  |  | pynomial (loop) | 10.9 ms | **64.7×** | **566.7×** | 2.2e-16 |
+|  | 100 |  |  | binoculars (loop) | 339 µs | **2.0×** | **17.7×** | 1.8e-06 |
+| wilson | 1,000 | 237 µs | 28 µs | statsmodels | 103 µs | **0.4×** | **3.7×** | 2.2e-16 |
+|  | 1,000 |  |  | astropy | 42 µs | **0.2×** | **1.5×** | 2.2e-16 |
+|  | 1,000 |  |  | scipy (loop) | 781.4 ms | **3300.6×** | **28160.8×** | 2.2e-16 |
+|  | 1,000 |  |  | DBCI (loop) | 88.5 ms | **374.0×** | **3191.2×** | 1.1e-16 |
+|  | 1,000 |  |  | pynomial (loop) | 110.6 ms | **467.3×** | **3987.4×** | 2.2e-16 |
+|  | 1,000 |  |  | binoculars (loop) | 3.2 ms | **13.3×** | **113.8×** | 5.7e-07 |
+| wilson | 10,000 | 528 µs | 73 µs | statsmodels | 153 µs | **0.3×** | **2.1×** | 2.2e-16 |
+|  | 10,000 |  |  | astropy | 92 µs | **0.2×** | **1.3×** | 2.2e-16 |
+| exact | 100 | 650 µs | 150 µs | statsmodels | 499 µs | **0.8×** | **3.3×** | 5.6e-17 |
+|  | 100 |  |  | scipy (loop) | 272.9 ms | **420.0×** | **1820.9×** | 4.5e-13 |
+|  | 100 |  |  | DBCI (loop) | 24.3 ms | **37.4×** | **162.1×** | 2.2e-16 |
+|  | 100 |  |  | pynomial (loop) | 18.6 ms | **28.6×** | **123.8×** | 2.2e-16 |
+|  | 100 |  |  | binoculars (loop) | 27.9 ms | **43.0×** | **186.3×** | 1.8e-06 |
+| exact | 1,000 | 2.2 ms | 1.4 ms | statsmodels | 3.0 ms | **1.4×** | **2.2×** | 5.6e-17 |
+|  | 1,000 |  |  | scipy (loop) | 3.24 s | **1472.7×** | **2378.9×** | 5.0e-13 |
+|  | 1,000 |  |  | DBCI (loop) | 262.4 ms | **119.3×** | **192.7×** | 6.7e-16 |
+|  | 1,000 |  |  | pynomial (loop) | 203.8 ms | **92.6×** | **149.6×** | 6.7e-16 |
+|  | 1,000 |  |  | binoculars (loop) | 299.9 ms | **136.3×** | **220.2×** | 5.7e-07 |
+| exact | 10,000 | 19.0 ms | 16.1 ms | statsmodels | 32.6 ms | **1.7×** | **2.0×** | 5.6e-17 |
+| jeffreys | 100 | 6.6 ms | 229 µs | statsmodels | 754 µs | **0.1×** | **3.3×** | 2.2e-16 |
+|  | 100 |  |  | astropy | 509 µs | **0.1×** | **2.2×** | 2.2e-16 |
+|  | 100 |  |  | DBCI (loop) | 34.6 ms | **5.3×** | **150.9×** | 2.2e-16 |
+|  | 100 |  |  | binoculars (loop) | 37.0 ms | **5.6×** | **161.3×** | 1.8e-06 |
+| jeffreys | 1,000 | 28.4 ms | 1.7 ms | statsmodels | 3.8 ms | **0.1×** | **2.3×** | 6.7e-16 |
+|  | 1,000 |  |  | astropy | 3.3 ms | **0.1×** | **2.0×** | 6.7e-16 |
+|  | 1,000 |  |  | DBCI (loop) | 293.0 ms | **10.3×** | **175.8×** | 6.7e-16 |
+|  | 1,000 |  |  | binoculars (loop) | 316.6 ms | **11.1×** | **189.9×** | 5.7e-07 |
+| jeffreys | 10,000 | 225.6 ms | 16.1 ms | statsmodels | 30.2 ms | **0.1×** | **1.9×** | 2.0e-15 |
+|  | 10,000 |  |  | astropy | 31.1 ms | **0.1×** | **1.9×** | 2.0e-15 |
+| agresti-coull | 100 | 359 µs | 23 µs | statsmodels | 138 µs | **0.4×** | **6.1×** | 1.1e-16 |
+|  | 100 |  |  | DBCI (loop) | 13.4 ms | **37.4×** | **592.8×** | 0.0e+00 |
+|  | 100 |  |  | pynomial (loop) | 16.3 ms | **45.5×** | **721.6×** | 0.0e+00 |
+| agresti-coull | 1,000 | 490 µs | 31 µs | statsmodels | 157 µs | **0.3×** | **5.0×** | 1.1e-16 |
+|  | 1,000 |  |  | DBCI (loop) | 125.3 ms | **255.6×** | **4022.9×** | 0.0e+00 |
+|  | 1,000 |  |  | pynomial (loop) | 133.4 ms | **272.1×** | **4283.4×** | 0.0e+00 |
+| agresti-coull | 10,000 | 881 µs | 72 µs | statsmodels | 201 µs | **0.2×** | **2.8×** | 1.1e-16 |
+| wald | 100 | 205 µs | 18 µs | statsmodels | 137 µs | **0.7×** | **7.6×** | 1.1e-16 |
+|  | 100 |  |  | astropy | 28 µs | **0.1×** | **1.6×** | 1.1e-16 |
+|  | 100 |  |  | DBCI (loop) | 11.4 ms | **55.6×** | **638.3×** | 0.0e+00 |
+|  | 100 |  |  | pynomial (loop) | 12.2 ms | **59.4×** | **682.1×** | 0.0e+00 |
+|  | 100 |  |  | binoculars (loop) | 343 µs | **1.7×** | **19.2×** | 1.8e-06 |
+| wald | 1,000 | 268 µs | 27 µs | statsmodels | 127 µs | **0.5×** | **4.7×** | 1.1e-16 |
+|  | 1,000 |  |  | astropy | 32 µs | **0.1×** | **1.2×** | 1.1e-16 |
+|  | 1,000 |  |  | DBCI (loop) | 118.4 ms | **441.5×** | **4347.6×** | 0.0e+00 |
+|  | 1,000 |  |  | pynomial (loop) | 142.2 ms | **530.4×** | **5222.6×** | 0.0e+00 |
+|  | 1,000 |  |  | binoculars (loop) | 3.8 ms | **14.0×** | **138.1×** | 5.7e-07 |
+| wald | 10,000 | 731 µs | 74 µs | statsmodels | 202 µs | **0.3×** | **2.7×** | 1.1e-16 |
+|  | 10,000 |  |  | astropy | 94 µs | **0.1×** | **1.3×** | 1.1e-16 |
 
 ## B. A single interval
 
 | method | n | `bk.ci()` (DataFrame) | `bk.interval()` (floats) | competitor | time | vs `ci()` | vs lean path | parity |
 |---|---:|---:|---:|---|---:|---:|---:|---:|
-| wilson | 1,000 | 260 µs | 4 µs | statsmodels | 131 µs | **0.5×** | **36.4×** |  |
-|  | 1,000 |  |  | scipy | 1.2 ms | **4.7×** | **337.7×** |  |
-|  | 1,000 |  |  | astropy | 38 µs | **0.1×** | **10.6×** |  |
-|  | 1,000 |  |  | DBCI | 127 µs | **0.5×** | **35.3×** |  |
-|  | 1,000 |  |  | pynomial | 166 µs | **0.6×** | **46.1×** |  |
-| exact | 1,000 | 418 µs | 10 µs | statsmodels | 250 µs | **0.6×** | **24.2×** |  |
-|  | 1,000 |  |  | scipy | 4.6 ms | **11.1×** | **448.7×** |  |
-|  | 1,000 |  |  | DBCI | 363 µs | **0.9×** | **35.2×** |  |
-|  | 1,000 |  |  | pynomial | 286 µs | **0.7×** | **27.8×** |  |
-| jeffreys | 1,000 | 643 µs | 11 µs | statsmodels | 288 µs | **0.4×** | **25.6×** |  |
-|  | 1,000 |  |  | astropy | 45 µs | **0.1×** | **4.0×** |  |
-|  | 1,000 |  |  | DBCI | 435 µs | **0.7×** | **38.8×** |  |
-| wald | 1,000 | 300 µs | 3 µs | statsmodels | 161 µs | **0.5×** | **50.7×** |  |
-|  | 1,000 |  |  | astropy | 27 µs | **0.1×** | **8.6×** |  |
-|  | 1,000 |  |  | DBCI | 125 µs | **0.4×** | **39.3×** |  |
-|  | 1,000 |  |  | pynomial | 163 µs | **0.5×** | **51.4×** |  |
+| wilson | 1,000 | 191 µs | 2 µs | statsmodels | 116 µs | **0.6×** | **53.0×** |  |
+|  | 1,000 |  |  | scipy | 1.1 ms | **5.6×** | **484.1×** |  |
+|  | 1,000 |  |  | astropy | 34 µs | **0.2×** | **15.3×** |  |
+|  | 1,000 |  |  | DBCI | 108 µs | **0.6×** | **49.1×** |  |
+|  | 1,000 |  |  | pynomial | 143 µs | **0.7×** | **65.1×** |  |
+| exact | 1,000 | 375 µs | 9 µs | statsmodels | 223 µs | **0.6×** | **25.3×** |  |
+|  | 1,000 |  |  | scipy | 4.0 ms | **10.7×** | **456.9×** |  |
+|  | 1,000 |  |  | DBCI | 298 µs | **0.8×** | **33.8×** |  |
+|  | 1,000 |  |  | pynomial | 218 µs | **0.6×** | **24.7×** |  |
+| jeffreys | 1,000 | 567 µs | 7 µs | statsmodels | 214 µs | **0.4×** | **28.6×** |  |
+|  | 1,000 |  |  | astropy | 30 µs | **0.1×** | **4.1×** |  |
+|  | 1,000 |  |  | DBCI | 299 µs | **0.5×** | **40.0×** |  |
+| wald | 1,000 | 212 µs | 2 µs | statsmodels | 121 µs | **0.6×** | **56.3×** |  |
+|  | 1,000 |  |  | astropy | 25 µs | **0.1×** | **11.6×** |  |
+|  | 1,000 |  |  | DBCI | 117 µs | **0.6×** | **54.4×** |  |
+|  | 1,000 |  |  | pynomial | 141 µs | **0.7×** | **65.5×** |  |
 
 ## C. Methods only DBCI also ships (whole table)
 
 | method | n | binomcikit | competitor | time | speed-up | parity |
 |---|---:|---:|---|---:|---:|---:|
-| blaker | 60 | 7.8 ms | DBCI (loop) | 27.26 s | **3516.8×** | 9.9e-06 |
-| midp | 60 | 7.1 ms | DBCI (loop) | 303.7 ms | **43.0×** | 5.0e-13 |
-| pratt | 60 | 550 µs | DBCI (loop) | 8.1 ms | **14.8×** | 5.3e-02 |
-| lr | 60 | 3.4 ms | DBCI (loop) | 239.6 ms | **70.2×** | 3.7e-13 |
-| modified-wilson | 60 | 1.1 ms | DBCI (loop) | 10.1 ms | **9.6×** | 1.0e+00 |
-| modified-jeffreys | 60 | 1.1 ms | DBCI (loop) | 21.1 ms | **18.7×** | 4.4e-16 |
+| blaker | 60 | 7.3 ms | DBCI (loop) | 18.88 s | **2599.7×** | 9.9e-06 |
+| midp | 60 | 5.0 ms | DBCI (loop) | 202.0 ms | **40.2×** | 5.0e-13 |
+| pratt | 60 | 352 µs | DBCI (loop) | 5.7 ms | **16.2×** | 5.3e-02 |
+| lr | 60 | 2.1 ms | DBCI (loop) | 220.3 ms | **104.7×** | 3.7e-13 |
+| modified-wilson | 60 | 729 µs | DBCI (loop) | 6.9 ms | **9.5×** | 1.0e+00 |
+| modified-jeffreys | 60 | 754 µs | DBCI (loop) | 16.4 ms | **21.7×** | 4.4e-16 |
 
 ## D. Coverage-probability curve (2 000 θ points)
 
 | method | n | binomcikit | competitor | time | speed-up | parity |
 |---|---:|---:|---|---:|---:|---:|
-| wilson coverage curve | 100 | 34.2 ms | numpy/scipy reference | 53.9 ms | **1.6×** | 4.0e-14 |
-| wilson coverage curve | 1,000 | 9.9 ms | numpy/scipy reference | 727.2 ms | **73.3×** | 7.8e-13 |
-| wilson coverage curve | 10,000 | 38.2 ms | numpy/scipy reference | 9.95 s | **260.2×** | 9.1e-12 |
+| wilson coverage curve | 100 | 21.8 ms | numpy/scipy reference | 35.0 ms | **1.6×** | 4.0e-14 |
+| wilson coverage curve | 1,000 | 5.8 ms | numpy/scipy reference | 482.7 ms | **83.4×** | 7.8e-13 |
+| wilson coverage curve | 10,000 | 22.4 ms | numpy/scipy reference | 6.44 s | **287.6×** | 9.1e-12 |
 
 ## E. Anytime-valid betting confidence sequence
 
 | method | n | binomcikit | competitor | time | speed-up | parity |
 |---|---:|---:|---|---:|---:|---:|
-| hedged betting CS (breaks=100) | 1,000 | 7.1 ms | confseq | 52.0 ms | **7.3×** | 1.1e-16 |
-| hedged betting CS (breaks=1000) | 1,000 | 65.3 ms | confseq | 503.7 ms | **7.7×** | 1.1e-16 |
+| hedged betting CS (breaks=100) | 1,000 | 4.6 ms | confseq | 40.2 ms | **8.7×** | 1.1e-16 |
+| hedged betting CS (breaks=1000) | 1,000 | 49.5 ms | confseq | 318.2 ms | **6.4×** | 1.1e-16 |
 
 ## F. Methods only binomcikit has (absolute cost)
 
 | method | n | time |
 |---|---:|---:|
-| `sterne` | 50 | 8.6 ms |
-| `sterne` | 200 | 50.8 ms |
-| `sterne` | 1,000 | 548.4 ms |
-| `sterne` | 5,000 | 12.50 s |
-| `bsc` | 50 | 37.8 ms |
-| `bsc` | 200 | 131.3 ms |
-| `bsc` | 1,000 | 718.0 ms |
-| `olc` | 50 | 3.6 ms |
-| `olc` | 200 | 13.9 ms |
-| `olc` | 1,000 | 86.7 ms |
-| `olc` | 5,000 | 413.2 ms |
-| `lr-star` | 50 | 7.2 ms |
-| `lr-star` | 200 | 9.3 ms |
-| `lr-star` | 1,000 | 16.1 ms |
-| `lr-star` | 5,000 | 49.2 ms |
-| `cressie-read` | 50 | 7.8 ms |
-| `cressie-read` | 200 | 8.5 ms |
-| `cressie-read` | 1,000 | 15.4 ms |
-| `cressie-read` | 5,000 | 46.9 ms |
-| `mixture` | 50 | 3.0 ms |
-| `mixture` | 200 | 4.1 ms |
-| `mixture` | 1,000 | 7.4 ms |
-| `mixture` | 5,000 | 23.8 ms |
-| `betting` | 50 | 54.0 ms |
-| `betting` | 200 | 741.9 ms |
-| `betting` | 1,000 | 15.53 s |
-| `pratt` | 50 | 710 µs |
-| `pratt` | 200 | 610 µs |
-| `pratt` | 1,000 | 974 µs |
-| `pratt` | 5,000 | 2.7 ms |
-| `hoeffding` | 50 | 301 µs |
-| `hoeffding` | 200 | 364 µs |
-| `hoeffding` | 1,000 | 654 µs |
-| `hoeffding` | 5,000 | 2.1 ms |
-| `chernoff` | 50 | 4.2 ms |
-| `chernoff` | 200 | 7.5 ms |
-| `chernoff` | 1,000 | 25.4 ms |
-| `chernoff` | 5,000 | 112.4 ms |
+| `sterne` | 50 | 6.0 ms |
+| `sterne` | 200 | 30.1 ms |
+| `sterne` | 1,000 | 403.1 ms |
+| `sterne` | 5,000 | 7.79 s |
+| `bsc` | 50 | 24.9 ms |
+| `bsc` | 200 | 95.7 ms |
+| `bsc` | 1,000 | 433.8 ms |
+| `olc` | 50 | 2.3 ms |
+| `olc` | 200 | 8.5 ms |
+| `olc` | 1,000 | 59.7 ms |
+| `olc` | 5,000 | 290.5 ms |
+| `lr-star` | 50 | 7.5 ms |
+| `lr-star` | 200 | 8.6 ms |
+| `lr-star` | 1,000 | 12.0 ms |
+| `lr-star` | 5,000 | 33.6 ms |
+| `cressie-read` | 50 | 5.8 ms |
+| `cressie-read` | 200 | 5.8 ms |
+| `cressie-read` | 1,000 | 10.2 ms |
+| `cressie-read` | 5,000 | 31.0 ms |
+| `mixture` | 50 | 2.0 ms |
+| `mixture` | 200 | 2.2 ms |
+| `mixture` | 1,000 | 4.1 ms |
+| `mixture` | 5,000 | 13.3 ms |
+| `betting` | 50 | 42.1 ms |
+| `betting` | 200 | 575.9 ms |
+| `betting` | 1,000 | 14.74 s |
+| `pratt` | 50 | 538 µs |
+| `pratt` | 200 | 486 µs |
+| `pratt` | 1,000 | 627 µs |
+| `pratt` | 5,000 | 1.1 ms |
+| `hoeffding` | 50 | 255 µs |
+| `hoeffding` | 200 | 278 µs |
+| `hoeffding` | 1,000 | 309 µs |
+| `hoeffding` | 5,000 | 507 µs |
+| `chernoff` | 50 | 3.9 ms |
+| `chernoff` | 200 | 6.2 ms |
+| `chernoff` | 1,000 | 17.5 ms |
+| `chernoff` | 5,000 | 74.7 ms |

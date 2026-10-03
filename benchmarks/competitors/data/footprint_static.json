@@ -1,65 +1,65 @@
 {
- "baseline_interpreter_s": 0.06647239997982979,
+ "baseline_interpreter_s": 0.09715509996749461,
  "python": "3.13.5",
  "rows": {
   "binomcikit": {
-   "import_s": 1.7514319999609143,
+   "import_s": 1.780775099992752,
    "own_bytes": 48349,
    "closure_bytes": 263393345,
    "n_deps_incl_self": 8,
    "ok": true
   },
   "binomcikit[numba loaded]": {
-   "import_s": 1.967427699943073,
+   "import_s": 2.210337800090201,
    "own_bytes": 48349,
    "closure_bytes": 263393345,
    "n_deps_incl_self": 8,
    "ok": true
   },
   "DBCI": {
-   "import_s": 1.8047164999879897,
+   "import_s": 2.1808043000055477,
    "own_bytes": 207432,
    "closure_bytes": 267649739,
    "n_deps_incl_self": 17,
    "ok": true
   },
   "binomial_cis": {
-   "import_s": 2.6012206999585032,
+   "import_s": 3.186423600069247,
    "own_bytes": 99506,
    "closure_bytes": 387918148,
    "n_deps_incl_self": 15,
    "ok": true
   },
   "pynomial": {
-   "import_s": 1.0132901000324637,
+   "import_s": 1.2258401000872254,
    "own_bytes": 54674,
    "closure_bytes": 219265545,
    "n_deps_incl_self": 19,
    "ok": true
   },
   "binoculars": {
-   "import_s": 0.9792319999542087,
+   "import_s": 1.2502243000781164,
    "own_bytes": 13642,
    "closure_bytes": 194917868,
    "n_deps_incl_self": 3,
    "ok": true
   },
   "statsmodels (proportion)": {
-   "import_s": 1.508712200098671,
+   "import_s": 1.8244720000075176,
    "own_bytes": 48266242,
    "closure_bytes": 314177975,
    "n_deps_incl_self": 10,
    "ok": true
   },
   "astropy.stats": {
-   "import_s": 0.3430858999490738,
+   "import_s": 0.5153115000575781,
    "own_bytes": 43336587,
    "closure_bytes": 111349297,
    "n_deps_incl_self": 6,
    "ok": true
   },
   "scipy.stats": {
-   "import_s": 0.9052787000546232,
+   "import_s": 1.306019700015895,
    "own_bytes": 140117024,
    "closure_bytes": 194904226,
    "n_deps_incl_self": 2,
