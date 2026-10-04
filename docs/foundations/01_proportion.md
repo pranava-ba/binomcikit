@@ -114,4 +114,4 @@ truth onto the boundary; this is exactly the trap the {term}`zero-width interval
 {term}`maximum likelihood estimate` · {term}`zero-width interval`
 :::
 
-*Next: {doc}`where the count $x$ comes from <02_binomial>` — trials and the binomial distribution.*
+*Next: {doc}`where the count *x* comes from <02_binomial>` — trials and the binomial distribution.*

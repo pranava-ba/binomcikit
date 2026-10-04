@@ -568,7 +568,7 @@ def recommend(
     """Rank methods for a given ``n`` by measuring them on the metric engine.
 
     For each method it computes, over a grid of the true proportion, the mean and
-    minimum {term}`coverage` and the mean {term}`expected length`, and flags whether
+    minimum coverage and the mean expected length, and flags whether
     the method is ``adequate`` (mean coverage within 0.02 of nominal — i.e. not badly
     under-covering). It then sorts:
 

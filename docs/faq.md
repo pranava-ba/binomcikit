@@ -147,9 +147,9 @@ Yes. `bk.pvalue(x, n, theta0, method=...)` gives the p-value of the test that go
 `theta0` falls outside the interval), and `bk.reject(x, n, theta0, method=..., alpha=...)` says whether it is rejected; see
 {doc}`access_layer`. Two cross-checks you can do yourself:
 
-- **Confidence–test duality.** A two-sided test of $H_0: 	heta = 	heta_0$ at level α rejects exactly
-  when $	heta_0$ falls outside the $1-lpha$ interval, so `bk.ci(x, n)` already answers "is
-  $	heta_0$ plausible?" — check whether it's inside.
+- **Confidence–test duality.** A two-sided test of $H_0: \theta = \theta_0$ at level α rejects exactly
+  when $\theta_0$ falls outside the $1-\alpha$ interval, so `bk.ci(x, n)` already answers "is
+  $\theta_0$ plausible?" — check whether it's inside.
 - **SciPy for an exact p-value.** `scipy.stats.binomtest(x, n, theta0)` gives the exact binomial
   {term}`tail probability`. Its default two-sided p-value uses a different ("minlike") convention from
   the equal-tailed `bk.pvalue(..., method="exact")` (which equals twice the smaller one-sided tail, up to its bisection tolerance), so the two can differ.

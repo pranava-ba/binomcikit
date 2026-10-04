@@ -120,7 +120,9 @@ Reading each piece:
 The variance estimator $V=\hat p\hat q/n$ is itself random. Pan (2002) treats it like a scaled
 chi-squared and applies the {term}`Satterthwaite approximation`: match its first two moments to get an
 effective {term}`degrees of freedom`
+
 $$\nu = \frac{2\,V^2}{\widehat{\operatorname{Var}}(V)},$$
+
 where $\widehat{\operatorname{Var}}(V)$ is Pan's estimate of the variance of $V$ (a polynomial in
 $\hat p$ and $n$). The interval is then the ordinary Wald form but with the normal quantile replaced by
 $t_{\nu,1-\alpha/2}$. As $n\to\infty$, $\nu\to\infty$ and the *t* collapses back to the normal — so

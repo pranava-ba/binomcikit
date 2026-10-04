@@ -130,7 +130,9 @@ Estimate θ by the **{term}`median-unbiased estimator`** $\hat\theta$ (solve
 $P(X \ge x \mid \theta) = 0.5$ and $P(X \le x \mid \theta) = 0.5$ for $\theta_{L}$/$\theta_{R}$ via the
 same incomplete-beta identity as {term}`Clopper–Pearson`, at the 50% level instead of α/2, then
 average). The **{term}`smooth quantile function`** is
+
 $$Q(u \mid \theta) = 1 - B_{3u,\,3(1-u)}(1-\theta), \qquad u \in (0,1),$$
+
 where $B_{a,b}$ is the Beta$(a,b)$ CDF. For $b = 1 \ldots B$: draw $n$ iid $U^*_i \sim \text{Unif}(0,1)$,
 map through $Q(\cdot \mid \hat\theta)$ to get pseudo-observations $X^*_i$, average them to $\bar X^*$,
 and convert back to a proportion $\theta^*_b = g(\bar X^*)$ via a fitted **cubic {term}`B-spline`** $g$.

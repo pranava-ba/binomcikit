@@ -110,9 +110,13 @@ yet the exact coverage guarantee still holds. The interval you get always sits i
 ### The formula
 For the binomial CDF `F(k; θ) = P_θ(X ≤ k)`, define the smaller-tail function and the
 {term}`acceptability function`:
+
 $$g(x,\theta) = \min\{\,F(x;\theta),\; 1 - F(x-1;\theta)\,\}, \qquad \gamma(x,\theta) = P_\theta\!\big(g(X,\theta) \le g(x,\theta)\big).$$
+
 The 1 − α **Blaker interval** is
+
 $$\{\,\theta : \gamma(x,\theta) \ge \alpha\,\},$$
+
 reported as `[LBK, UBK]`, whose ends solve `γ(x, θ) = α`.
 
 Reading each piece:

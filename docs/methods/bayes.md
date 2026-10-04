@@ -102,7 +102,9 @@ the posterior of a {term}`binomial` with a Beta prior is *again* a Beta, all of 
 
 ### The formula
 With a {term}`prior` Beta(a, b) and x successes in n trials, the {term}`posterior` is
+
 $$\theta \mid x \;\sim\; \mathrm{Beta}(x+a,\; n-x+b).$$
+
 From it:
 - **{term}`posterior mean`:** $\dfrac{x+a}{n+a+b}$.
 - **quantile {term}`credible interval`:** the α/2 and 1−α/2 {term}`quantile`s of that Beta (`LBAQ`, `UBAQ`).
